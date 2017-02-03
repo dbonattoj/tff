@@ -5,6 +5,7 @@
 #include "../common.h"
 
 #include <vector>
+#include <string>
 
 namespace tff {
 
@@ -16,11 +17,15 @@ class node {
 private:
 	struct requestee {
 		node& preceding_node;
-		time_unit past_window;
-		time_unit future_window;
+		time_unit past_window = 0;
+		time_unit future_window = 0;
+		
+		explicit requestee(node& prec) : preceding_node(prec) { }
 	};
 	
 	node_graph& graph_;
+	std::string name_;
+	
 	std::vector<requestee> requestees_;
 	unique_ptr_vector<node_input> inputs_;
 	unique_ptr_vector<node_output> outputs_;
@@ -39,6 +44,9 @@ protected:
 public:
 	virtual ~node() = default;
 	
+	const auto& inputs() const { return inputs_; }
+	const auto& outputs() const { return outputs_; }
+	
 	void request(time_span);
 	void launch();
 	void stop();
@@ -53,9 +61,16 @@ private:
 	time_unit past_window_ = 0;
 	time_unit future_window_ = 0;
 	node_output* connected_output_ = nullptr;
+	
+	std::string name_;
+	thread_index_type reader_thread_index = undefined_thread_index;
+	
+	bool activated_ = false;
 
 public:
 	virtual ~node_input() = default;
+	
+	virtual node_read_handle read(time_span) = 0;
 };
 
 
@@ -63,6 +78,12 @@ class node_output {
 private:
 	node& node_;
 	
+	
+};
+
+
+class node_read_handle {
+private:
 	
 };
 
