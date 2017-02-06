@@ -1,23 +1,24 @@
 #ifndef TFF_RING_FORMAT_H_
 #define TFF_RING_FORMAT_H_
 
+#include "../nd/nd.h"
+#include <vector>
+
 namespace tff {
 
-
 class ring_format {
-public:
-	class frame_channel {
-	private:
-		opaque_ndarray_format ndarray_format_;
-	};
-	
-	class parameter_channel {
-		
-	};
-	
 private:
-	std::vector<frame_channel> frame_channels_;
-	std::vector<parameter_channel> parameter_channels_;
+	std::vector<opaque_ndarray_format> ndarray_channel_formats_;
+	//std::vector<opaque_ndarray_format> parameter_channels_;
+	
+public:
+	const opaque_ndarray_format& ndarray(std:::ptrdiff_t i) const { return ndarray_channel_formats_.at(i); }
+	std::size_t ndarrays_count() const { return ndarray_channel_formats_.size(); }
+
+	std::ptrdiff_t add_ndarray(const opaque_ndarray_format& frm) {
+		ndarray_channel_formats_.push_back(frm);
+		return ndarray_channel_formats_.size();
+	}
 };
 
 }

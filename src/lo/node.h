@@ -1,8 +1,8 @@
 #ifndef TFF_LO_NODE_H_
 #define TFF_LO_NODE_H_
 
-#include "../utility/unique_ptr_vector.h"
 #include "../common.h"
+#include "../ring/read_handle.h"
 
 #include <vector>
 #include <string>
@@ -14,6 +14,9 @@ class node_input;
 class node_output;
 
 class node {
+public:
+	using ring_type = rqueue<ring>;
+	
 private:
 	struct requestee {
 		node& preceding_node;
@@ -27,9 +30,9 @@ private:
 	std::string name_;
 	
 	std::vector<requestee> requestees_;
-	unique_ptr_vector<node_input> inputs_;
-	unique_ptr_vector<node_output> outputs_;
-
+	std::vector<node_input> inputs_;
+	std::vector<node_output> outputs_;
+	
 protected:
 	explicit node(node_graph&);
 	node(const node&) = delete;
@@ -37,9 +40,8 @@ protected:
 	node& operator(const node&) = delete;
 	node& operator(node&&) = delete;
 	
-	virtual void do_request(time_span) = 0;
-	virtual void do_launch() = 0;
-	virtual void do_stop() = 0;
+	node_input& add_input_();
+	node_output& add_output_();
 	
 public:
 	virtual ~node() = default;
@@ -47,44 +49,65 @@ public:
 	const auto& inputs() const { return inputs_; }
 	const auto& outputs() const { return outputs_; }
 	
-	void request(time_span);
-	void launch();
-	void stop();
+	virtual void setup();
 	
+	virtual void request(time_span);
+	virtual void launch();
+	virtual void stop();
+	
+	virtual node_read_handle read_output(time_span, output_index_type) = 0;
 };
 
 
 class node_input {
 private:
 	node& node_;
+	input_index_type index_;
 	
 	time_unit past_window_ = 0;
 	time_unit future_window_ = 0;
 	node_output* connected_output_ = nullptr;
 	
 	std::string name_;
-	thread_index_type reader_thread_index = undefined_thread_index;
 	
 	bool activated_ = false;
 
-public:
-	virtual ~node_input() = default;
+	node_input(const node_input&) = delete;
+	node_input& operator=(const node_input&) = delete;
 	
-	virtual node_read_handle read(time_span) = 0;
+public:
+	node_input(node& nd, input_index_type idx) : node_(nd), index_(ids) { }
+	
+	time_unit past_window() const { return past_window_; }
+	time_unit future_window() const { return future_window_; }
+	void set_past_window(time_unit);
+	void set_future_window(time_unit);
+	
+	void connect(node_output&);
+	void disconnect();
+	bool is_connected() const;
+	const node_output& connected_output() const;
+	const node& connected_node() const;
+	
+	bool is_activated() const { return activated_; }
+	void set_activated(bool);
+	
+	node_read_handle read_frame(time_unit);
 };
 
 
 class node_output {
 private:
 	node& node_;
+	output_index_type index_;
 	
+	node_output(const node_output&) = delete;
+	node_output& operator=(const node_output&) = delete;
 	
-};
-
-
-class node_read_handle {
-private:
+public:
+	node_output(node& nd, output_index_type idx) : node_(nd), index_(ids) { }
 	
+	node_read_handle read(time_span);
 };
 
 };
