@@ -3,6 +3,7 @@
 
 #include "../common.h"
 #include "../ring/read_handle.h"
+#include "node_request_connection.h"
 
 #include <vector>
 #include <string>
@@ -13,42 +14,70 @@ class node_graph;
 class node_input;
 class node_output;
 
+/// Node in flow graph.
 class node {
 public:
 	using ring_type = rqueue<ring>;
 	
 private:
-	struct requestee {
-		node& preceding_node;
-		time_unit past_window = 0;
-		time_unit future_window = 0;
-		
-		explicit requestee(node& prec) : preceding_node(prec) { }
-	};
+	enum class stage { was_constructed, was_pre_setup, was_setup };
 	
 	node_graph& graph_;
 	std::string name_;
 	
-	std::vector<requestee> requestees_;
+	stage stage_ = stage::was_constructed;
+	
+	std::vector<node_request_connection> request_receivers_;
+	node_request_connection* request_sender_ = nullptr;
+	
 	std::vector<node_input> inputs_;
 	std::vector<node_output> outputs_;
 	
-protected:
-	explicit node(node_graph&);
+	/// Recursively pre-setup nodes in sink-to-source order.
+	/** Must be called on sink node. Calls pre_setup() once on each node in graph, in an order such that when one node
+	 ** is pre-setup, its successors have already been pre-setup. */
+	void propagate_pre_setup_();
+	
+	/// Recursively setup nodes in source-to-sink order.
+	/** Must be called on sink node. Calls setup() once on each node in graph, in an order such that when one node
+	 ** is setup, its predecessors have already been setup */
+	void propagate_setup_();
+
 	node(const node&) = delete;
 	node(node&&) = delete;
 	node& operator(const node&) = delete;
 	node& operator(node&&) = delete;
+	
+	bool requester_is_setup_() const;
+	bool request_chain_contains_(const node&) const;
+	void connect_to_request_sender_();
+	
+	void propagate_request_connections_();
+	
+protected:
+	explicit node(node_graph&);
 	
 	node_input& add_input_();
 	node_output& add_output_();
 	
 public:
 	virtual ~node() = default;
-	
+	/*
+	node_request_connection& add_request_receiver(node& receiver);
+	bool has_request_sender() const { return (request_sender_ != nullptr); }
+	*/
+	const node_request_connection& request_sender() const { Assert(has_request_sender()); return *request_sender_; }
+	node_request_connection& request_sender() { Assert(has_request_sender()); return *request_sender_; }
+	const node& request_sender_node() const { request_sender().sender(); }
+	node& request_sender_node() { request_sender().sender(); }
+	const auto& request_receivers() const { return request_receivers_; }
+
 	const auto& inputs() const { return inputs_; }
 	const auto& outputs() const { return outputs_; }
+	bool is_source() const { return (inputs_.size() == 0); }
+	bool is_sink() const { return (outputs_.size() == 0); }
 	
+	virtual void pre_setup();
 	virtual void setup();
 	
 	virtual void request(time_span);
@@ -59,57 +88,6 @@ public:
 };
 
 
-class node_input {
-private:
-	node& node_;
-	input_index_type index_;
-	
-	time_unit past_window_ = 0;
-	time_unit future_window_ = 0;
-	node_output* connected_output_ = nullptr;
-	
-	std::string name_;
-	
-	bool activated_ = false;
-
-	node_input(const node_input&) = delete;
-	node_input& operator=(const node_input&) = delete;
-	
-public:
-	node_input(node& nd, input_index_type idx) : node_(nd), index_(ids) { }
-	
-	time_unit past_window() const { return past_window_; }
-	time_unit future_window() const { return future_window_; }
-	void set_past_window(time_unit);
-	void set_future_window(time_unit);
-	
-	void connect(node_output&);
-	void disconnect();
-	bool is_connected() const;
-	const node_output& connected_output() const;
-	const node& connected_node() const;
-	
-	bool is_activated() const { return activated_; }
-	void set_activated(bool);
-	
-	node_read_handle read_frame(time_unit);
-};
-
-
-class node_output {
-private:
-	node& node_;
-	output_index_type index_;
-	
-	node_output(const node_output&) = delete;
-	node_output& operator=(const node_output&) = delete;
-	
-public:
-	node_output(node& nd, output_index_type idx) : node_(nd), index_(ids) { }
-	
-	node_read_handle read(time_span);
-};
-
-};
+}
 
 #endif

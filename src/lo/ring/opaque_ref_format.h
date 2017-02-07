@@ -6,9 +6,9 @@
 
 namespace tff {
 
-/// Opaque format for \ref ndarray_view which references another opaque format.
+/// Opaque format for \ref ndarray_opaque_view which references another opaque format.
 /** Contains only the reference to watched opaque format. Avoids propagating a copy of the opaque format every time
- ** a section of the view is taken. The watched opaque format must remain alive. */
+ ** a section of a view is taken. The watched opaque format must remain alive. */
 template<typename Opaque_format>
 class opaque_ref_format {
 public:

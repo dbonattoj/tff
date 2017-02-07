@@ -3,6 +3,9 @@
 namespace tff {
 
 
+processing_node::processing_node(node_graph& gr) : node(gr) { }
+
+
 bool processing_node::call_handler_pre_process(processing_job& job) const {
 	try {
 		handler_->handler_pre_process_(job);
@@ -87,8 +90,36 @@ bool processing_node::write_next_(rqueue_write_handle& write_handle) {
 }
 
 
+void processing_node::setup_ring_(rqueue_variant variant, std::size_t required_capacity) {
+	Assert(! queue_);
+	queue_ = std::move(std::make_unique<rqueue_type>(variant, required_capacity, format_));
+}
+
+
+std::size_t processing_node::channels_count() const {
+	return format_.ndarrays_count();
+}
+
+
+node_input& processing_node::add_input() {
+	return node::add_input_();
+}
+
+
+channel_index_type processing_node::add_channel(const opaque_ndarray_format& frm) {
+	return format_.add_ndarray(frm);
+}
+
+
+node_output& processing_node::add_output(channel_index_type chan) {
+	node_output& out = node::add_output_();
+	output_channels_[out.index()] = chan;
+	return out;
+}
+
+
 void processing_node::setup() {
-	
+	node::setup();
 }
 
 
@@ -112,14 +143,7 @@ void processing_node::stop() {
 
 auto processing_node::read_output(time_span span, output_index_type idx) -> node_read_handle {
 	rqueue_read_handle queue_handle = queue_->read(span);
-
-	while(! queue_handle.valid()) {
-		// transitory failure
-		queue_handle = std::move(queue_->read(span));
-	}
-	
 	channel_index_type channel_idx = output_channels_.at(idx);
-	
 	return node_read_handle(
 		std::move(queue_handle),
 		span.begin,

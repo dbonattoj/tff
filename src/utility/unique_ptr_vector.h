@@ -8,6 +8,10 @@
 
 namespace tff {
 
+/// Array holding unique pointers to items of differing types.
+/** Interface similar to `std::vector`, except that items can be of different (polymorphic) types, derived from \a T.
+ ** Items are stored on dynamically allocted memory, and owned by the contained.
+ ** Replaces `std::vector<std::unique_ptr<T>>`. Iteration using `indirect_iterator`. */
 template<typename T, typename Allocator = std::allocator<T>>
 class unique_ptr_vector {
 public:

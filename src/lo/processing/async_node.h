@@ -8,7 +8,7 @@ namespace tff {
 
 class async_node : public processing_node, public worker {
 private:
-	
+	time_unit prefetch_duration_ = 0;
 };
 
 };

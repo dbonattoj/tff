@@ -9,6 +9,8 @@ namespace tff {
 
 class sink_node;
 
+/// Low-level node graph.
+/** Contains the nodes. Created during installation of high-level filter graph. */
 class node_graph {
 private:
 	unique_ptr_vector<node> nodes_;
