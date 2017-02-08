@@ -18,8 +18,8 @@ private:
 	time_window window_;
 	
 public:
-	node_request_connection(node& sender, node& receiver) :
-		sender_(sender), receiver_(receiver) { Assert(precedes_strict(receiver, sender)); }
+	node_request_connection(node& sender, node& receiver, const time_window& win) :
+		sender_(sender), receiver_(receiver), window_(win) { Assert(precedes_strict(receiver, sender)); }
 	
 	time_window window() const { return window_; }
 	void set_window(time_window win) { window_ = win; }

@@ -20,12 +20,12 @@ public:
 	using ring_type = rqueue<ring>;
 	
 private:
-	enum class stage { was_constructed, was_pre_setup, was_setup };
+	enum class stage { initial, request_connection, setup };
 	
 	node_graph& graph_;
 	std::string name_;
 	
-	stage stage_ = stage::was_constructed;
+	stage stage_ = stage::initial;
 	
 	std::vector<node_request_connection> request_receivers_;
 	node_request_connection* request_sender_ = nullptr;
@@ -33,14 +33,12 @@ private:
 	std::vector<node_input> inputs_;
 	std::vector<node_output> outputs_;
 	
-	/// Recursively pre-setup nodes in sink-to-source order.
-	/** Must be called on sink node. Calls pre_setup() once on each node in graph, in an order such that when one node
-	 ** is pre-setup, its successors have already been pre-setup. */
-	void propagate_pre_setup_();
+	bool request_chain_contains_(const node& q_indirect_sender) const;
+	void add_request_receiver_(node& receiver, time_window window);
+	bool accumulated_time_window_to_(const node& target_successor_node, time_window& out_window) const;
+	void connect_to_request_sender_();
+	void propagate_request_connections_();
 	
-	/// Recursively setup nodes in source-to-sink order.
-	/** Must be called on sink node. Calls setup() once on each node in graph, in an order such that when one node
-	 ** is setup, its predecessors have already been setup */
 	void propagate_setup_();
 
 	node(const node&) = delete;
@@ -48,24 +46,21 @@ private:
 	node& operator(const node&) = delete;
 	node& operator(node&&) = delete;
 	
-	bool requester_is_setup_() const;
-	bool request_chain_contains_(const node&) const;
-	void connect_to_request_sender_();
-	
-	void propagate_request_connections_();
-	
 protected:
-	explicit node(node_graph&);
+	node(node_graph&, const std::string& name);
 	
 	node_input& add_input_();
 	node_output& add_output_();
 	
+	void sink_setup_();
+	
 public:
 	virtual ~node() = default;
-	/*
-	node_request_connection& add_request_receiver(node& receiver);
+	
+	const node_graph& graph() const { return graph_; }
+	node_graph& graph() { return graph_; }
+	
 	bool has_request_sender() const { return (request_sender_ != nullptr); }
-	*/
 	const node_request_connection& request_sender() const { Assert(has_request_sender()); return *request_sender_; }
 	node_request_connection& request_sender() { Assert(has_request_sender()); return *request_sender_; }
 	const node& request_sender_node() const { request_sender().sender(); }
@@ -77,8 +72,8 @@ public:
 	bool is_source() const { return (inputs_.size() == 0); }
 	bool is_sink() const { return (outputs_.size() == 0); }
 	
-	virtual void pre_setup();
 	virtual void setup();
+	virtual thread_index_type input_reader_thread(input_index_type) const = 0;
 	
 	virtual void request(time_span);
 	virtual void launch();

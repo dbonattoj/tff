@@ -32,6 +32,8 @@ public:
 	node& this_node() { return node_; }
 	input_index_type index() const { return index_; }
 	
+	thread_index_type reader_thread() const;
+	
 	time_window window() const { return window_; }
 	void set_window(time_window win) { window_ = win; }
 	

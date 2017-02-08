@@ -4,6 +4,10 @@
 
 namespace tff {
 
+thread_index_type node_output::reader_thread() const {
+	return node_.input_reader_thread(index_);
+}
+
 void node_input::set_past_window(time_unit dur) {
 	Assert(dur >= 0);
 	past_window_ = dur;

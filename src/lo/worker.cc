@@ -3,7 +3,7 @@
 namespace tff {
 
 void worker::thread_main_() {
-	set_this_thread_name(name_);
+	//set_this_thread_name(name_);
 	
 	std::unique_lock<std::mutex> lock(mutex_);
 	for(;;) {

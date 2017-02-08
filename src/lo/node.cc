@@ -2,7 +2,8 @@
 
 namespace tff {
 
-node::node(node_graph& gr) : graph_(gr) { }
+node::node(node_graph& gr, const std::string& nm) :
+	graph_(gr), name_(nm) { }
 
 
 node_request_connection& node::add_request_receiver(node& receiver) {
@@ -27,36 +28,36 @@ node_output& node::add_output_() {
 
 void node::request(time_span span) {
 	if(span.begin < 0) span.begin = 0;
-	for(const requestee& req : requestees_)
-		req.preceding_node.request(time_span(span.begin - req.past_window, span.end + req.future_window));
+	
+	for(node_request_connection& req : request_receivers_)
+		req.receiver().request(expand(span, req.window()));
 }
 
 
 void node::launch() {
-	for(const requestee& req : requestees_) req.preceding_node.launch();
+	for(node_request_connection& req : request_receivers_)
+		req.receiver().launch();
 }
 
 
 void node::stop() {
-	for(const requestee& req : requestees_) req.preceding_node.stop();
-}
-
-
-
-bool node::requester_is_setup_() const {
-	return has_request_sender() || is_sink();
+	for(node_request_connection& req : request_receivers_)
+		req.receiver().stop();
 }
 
 
 bool node::request_chain_contains_(const node& q_indirect_sender) const {
-	Assert(requester_is_setup_());
+	Assert(has_request_sender() || is_sink());
 	if(this == &q_indirect_sender) return true;
 	else if(has_request_sender()) return request_sender().sender().request_chain_contains_(q_indirect_sender);
 	else return false;
 }
 
 
-void node::add_request_receiver_(node& receiver, time_unit past_window, time_unit future_window) {
+void node::add_request_receiver_(node& receiver, time_window window) {
+	Assert(! receiver.has_request_sender());
+	request_receivers_.emplace_back(*this, receiver, window);
+	receiver.request_sender_ = this;
 }
 
 
@@ -85,107 +86,57 @@ bool node::accumulated_time_window_to_(const node& target_successor_node, time_w
 
 void node::connect_to_request_sender_() {
 	Assert(! has_request_sender());
-	if(outputs().size() == 1) {
-		node_output& out = outputs().front();
-		node_input& conn_in = out.connected_input();
-		
-		conn_in.this_node().add_request_receiver_(*this, conn_in.past_window(), conn_in.future_window());
-		return;
-	}
-	
 
-	node* candidate = &outputs().front().connected_node();
+	node* sender = &outputs().front().connected_node();
 	for(;;) {
 		bool rejected = false;
 		for(output_index_type i = 1; !rejected && (i < outputs().size()); ++i) {
-			if(! outputs().at(i).connected_node().request_chain_contains_(*candidate)) rejected = true;
+			if(! outputs().at(i).connected_node().request_chain_contains_(*sender)) rejected = true;
 		}
-		if(rejected) candidate = &candidate->request_sender_node();
+		if(rejected) sender = &sender->request_sender_node();
 		else break;
 	}
 	
+	time_window request_window;
+	bool ok = accumulated_time_window_to_(*candidate, request_window);
+	Assert(ok);
 	
-	
+	sender->add_request_receiver_(*this, request_window);
 }
-
 
 
 void node::propagate_request_connections_() {
-	auto connected = [](const node& nd) {
-		
-	};
-	
-	auto request_chain_contains()
-	
-	
-	for(const node_output& out : outputs()) {
-		const node& direct_successor = out.connected_node();
-		if(! connected(direct_successor)) return;
-	}
-	
-	if(outputs().size() == 1) {
-		
-	}
-	
-	const node* candidate = &outputs().front().connected_node();
-	for(;;) {
-		
-		if()
-	}
-	
-	
-	
-	
-	if(! has_request_sender()) return; // or sink
-	
+	if(! is_sink()) {
+		if(has_request_sender()) return;
 
-	for(const node_input& in : inputs()) {
-		node& direct_predecessor = in.connected_node();
-		
+		for(const node_output& out : outputs()) {
+			const node* successor = out.connected_node();
+			if(!successor.has_request_sender() && !successor.is_sink()) return;
+		}
+			
+		connect_to_request_sender_();
 	}
-
-}
-
-
-void node::propagate_pre_setup_() {
-	// do nothing if this node was already pre_setup
-	if(stage_ == stage::was_pre_setup) return;
 	
-	// do nothing if any of its direct successors are not yet pre_setup
-	for(const node_output& out : outputs()) {
-		const node& direct_successor = out.connected_node();
-		if(direct_successor.stage_ != stage::was_pre_setup) return;
-	}
-
-	// pre_setup this node
-	Assert(stage_ == stage::was_constructed);
-	this->pre_setup();
-	stage_ = stage::was_pre_setup;
+	stage_ = stage::request_connection;
 	
-	// recursively attempt to pre_setup direct predecessors
-	for(const node_input& in : inputs()) {
-		node& direct_predecessor = in.connected_node();
-		direct_predecessor.propagate_pre_setup_();
-	}
+	for(node_input& in : inputs())
+		in.connected_node().propagate_request_connections_();
 }
 
 
 void node::propagate_setup_() {
-	// do nothing if this node was already setup
-	if(stage_ == stage::was_setup) return;
-	
-	// recursively attempt to setup its direct predecessors
-	for(const node_input& in : inputs()) {
-		node& direct_predecessor = in.connected_node();
-		direct_predecessor.propagate_setup_();
-	}
-
-	// setup this node
-	Assert(stage_ == stage::was_pre_setup);
+	Assert(stage_ == stage::request_connection);
+	for(node_request_connection& conn : request_receivers_) conn.receiver().propagate_setup_();
 	this->setup();
-	
-	stage_ = stage::was_setup;
+	stage_ = stage::setup;
 }
 
+
+void node::sink_setup_() {
+	Assert(is_sink());
+	Assert(stage_ == stage::initial);
+	propagate_request_connections_();
+	propagate_setup_();
+}
 
 }

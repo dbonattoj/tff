@@ -43,12 +43,12 @@ protected:
 	void setup_ring_(rqueue_variant, std::size_t required_capacity);
 	
 public:
-	explicit processing_node(node_graph&);
+	processing_node(node_graph&, const std::string& name);
 	
+	channel_index_type add_channel(const opaque_ndarray_format&);
 	std::size_t channels_count() const;
 	
 	node_input& add_input();
-	channel_index_type add_channel(const opaque_ndarray_format&);
 	node_output& add_output(channel_index_type);
 	
 	void setup() override;
@@ -56,7 +56,7 @@ public:
 	void launch() override;
 	void stop() override;
 	
-	read_handle read_output(time_span, output_index_type) override;
+	read_handle read_output(time_span, output_index_type) final override;
 
 };
 

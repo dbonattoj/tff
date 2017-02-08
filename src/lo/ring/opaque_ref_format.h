@@ -22,7 +22,7 @@ private:
 	const Opaque_format& format_;
 	
 public:
-	opaque_ref_format(const format_type& frm) : format_(frm) { }
+	explicit opaque_ref_format(const format_type& frm) : format_(frm) { }
 	
 	std::size_t size() const { return format_.size(); }
 	std::size_t alignment_requirement() const { return format_.alignment_requirement(); }

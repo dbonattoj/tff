@@ -18,7 +18,6 @@ private:
 	enum { idle, launch, kill } state_;
 	std::mutex mutex_;
 	std::condition_variable cv_;
-
 	std::thread thread_;
 	
 	void thread_main_();
@@ -26,13 +25,15 @@ private:
 protected:
 	virtual void worker_main_() = 0;
 	
+	thread_index_type worker_thread_() const { return thread_index_; }
+	
 	/// Schedules call to worker_main_() on the separate thread.
 	/** If worker_main_() is still executing, blocks until it is finished. */
 	void worker_launch_();
 	
 public:
 	worker(thread_index_type index, const std::string& name);
-	~worker();
+	virtual ~worker();
 };
 
 };

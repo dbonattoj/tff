@@ -11,4 +11,10 @@ void sync_node::setup() {
 	processing_node::setup_ring_(rqueue_variant::sync, capacity);
 }
 
+
+thread_index_type sync_node::input_reader_thread(input_index_type) const {
+	return outputs().front().reader_thread();
+}
+
+
 }

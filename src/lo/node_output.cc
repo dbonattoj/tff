@@ -40,6 +40,11 @@ node& node_output::connected_node() {
 	return connected_input().this_node();
 }
 
+
+thread_index_type node_output::reader_thread() const {
+	return connected_input().reader_thread();
+}
+
 	
 node_read_handle node_output::read(time_span span) {
 	return this_node().read_output(span, index_);

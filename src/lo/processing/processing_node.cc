@@ -3,7 +3,8 @@
 namespace tff {
 
 
-processing_node::processing_node(node_graph& gr) : node(gr) { }
+processing_node::processing_node(node_graph& gr, const std::string& name) :
+	node(gr, name) { }
 
 
 bool processing_node::call_handler_pre_process(processing_job& job) const {

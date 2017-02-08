@@ -33,6 +33,8 @@ public:
 	const node& connected_node() const;
 	node& connected_node();
 	
+	thread_index_type reader_thread() const;
+	
 	node_read_handle read(time_span);
 };
 
