@@ -1,5 +1,7 @@
 #include "sink_node.h"
 #include "../node_graph.h"
+#include "../ring/ring.h"
+#include "../ring/frame_metadata.h"
 #include "../../rqueue/rqueue.h"
 
 namespace tff {
@@ -11,6 +13,13 @@ sink_node::sink_node(node_graph& gr, const std::string& name) :
 void sink_node::setup() {
 	processing_node::setup();
 	processing_node::setup_ring_(rqueue_variant::sync, 1);
+	rqueue_().set_sync_writer(std::bind(&sink_node::write_, this, std::placeholders::_1));
+}
+
+
+void sink_node::write_(rqueue_type::write_handle& handle) {
+	if(handle.has_stopped()) return;
+	processing_node::write_next_(handle);
 }
 
 
@@ -24,13 +33,17 @@ thread_index_type sink_node::input_reader_thread(input_index_type) const {
 }
 
 
-auto sink_node::process_next() -> process_result {
-
+frame_state sink_node::process(time_unit t) {
+	time_span span(t, t + 1);
+	request(span);
+	rqueue_type::read_handle handle = rqueue_().read(span);
+	Assert(handle.valid());
+	return handle.view().metadata().at(0).state;
 }
 
 
-void sink_node::seek(time_unit t) {
-
+frame_state sink_node::process_next() {
+	return process(current_time() + 1);
 }
 
 }

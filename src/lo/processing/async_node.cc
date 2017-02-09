@@ -1,6 +1,8 @@
 #include "async_node.h"
 #include "../node_output.h"
 #include "../node_graph.h"
+#include "../../rqueue/rqueue.h"
+#include <thread>
 
 namespace tff {
 
@@ -40,6 +42,24 @@ void async_node::request(time_span span) {
 void async_node::launch() {
 	worker_launch_();
 	processing_node::launch();
+}
+
+
+void async_node::transitory_failure_() {
+	std::this_thread::yield();
+}
+
+
+void async_node::worker_main_() {
+	for(;;) {
+		bool succeeded;
+		{
+			rqueue_type::write_handle handle = rqueue_().write();
+			if(handle.has_stopped()) break;
+			succeeded = processing_node::write_next_(handle);
+		}
+		if(! succeeded) transitory_failure_();
+	}
 }
 
 

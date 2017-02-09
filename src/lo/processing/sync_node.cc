@@ -1,5 +1,6 @@
 #include "sync_node.h"
 #include "../node_output.h"
+#include <functional>
 
 namespace tff {
 
@@ -10,6 +11,14 @@ void sync_node::setup() {
 	std::size_t capacity = req_sender.window().past + 1 + req_sender.window().future;
 	
 	processing_node::setup_ring_(rqueue_variant::sync, capacity);
+	
+	rqueue_().set_sync_writer(std::bind(&sync_node::write_, this, std::placeholders::_1));
+}
+
+
+void sync_node::write_(rqueue_type::write_handle& handle) {
+	if(handle.has_stopped()) return;
+	processing_node::write_next_(handle);
 }
 
 

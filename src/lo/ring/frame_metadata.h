@@ -3,14 +3,14 @@
 
 namespace tff {
 
+enum class frame_state {
+	success,
+	end_of_stream,
+	failure
+};
+
 struct frame_metadata {
-	enum frame_state {
-		success,
-		end_of_stream,
-		failure
-	};
-	
-	frame_state state = failure;
+	frame_state state = frame_state::failure;
 };
 
 }

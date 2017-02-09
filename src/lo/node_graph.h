@@ -1,9 +1,9 @@
 #ifndef TFF_NODE_GRAPH_H_
 #define TFF_NODE_GRAPH_H_
 
-#include "../utility/unique_ptr_vector.h"
 #include "node.h"
-#include <vector>
+#include "../common.h"
+#include "../utility/unique_ptr_vector.h"
 #include <utility>
 
 namespace tff {
@@ -11,11 +11,15 @@ namespace tff {
 class sink_node;
 
 /// Low-level node graph.
-/** Contains the nodes. Created during installation of high-level filter graph. */
+/** Contains the nodes, and controls execution. Created during installation of high-level filter graph. */
 class node_graph {
 private:
 	unique_ptr_vector<node> nodes_;
 	sink_node* sink_ = nullptr;
+	bool was_setup_ = false;
+	
+	bool launched_ = false;
+	time_unit next_run_start_time_ = 0;
 	
 	thread_index_type last_thread_index_ = 0;
 	
@@ -42,6 +46,17 @@ public:
 		sink_ = &sink;
 		return sink;
 	}
+	
+	void setup();
+	
+	void launch();
+	void stop();
+	
+	time_unit current_time() const;
+	void run_until(time_unit last_frame);
+	void run_for(time_unit duration);
+	void run();
+	void seek(time_unit target_time);
 };
 
 }

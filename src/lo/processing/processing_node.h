@@ -56,6 +56,8 @@ public:
 	void launch() override;
 	void stop() override;
 	
+	time_unit current_time() const { return current_time_; }
+
 	node_read_handle read_output(time_span, output_index_type) final override;
 };
 
