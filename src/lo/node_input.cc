@@ -5,7 +5,7 @@
 
 namespace tff {
 
-thread_index_type node_output::reader_thread() const {
+thread_index_type node_input::reader_thread() const {
 	return node_.input_reader_thread(index_);
 }
 

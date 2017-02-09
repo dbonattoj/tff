@@ -9,7 +9,7 @@ template<typename Iterator>
 class indirect_iterator {
 public:
 	using iterator_type = Iterator;
-	using value_type = std::decay_t<decltype(*std::declval<iterator_type>())>;
+	using value_type = std::decay_t<decltype(**std::declval<iterator_type>())>;
 	using pointer = value_type*;
 	using reference = value_type&;
 	using difference_type = typename iterator_type::difference_type;

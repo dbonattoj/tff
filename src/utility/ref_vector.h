@@ -62,20 +62,20 @@ public:
 	const_reference data() const { return *vector_.data(); }
 	
 	iterator begin() { return iterator(vector_.begin()); }
-	const_iterator begin() const { return iterator(vector_.begin()); }
-	const_iterator cbegin() const { return iterator(vector_.begin()); }
+	const_iterator begin() const { return const_iterator(vector_.cbegin()); }
+	const_iterator cbegin() const { return const_iterator(vector_.cbegin()); }
 
 	iterator end() { return iterator(vector_.end()); }
-	const_iterator end() const { return iterator(vector_.end()); }
-	const_iterator cend() const { return iterator(vector_.end()); }
+	const_iterator end() const { return const_iterator(vector_.cend()); }
+	const_iterator cend() const { return const_iterator(vector_.cend()); }
 
-	reverse_iterator rbegin() { return iterator(vector_.rbegin()); }
-	const_reverse_iterator rbegin() const { return iterator(vector_.rbegin()); }
-	const_reverse_iterator crbegin() const { return iterator(vector_.rbegin()); }
+	reverse_iterator rbegin() { return reverse_iterator(vector_.rbegin()); }
+	const_reverse_iterator rbegin() const { return const_reverse_iterator(vector_.rbegin()); }
+	const_reverse_iterator crbegin() const { return const_reverse_iterator(vector_.rbegin()); }
 
-	reverse_iterator rend() { return iterator(vector_.rend()); }
-	const_reverse_iterator rend() const { return iterator(vector_.rend()); }
-	const_reverse_iterator crend() const { return iterator(vector_.rend()); }
+	reverse_iterator rend() { return reverse_iterator(vector_.rend()); }
+	const_reverse_iterator rend() const { return const_reverse_iterator(vector_.rend()); }
+	const_reverse_iterator crend() const { return const_reverse_iterator(vector_.rend()); }
 
 	bool empty() const { return vector_.empty(); }
 	size_type size() const { return vector_.size(); }

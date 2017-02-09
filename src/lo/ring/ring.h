@@ -3,10 +3,12 @@
 
 #include "../types.h"
 #include "../../nd/nd.h"
+#include "frame_metadata.h"
 #include "ring_format.h"
 #include "opaque_ref_format.h"
 
 #include <vector>
+#include <type_traits>
 
 namespace tff {
 
@@ -15,21 +17,9 @@ namespace tff {
  ** - _Metadata_ channel containing state information etc.
  ** - _Ndarray_ channels containing opaque ndarray shaped data with given format.
  ** - _Parameter_ channels...
- ** Also contains \ref ring_format object which holds frame format information.
  ** Provides wraparound view to circular buffer segment, using underlying \ref ndarray_wraparound_view.
  ** To be accessed through \ref rqueue<ring>. */
 class ring {
-public:
-	enum frame_state {
-		success,
-		end_of_stream,
-		failure
-	};
-	
-	struct frame_metadata {
-		frame_state state;
-	};
-	
 private:
 	template<bool Mutable> class frame_view_;
 	template<bool Mutable> class wraparound_view_;
@@ -48,7 +38,6 @@ public:
 	using const_wraparound_view_type = wraparound_view_<false>;
 	
 private:
-	ring_format format_;
 	std::size_t capacity_;
 	
 	ndarray<1, frame_metadata> metadata_channel_;
@@ -90,8 +79,8 @@ public:
 		return ring_.metadata_channel_[index_];
 	}
 	
-	ndarray_view_type ndarray(channel_index_type chan) const {
-		return ring_.ndarray_channels_.at(chan)[index_];
+	ndarray_view_type ndarray(channel_index_type i) const {
+		return ring_.ndarray_channels_.at(i)[index_];
 	}
 };
 
@@ -114,7 +103,7 @@ public:
 	
 	metadata_view_type metadata() const {
 		return wraparound(
-			ring_.metadata_channel_,
+			ring_.metadata_channel_.view(),
 			make_ndptrdiff(start_index_),
 			make_ndptrdiff(start_index_ + duration_)
 		);

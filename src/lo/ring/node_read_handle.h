@@ -21,20 +21,14 @@ private:
 	node_read_handle& operator=(const node_read_handle&) = delete;
 
 public:
-	node_read_handle(rqueue_type::read_handle&& handle, time_unit start_t, channel_index_type chan) :
-		handle_(std::move(handle)),
-		start_time_(start_t),
-		ndarray_channel_index_(chan) { }
+	node_read_handle(rqueue_type::read_handle&&, time_unit start_t, channel_index_type);
 	
 	node_read_handle(node_read_handle&&) = default;
 	node_read_handle& operator=(node_read_handle&&) = default;
 	
-	bool valid() const { return handle_.valid(); }
-	
-	input_ndarray_window_view_type view() const {
-		Assert(valid());
-		return timed(handle_.view().ndarray(ndarray_channel_index_), start_time_);
-	}
+	bool valid() const;
+	input_metadata_window_view_type metadata() const;
+	input_ndarray_window_view_type view() const;
 };
 
 }

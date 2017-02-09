@@ -5,6 +5,7 @@
 #include "ring/opaque_ref_format.h"
 #include "../nd/nd.h"
 #include "../rqueue/rqueue.h"
+#include "ring/frame_metadata.h"
 
 namespace tff {
 
@@ -22,6 +23,9 @@ using propagated_opaque_format_type = opaque_ref_format<opaque_ndarray_format>;
 using input_ndarray_window_view_type = ndarray_timed_wraparound_opaque_view<1, false, propagated_opaque_format_type>;
 using input_ndarray_view_type = ndarray_opaque_view<0, false, propagated_opaque_format_type>;
 using channel_ndarray_view_type = ndarray_opaque_view<0, true, propagated_opaque_format_type>;
+
+using input_metadata_window_view_type = ndarray_timed_wraparound_view<1, const frame_metadata>;
+
 
 }
 

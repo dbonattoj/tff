@@ -5,6 +5,8 @@
 
 #include <cstddef>
 
+#include <optional.hpp>
+
 namespace tff {
 
 using time_unit = std::ptrdiff_t;
@@ -16,6 +18,9 @@ struct time_span {
 	time_span() = default;
 	time_span(time_unit b, time_unit e) : begin(b), end(e) { }
 };
+
+using std::experimental::optional;
+using std::experimental::nullopt;
 
 };
 

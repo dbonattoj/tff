@@ -54,7 +54,7 @@ bool processing_node::write_next_(rqueue_type::write_handle& write_handle) {
 	if(! pre_processed) {
 		// handler failure on preprocess:
 		// write failure flag into metadata, and return
-		write_handle.frame().metadata().state = ring::failure;
+		write_handle.frame().metadata().state = frame_metadata::failure;
 		return true;
 	}
 	
@@ -74,8 +74,8 @@ bool processing_node::write_next_(rqueue_type::write_handle& write_handle) {
 		if(! read_handle.valid()) return false;
 		
 		// propagate failure, or end of stream flag
-		ring::frame_state input_frame_state = read_handle.view().metadata().at_time(current_time_).state;
-		if(input_frame_state != ring::success) {
+		frame_metadata::frame_state input_frame_state = read_handle.metadata().at_time(current_time_).state;
+		if(input_frame_state != frame_metadata::success) {
 			write_handle.frame().metadata().state = input_frame_state;
 			return true;
 		}
@@ -88,14 +88,14 @@ bool processing_node::write_next_(rqueue_type::write_handle& write_handle) {
 	// now let handler process the frame
 	bool processed = call_handler_process(job);
 	if(! processed) {
-		write_handle.frame().metadata().state = ring::failure;
+		write_handle.frame().metadata().state = frame_metadata::failure;
 		return true;
 	}
 	
 	// close read handles now
 	open_read_handles.clear();
 	
-	write_handle.frame().metadata().state = ring::success;
+	write_handle.frame().metadata().state = frame_metadata::success;
 	
 	return true;
 }

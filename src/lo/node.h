@@ -2,6 +2,7 @@
 #define TFF_LO_NODE_H_
 
 #include "../common.h"
+#include "../utility/unique_ptr_vector.h"
 #include "types.h"
 #include "node_request_connection.h"
 
@@ -28,8 +29,8 @@ private:
 	std::vector<node_request_connection> request_receivers_;
 	node_request_connection* request_sender_ = nullptr;
 	
-	std::vector<node_input> inputs_;
-	std::vector<node_output> outputs_;
+	unique_ptr_vector<node_input> inputs_;
+	unique_ptr_vector<node_output> outputs_;
 	
 	bool request_chain_contains_(const node& q_indirect_sender) const;
 	void add_request_receiver_(node& receiver, time_window window);

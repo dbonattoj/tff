@@ -21,9 +21,11 @@ private:
 	const Opaque_format* format_;
 	
 public:
-	opaque_ref_format() = delete;
+	opaque_ref_format() : format_(nullptr) { }
 	explicit opaque_ref_format(const format_type& frm) : format_(&frm) { }
 	
+	operator const format_type& () const { return *format_; } // for frame_handle_type construction
+
 	std::size_t size() const { return format_->size(); }
 	std::size_t alignment_requirement() const { return format_->alignment_requirement(); }
 

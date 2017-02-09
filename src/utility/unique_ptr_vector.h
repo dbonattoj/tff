@@ -8,9 +8,10 @@
 
 namespace tff {
 
-/// Array holding unique pointers to items of differing types.
+/// Array holding unique pointers to items.
 /** Interface similar to `std::vector`, except that items can be of different (polymorphic) types, derived from \a T.
- ** Items are stored on dynamically allocted memory, and owned by the contained.
+ ** Items are stored on dynamically allocated memory, and owned by the container. Items do not need to be movable or
+ ** copyable, as they will not be moved around when the underlying `std::vector` grows.
  ** Replaces `std::vector<std::unique_ptr<T>>`. Iteration using `indirect_iterator`. */
 template<typename T, typename Allocator = std::allocator<T>>
 class unique_ptr_vector {
@@ -43,8 +44,11 @@ public:
 		vector_(alloc) { }
 	
 	template<typename D>
-	explicit unique_ptr_vector(size_type count, const D& item, const allocator_type& alloc = allocator_type()) :
+	unique_ptr_vector(size_type count, const D& item, const allocator_type& alloc = allocator_type()) :
 		vector_(count, unique_ptr_type(), alloc) { initialize_(item); }
+
+	explicit unique_ptr_vector(size_type count, const allocator_type& alloc = allocator_type()) :
+		vector_(count, unique_ptr_type(), alloc) { initialize_(T()); }
 	
 	unique_ptr_vector(const unique_ptr_vector& other) = delete;
 	unique_ptr_vector(unique_ptr_vector&& other) : vector_(std::move(other.vector_)) { }
@@ -53,7 +57,7 @@ public:
 	unique_ptr_vector& operator=(const unique_ptr_vector&) = delete;
 	unique_ptr_vector& operator=(unique_ptr_vector&&) = default;
 	
-	template<typename D>
+	template<typename D = T>
 	void assign(size_type count, const D& item = D()) {
 		vector_.assign(count);
 		initialize_(item);
@@ -76,20 +80,20 @@ public:
 	const_reference data() const { return *vector_.data(); }
 	
 	iterator begin() { return iterator(vector_.begin()); }
-	const_iterator begin() const { return iterator(vector_.begin()); }
-	const_iterator cbegin() const { return iterator(vector_.begin()); }
+	const_iterator begin() const { return const_iterator(vector_.cbegin()); }
+	const_iterator cbegin() const { return const_iterator(vector_.cbegin()); }
 
 	iterator end() { return iterator(vector_.end()); }
-	const_iterator end() const { return iterator(vector_.end()); }
-	const_iterator cend() const { return iterator(vector_.end()); }
+	const_iterator end() const { return const_iterator(vector_.cend()); }
+	const_iterator cend() const { return const_iterator(vector_.cend()); }
 
-	reverse_iterator rbegin() { return iterator(vector_.rbegin()); }
-	const_reverse_iterator rbegin() const { return iterator(vector_.rbegin()); }
-	const_reverse_iterator crbegin() const { return iterator(vector_.rbegin()); }
+	reverse_iterator rbegin() { return reverse_iterator(vector_.rbegin()); }
+	const_reverse_iterator rbegin() const { return const_reverse_iterator(vector_.rbegin()); }
+	const_reverse_iterator crbegin() const { return const_reverse_iterator(vector_.rbegin()); }
 
-	reverse_iterator rend() { return iterator(vector_.rend()); }
-	const_reverse_iterator rend() const { return iterator(vector_.rend()); }
-	const_reverse_iterator crend() const { return iterator(vector_.rend()); }
+	reverse_iterator rend() { return reverse_iterator(vector_.rend()); }
+	const_reverse_iterator rend() const { return const_reverse_iterator(vector_.rend()); }
+	const_reverse_iterator crend() const { return const_reverse_iterator(vector_.rend()); }
 
 	bool empty() const { return vector_.empty(); }
 	size_type size() const { return vector_.size(); }
@@ -111,7 +115,7 @@ public:
 		return iterator(it);
 	}
 
-	template<typename D, typename... Args>
+	template<typename D = T, typename... Args>
 	iterator emplace(const_iterator pos, Args&&... args)
 		{ return iterator(vector_.insert(pos.base(), std::make_unique<D>(std::forward<Args>(args)...))); }
 	
@@ -125,9 +129,13 @@ public:
 	template<typename D>
 	void push_back(D&& item) { vector_.push_back(std::make_unique<D>(std::move(item))); }
 	
-	template<typename D, typename... Args>
-	reference emplace_back(Args&&... args)
-		{ vector_.push_back(std::make_unique<D>(std::forward<Args>(args)...)); return back(); }
+	template<typename D = T, typename... Args>
+	D& emplace_back(Args&&... args) {
+		std::unique_ptr<D> ptr = std::make_unique<D>(std::forward<Args>(args)...);
+		D& ref = *ptr;
+		vector_.push_back(std::move(ptr));
+		return ref;
+	}
 	
 	void pop_back() { vector_.pop_back(); }
 	
