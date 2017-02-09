@@ -3,7 +3,7 @@
 #include "../node_input.h"
 #include "../node_output.h"
 #include "../ring/node_read_handle.h"
-#include "../../rqueue.h"
+#include "../../rqueue/rqueue.h"
 
 namespace tff {
 
@@ -135,7 +135,7 @@ void processing_node::setup() {
 
 
 void processing_node::request(time_span span) {
-	if(span.start_time() < 0) span.set_start_time(0);
+	if(span.begin < 0) span.begin = 0;
 	node::request(span);
 	queue_->request(span);
 }

@@ -1,6 +1,6 @@
 #include "sink_node.h"
 #include "../node_graph.h"
-#include "../../rqueue.h"
+#include "../../rqueue/rqueue.h"
 
 namespace tff {
 

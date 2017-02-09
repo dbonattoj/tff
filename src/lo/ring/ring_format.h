@@ -2,7 +2,7 @@
 #define TFF_RING_FORMAT_H_
 
 #include "../types.h"
-#include "../../nd.h"
+#include "../../nd/opaque_format/ndarray.h"
 #include <vector>
 
 namespace tff {

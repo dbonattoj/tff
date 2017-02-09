@@ -53,7 +53,7 @@ protected:
 	void sink_setup_();
 	
 public:
-	virtual ~node() = default;
+	virtual ~node();
 	
 	const node_graph& graph() const { return graph_; }
 	node_graph& graph() { return graph_; }

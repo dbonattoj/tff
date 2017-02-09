@@ -1,7 +1,7 @@
 #ifndef TFF_NODE_READ_HANDLE_H_
 #define TFF_NODE_READ_HANDLE_H_
 
-#include "../../rqueue.h"
+#include "../../rqueue/rqueue.h"
 #include "../types.h"
 #include "ring.h"
 #include <utility>

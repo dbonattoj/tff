@@ -1,7 +1,7 @@
 #ifndef TFF_OPAQUE_REF_FORMAT_H_
 #define TFF_OPAQUE_REF_FORMAT_H_
 
-#include "../../nd.h"
+#include "../../nd/nd.h"
 
 namespace tff {
 

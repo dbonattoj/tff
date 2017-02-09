@@ -8,6 +8,9 @@ node::node(node_graph& gr, const std::string& nm) :
 	graph_(gr), name_(nm) { }
 
 
+node::~node() { }
+
+
 node_input& node::add_input_() {
 	inputs_.emplace_back(*this, inputs_.size());
 	return inputs_.back();
@@ -31,7 +34,7 @@ bool node::is_sink() const {
 
 
 void node::request(time_span span) {
-	if(span.start_time() < 0) span.set_start_time(0);
+	if(span.begin < 0) span.begin = 0;
 	
 	for(node_request_connection& req : request_receivers_)
 		req.receiver().request(expand(span, req.window()));

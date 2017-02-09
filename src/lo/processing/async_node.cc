@@ -32,7 +32,7 @@ void async_node::setup() {
 
 
 void async_node::request(time_span span) {
-	span.set_end_time(span.end_time() + prefetch_duration_);
+	span.end += prefetch_duration_;
 	processing_node::request(span);
 }
 

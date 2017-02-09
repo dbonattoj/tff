@@ -3,8 +3,8 @@
 
 #include <cstddef>
 #include "ring/opaque_ref_format.h"
-#include "../nd.h"
-#include "../rqueue.h"
+#include "../nd/nd.h"
+#include "../rqueue/rqueue.h"
 
 namespace tff {
 

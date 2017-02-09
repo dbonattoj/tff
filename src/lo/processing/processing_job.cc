@@ -1,5 +1,7 @@
 #include "processing_job.h"
 #include "processing_node.h"
+#include "../node_input.h"
+#include "../node_output.h"
 
 namespace tff {
 

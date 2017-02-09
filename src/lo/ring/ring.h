@@ -2,7 +2,7 @@
 #define TFF_RING_H_
 
 #include "../types.h"
-#include "../../nd.h"
+#include "../../nd/nd.h"
 #include "ring_format.h"
 #include "opaque_ref_format.h"
 
