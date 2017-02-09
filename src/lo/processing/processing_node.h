@@ -29,13 +29,13 @@ private:
 	
 	time_unit current_time_ = undefined_time;
 	
-	const ring& ring_() const { return queue_.ring(); }
+	const ring& ring_() const;
 	
 	bool call_handler_pre_process(processing_job&) const;
 	bool call_handler_process(processing_job&) const;
 	
 protected:
-	bool write_next_(rqueue_write_handle&);
+	bool write_next_(rqueue_type::write_handle&);
 	
 	const rqueue_type& rqueue_() const { return *queue_; }
 	rqueue_type& rqueue_() { return *queue_; }
@@ -56,8 +56,7 @@ public:
 	void launch() override;
 	void stop() override;
 	
-	read_handle read_output(time_span, output_index_type) final override;
-
+	node_read_handle read_output(time_span, output_index_type) final override;
 };
 
 

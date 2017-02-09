@@ -1,10 +1,11 @@
 #include "node_output.h"
 #include "node_input.h"
+#include "ring/node_read_handle.h"
 #include "node.h"
 
 namespace tff {
 
-void node_output::input_has_connected(const node_input& in) {
+void node_output::input_has_connected(node_input& in) {
 	connected_input_ = &in;
 }
 

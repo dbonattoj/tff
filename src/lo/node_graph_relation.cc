@@ -1,5 +1,7 @@
 #include "node_graph_relation.h"
 #include "node.h"
+#include "node_output.h"
+#include "node_input.h"
 
 #include <set>
 #include <functional>
@@ -23,7 +25,7 @@ bool precedes_strict(const node& a, const node& b) {
 	return false;
 }
 
-
+/*
 const node& first_successor(const node& nd) {
 	Assert(nd.outputs().size() > 0);
 	
@@ -41,7 +43,7 @@ const node& first_successor(const node& nd) {
 
 	// common_successors := successors of node connected to first output of nd
 	nodes_set_type common_successors;
-	collect_all_successors(nd.outputs().front()->connected_node(), common_successors);
+	collect_all_successors(nd.outputs().front().connected_node(), common_successors);
 	
 	// for the other outputs...
 	for(auto it = nd.outputs().cbegin() + 1; it < nd.outputs().cend(); ++it) {
@@ -80,6 +82,6 @@ const node& first_successor(const node& nd) {
 node& first_successor(node& nd) {
 	return const_cast<node&>(first_successor(static_cast<const node&>(nd)));
 }
-
+*/
 
 }

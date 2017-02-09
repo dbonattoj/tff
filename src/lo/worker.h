@@ -1,10 +1,12 @@
 #ifndef TFF_WORKER_H_
 #define TFF_WORKER_H_
 
+#include "types.h"
 #include "../common.h"
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 #include <string>
-#include <atomic>
 
 namespace tff {
 

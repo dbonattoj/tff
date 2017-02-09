@@ -16,7 +16,7 @@ auto ring::operator[](index_type idx) -> frame_type {
 	return frame_type(*this, idx);
 }
 
-auto ring::operator[](index_type idx) -> const_frame_type {
+auto ring::operator[](index_type idx) const -> const_frame_type {
 	return const_frame_type(*this, idx);
 }
 	

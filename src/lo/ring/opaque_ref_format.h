@@ -1,8 +1,7 @@
 #ifndef TFF_OPAQUE_REF_FORMAT_H_
 #define TFF_OPAQUE_REF_FORMAT_H_
 
-#include "../../nd/pod_array_format.h"
-#include "../../nd/ndcoord_dyn.h"
+#include "../../nd.h"
 
 namespace tff {
 
@@ -19,30 +18,31 @@ public:
 	using const_frame_pointer_type = typename format_type::const_frame_pointer_type;
 	
 private:
-	const Opaque_format& format_;
+	const Opaque_format* format_;
 	
 public:
-	explicit opaque_ref_format(const format_type& frm) : format_(frm) { }
+	opaque_ref_format() = delete;
+	explicit opaque_ref_format(const format_type& frm) : format_(&frm) { }
 	
-	std::size_t size() const { return format_.size(); }
-	std::size_t alignment_requirement() const { return format_.alignment_requirement(); }
+	std::size_t size() const { return format_->size(); }
+	std::size_t alignment_requirement() const { return format_->alignment_requirement(); }
 
-	bool is_pod() const { return format_.is_pod(); }
-	pod_array_format pod_format() const { return format_.pod_format(); }
+	bool is_pod() const { return format_->is_pod(); }
+	pod_array_format pod_format() const { return format_->pod_format(); }
 	
-	bool is_ndarray() const { return format_.is_ndarray(); }
-	std::size_t dimension() const { return format_.dimension(); }
-	const ndsize_dyn& shape() const { return format_.shape(); }
-	std::size_t elem_size() const { return format_.elem_size(); }
-	std::size_t elem_alignment_requirement() const { return format_.elem_alignment_requirement(); }
-	std::size_t elem_stride() const { return format_.elem_stride(); }
+	bool is_ndarray() const { return format_->is_ndarray(); }
+	std::size_t dimension() const { return format_->dimension(); }
+	const ndsize_dyn& shape() const { return format_->shape(); }
+	std::size_t elem_size() const { return format_->elem_size(); }
+	std::size_t elem_alignment_requirement() const { return format_->elem_alignment_requirement(); }
+	std::size_t elem_stride() const { return format_->elem_stride(); }
 
 	friend bool operator==(const opaque_ref_format& a, const opaque_ref_format& b) {
-		return (a.format_ == b.format_);
+		return (*a.format_ == *b.format_);
 	}
 	
 	friend bool operator!=(const opaque_ref_format& a, const opaque_ref_format& b) {
-		return (a.format_ != b.format_);
+		return (*a.format_ != *b.format_);
 	}
 };
 

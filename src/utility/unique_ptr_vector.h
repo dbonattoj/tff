@@ -46,9 +46,9 @@ public:
 	explicit unique_ptr_vector(size_type count, const D& item, const allocator_type& alloc = allocator_type()) :
 		vector_(count, unique_ptr_type(), alloc) { initialize_(item); }
 	
-	unique_ptr_vector(const ref_vector& other) = delete;
-	unique_ptr_vector(ref_vector&& other) : vector_(std::move(other.vector_)) { }
-	unique_ptr_vector(ref_vector&& other, const allocator_type& alloc) : vector_(std::move(other.vector_), alloc) { }
+	unique_ptr_vector(const unique_ptr_vector& other) = delete;
+	unique_ptr_vector(unique_ptr_vector&& other) : vector_(std::move(other.vector_)) { }
+	unique_ptr_vector(unique_ptr_vector&& other, const allocator_type& alloc) : vector_(std::move(other.vector_), alloc) { }
 
 	unique_ptr_vector& operator=(const unique_ptr_vector&) = delete;
 	unique_ptr_vector& operator=(unique_ptr_vector&&) = default;

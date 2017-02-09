@@ -1,5 +1,6 @@
-#ifndef TFF_SINK_NODE_H_
-#define TFF_SINK_NODE_H_
+#include "sink_node.h"
+#include "../node_graph.h"
+#include "../../rqueue.h"
 
 namespace tff {
 
@@ -23,12 +24,7 @@ thread_index_type sink_node::input_reader_thread(input_index_type) const {
 }
 
 
-auto sink_node::pull_next() -> pull_result {
-
-}
-
-
-auto sink_node::pull(time_unit t) -> pull_result {
+auto sink_node::process_next() -> process_result {
 
 }
 
@@ -37,7 +33,4 @@ void sink_node::seek(time_unit t) {
 
 }
 
-
 }
-
-#endif

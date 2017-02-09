@@ -1,4 +1,9 @@
 #include "processing_node.h"
+#include "processing_job.h"
+#include "../node_input.h"
+#include "../node_output.h"
+#include "../ring/node_read_handle.h"
+#include "../../rqueue.h"
 
 namespace tff {
 
@@ -27,7 +32,12 @@ bool processing_node::call_handler_process(processing_job& job) const {
 }
 
 
-bool processing_node::write_next_(rqueue_write_handle& write_handle) {
+const ring& processing_node::ring_() const {
+	return queue_->ring();
+}
+
+
+bool processing_node::write_next_(rqueue_type::write_handle& write_handle) {
 	// set current time
 	current_time_ = write_handle.time();
 	
@@ -125,7 +135,7 @@ void processing_node::setup() {
 
 
 void processing_node::request(time_span span) {
-	if(span.begin < 0) span.begin = 0;
+	if(span.start_time() < 0) span.set_start_time(0);
 	node::request(span);
 	queue_->request(span);
 }
@@ -143,7 +153,7 @@ void processing_node::stop() {
 
 
 auto processing_node::read_output(time_span span, output_index_type idx) -> node_read_handle {
-	rqueue_read_handle queue_handle = queue_->read(span);
+	rqueue_type::read_handle queue_handle = queue_->read(span);
 	channel_index_type channel_idx = output_channels_.at(idx);
 	return node_read_handle(
 		std::move(queue_handle),

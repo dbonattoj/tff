@@ -2,6 +2,7 @@
 #define TFF_NODE_INPUT_H_
 
 #include "../common.h"
+#include "types.h"
 #include <string>
 
 namespace tff {
@@ -26,7 +27,8 @@ private:
 	node_input& operator=(const node_input&) = delete;
 	
 public:
-	node_input(node& nd, input_index_type idx) : node_(nd), index_(ids) { }
+	node_input(node& nd, input_index_type idx) :
+		node_(nd), index_(idx) { }
 	
 	const node& this_node() const { return node_; }
 	node& this_node() { return node_; }

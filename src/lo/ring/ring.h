@@ -1,7 +1,8 @@
 #ifndef TFF_RING_H_
 #define TFF_RING_H_
 
-#include "../../nd/nd.h"
+#include "../types.h"
+#include "../../nd.h"
 #include "ring_format.h"
 #include "opaque_ref_format.h"
 
@@ -30,9 +31,10 @@ public:
 	};
 	
 private:
-	template<bool Mutable> class frame_view;
-	template<bool Mutable> class wraparound_view;
+	template<bool Mutable> class frame_view_;
+	template<bool Mutable> class wraparound_view_;
 
+public:
 	using ndarray_opaque_format_type = opaque_ref_format<opaque_ndarray_format>;
 	//using parameter_opaque_format_type = void;
 
@@ -40,11 +42,12 @@ private:
 	//using parameter_array_type = ndarray_opaque<1, parameter_opaque_format_type>;
 	
 	using index_type = std::ptrdiff_t;
-	using frame_type = frame_view<true>;
-	using const_frame_type = frame_view<false>;
-	using wraparound_view_type = wraparound_view<true>;
-	using const_wraparound_view_type = wraparound_view<false>;
+	using frame_type = frame_view_<true>;
+	using const_frame_type = frame_view_<false>;
+	using wraparound_view_type = wraparound_view_<true>;
+	using const_wraparound_view_type = wraparound_view_<false>;
 	
+private:
 	ring_format format_;
 	std::size_t capacity_;
 	
@@ -69,42 +72,44 @@ public:
 
 
 template<bool Mutable>
-class ring::frame_view {
+class ring::frame_view_ {
 public:
+	using ring_type = std::conditional_t<Mutable, ring, const ring>;
 	using metadata_view_type = std::conditional_t<Mutable, frame_metadata&, const frame_metadata&>;
 	using ndarray_view_type = ndarray_opaque_view<0, Mutable, ndarray_opaque_format_type>;
 
 private:
-	ring& ring_;
+	ring_type& ring_;
 	std::ptrdiff_t index_;
 	
 public:
-	frame_view(ring& rng, std::ptrdiff_t idx) :
+	frame_view_(ring_type& rng, std::ptrdiff_t idx) :
 		ring_(rng), index_(idx) { }
 	
 	metadata_view_type metadata() const {
-		return ring_.metadata_channel_[index];
+		return ring_.metadata_channel_[index_];
 	}
 	
 	ndarray_view_type ndarray(channel_index_type chan) const {
-		return ring_.frame_arrays_.at(chan)[index];
+		return ring_.ndarray_channels_.at(chan)[index_];
 	}
 };
 
 
 template<bool Mutable>
-class ring::wraparound_view {
+class ring::wraparound_view_ {
 public:
-	using metadata_view_type = ndarray_wraparound_view<1, std::conditional_t<Mutable, frame_metadata, const frame_metadata>>
+	using ring_type = std::conditional_t<Mutable, ring, const ring>;
+	using metadata_view_type = ndarray_wraparound_view<1, std::conditional_t<Mutable, frame_metadata, const frame_metadata>>;
 	using ndarray_view_type = ndarray_wraparound_opaque_view<1, Mutable, ndarray_opaque_format_type>;
 
 private:
-	ring& ring_;
+	ring_type& ring_;
 	std::ptrdiff_t start_index_;
 	std::size_t duration_;
 	
 public:
-	wraparound_view(ring& rng, std::ptrdiff_t idx, std::size_t dur) :
+	wraparound_view_(ring_type& rng, std::ptrdiff_t idx, std::size_t dur) :
 		ring_(rng), start_index_(idx), duration_(dur) { }
 	
 	metadata_view_type metadata() const {
@@ -117,7 +122,7 @@ public:
 	
 	ndarray_view_type ndarray(channel_index_type chan) const {
 		return wraparound(
-			ring_.frame_arrays_.at(chan).view(),
+			ring_.ndarray_channels_.at(chan).view(),
 			make_ndptrdiff(start_index_),
 			make_ndptrdiff(start_index_ + duration_)
 		);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "nd.h"
 #include <algorithm>
 
 namespace tff {
@@ -14,8 +15,8 @@ time_window min(const time_window& a, const time_window& b) {
 
 
 time_span expand(const time_span& span, const time_window& win, bool truncate_begin) {
-	time_unit begin = span.begin - win.past;
-	time_unit end = span.end + win.future;
+	time_unit begin = span.start_time() - win.past;
+	time_unit end = span.end_time() + win.future;
 	if(truncate_begin && (begin < 0)) begin = 0;
 	return time_span(begin, end);
 }

@@ -1,7 +1,8 @@
 #ifndef TFF_RING_FORMAT_H_
 #define TFF_RING_FORMAT_H_
 
-#include "../nd/nd.h"
+#include "../types.h"
+#include "../../nd.h"
 #include <vector>
 
 namespace tff {
@@ -12,7 +13,7 @@ private:
 	//std::vector<opaque_ndarray_format> parameter_channels_;
 	
 public:
-	const opaque_ndarray_format& ndarray(std:::ptrdiff_t i) const { return ndarray_channel_formats_.at(i); }
+	const opaque_ndarray_format& ndarray(channel_index_type i) const { return ndarray_channel_formats_.at(i); }
 	std::size_t ndarrays_count() const { return ndarray_channel_formats_.size(); }
 
 	std::ptrdiff_t add_ndarray(const opaque_ndarray_format& frm) {

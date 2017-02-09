@@ -1,4 +1,6 @@
 #include "async_node.h"
+#include "../node_output.h"
+#include "../node_graph.h"
 
 namespace tff {
 
@@ -20,12 +22,18 @@ void async_node::setup() {
 	for(output_index_type i = 1; (i < outputs().size()) && !different_output_reader_threads; ++i)
 		if(outputs().at(i).reader_thread() != first_output_reader_thread) different_output_reader_threads = true;
 	
-	rqueue_variant variant = (different_output_reader_threads ? rqueue_variant::async_mpx : rqueue_variant::async);
+	rqueue_variant variant = (different_output_reader_threads ? rqueue_variant::async_multiplex : rqueue_variant::async);
 
 	node_request_connection& req_sender = request_sender();
-	std::size_t capacity = req_sender.past_window() + 1 + req_sender.future_window() + prefetch_duration_;
+	std::size_t capacity = req_sender.window().past + 1 + req_sender.window().future + prefetch_duration_;
 
 	processing_node::setup_ring_(variant, capacity);
+}
+
+
+void async_node::request(time_span span) {
+	span.set_end_time(span.end_time() + prefetch_duration_);
+	processing_node::request(span);
 }
 
 

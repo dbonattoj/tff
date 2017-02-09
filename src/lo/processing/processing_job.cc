@@ -1,4 +1,5 @@
 #include "processing_job.h"
+#include "processing_node.h"
 
 namespace tff {
 
@@ -15,17 +16,17 @@ void processing_job::set_input_view(input_index_type idx, const input_ndarray_wi
 }
 
 
-void processing_job::set_channel_view(channel_index_type idx, const channel_ndarray_view_type& view);
+void processing_job::set_channel_view(channel_index_type idx, const channel_ndarray_view_type& view) {
 	channel_views_.at(idx).reset(view);
 }
 
 
-void set_input_activated(input_index_type, bool activated) {
+void processing_job::set_input_activated(input_index_type, bool activated) {
 	
 }
 
 
-bool is_input_activated(input_index_type) const {
+bool processing_job::is_input_activated(input_index_type) const {
 	
 }
 

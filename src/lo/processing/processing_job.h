@@ -1,7 +1,13 @@
 #ifndef TFF_PROCESSING_JOB_H_
 #define TFF_PROCESSING_JOB_H_
 
+#include "../../common.h"
+#include "../types.h"
+#include <vector>
+
 namespace tff {
+
+class processing_node;
 
 class processing_job {
 private:

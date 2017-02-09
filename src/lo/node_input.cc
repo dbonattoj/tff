@@ -1,4 +1,5 @@
 #include "node_input.h"
+#include "node.h"
 #include "node_output.h"
 #include "ring/node_read_handle.h"
 
@@ -6,17 +7,6 @@ namespace tff {
 
 thread_index_type node_output::reader_thread() const {
 	return node_.input_reader_thread(index_);
-}
-
-void node_input::set_past_window(time_unit dur) {
-	Assert(dur >= 0);
-	past_window_ = dur;
-}
-
-
-void node_input::set_future_window(time_unit dur) {
-	Assert(dur >= 0);
-	future_window_ = dur;
 }
 
 	
@@ -29,7 +19,7 @@ void node_input::connect(node_output& out) {
 
 void node_input::disconnect() {
 	Assert(is_connected());
-	connected_output_->input_has_disconnected(*this);
+	connected_output_->input_has_disconnected();
 	connected_output_ = nullptr;
 }
 
@@ -67,7 +57,7 @@ void node_input::set_activated(bool act) {
 
 
 node_read_handle node_input::read_frame(time_unit t) {
-	time_span span(t - window_.past(), t + window_.future() + 1);
+	time_span span(t - window_.past, t + window_.future + 1);
 	return connected_output_->read(span);
 }
 

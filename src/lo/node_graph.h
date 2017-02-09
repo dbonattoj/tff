@@ -29,7 +29,7 @@ public:
 	thread_index_type new_thread_index() { return ++last_thread_index_; }
 	static thread_index_type root_thread_index() { return 0; }
 	
-	template<typename Node typename... Args>
+	template<typename Node, typename... Args>
 	Node& add_node(Args&&... args) {
 		static_assert(std::is_base_of<node, Node>::value, "node must be derived from class `node`");
 		return nodes_.emplace_back<Node>(std::forward<Args>(args)...);

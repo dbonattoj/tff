@@ -12,9 +12,9 @@ void worker::thread_main_() {
 		if(state_ == launch) {
 			this->thread_main_();
 			state_ = idle;
-		} else if(state == idle) {
+		} else if(state_ == idle) {
 			continue;
-		} else if(state == kill) {
+		} else if(state_ == kill) {
 			break;
 		}
 	}

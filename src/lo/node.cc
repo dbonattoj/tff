@@ -1,17 +1,11 @@
 #include "node.h"
+#include "node_input.h"
+#include "node_output.h"
 
 namespace tff {
 
 node::node(node_graph& gr, const std::string& nm) :
 	graph_(gr), name_(nm) { }
-
-
-node_request_connection& node::add_request_receiver(node& receiver) {
-	Assert(! receiver.has_request_sender());
-	request_receivers_.emplace_back(*this, receiver);
-	receiver.request_sender_ = this;
-	return request_receivers_.back();
-}
 
 
 node_input& node::add_input_() {
@@ -26,8 +20,18 @@ node_output& node::add_output_() {
 }
 
 
+bool node::is_source() const {
+	return (inputs_.size() == 0);
+}
+
+
+bool node::is_sink() const {
+	return (outputs_.size() == 0);
+}
+
+
 void node::request(time_span span) {
-	if(span.begin < 0) span.begin = 0;
+	if(span.start_time() < 0) span.set_start_time(0);
 	
 	for(node_request_connection& req : request_receivers_)
 		req.receiver().request(expand(span, req.window()));
@@ -57,7 +61,7 @@ bool node::request_chain_contains_(const node& q_indirect_sender) const {
 void node::add_request_receiver_(node& receiver, time_window window) {
 	Assert(! receiver.has_request_sender());
 	request_receivers_.emplace_back(*this, receiver, window);
-	receiver.request_sender_ = this;
+	receiver.request_sender_ = &request_receivers_.back();
 }
 
 
@@ -98,7 +102,7 @@ void node::connect_to_request_sender_() {
 	}
 	
 	time_window request_window;
-	bool ok = accumulated_time_window_to_(*candidate, request_window);
+	bool ok = accumulated_time_window_to_(*sender, request_window);
 	Assert(ok);
 	
 	sender->add_request_receiver_(*this, request_window);
@@ -110,7 +114,7 @@ void node::propagate_request_connections_() {
 		if(has_request_sender()) return;
 
 		for(const node_output& out : outputs()) {
-			const node* successor = out.connected_node();
+			const node& successor = out.connected_node();
 			if(!successor.has_request_sender() && !successor.is_sink()) return;
 		}
 			

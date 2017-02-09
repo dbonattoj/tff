@@ -9,9 +9,9 @@ template<typename Iterator>
 class indirect_iterator {
 public:
 	using iterator_type = Iterator;
-	using value_type = std::decay_t<decltype(*std::declval<iterator_type>)>;
-	using pointer = typename value_type*;
-	using reference = typename value_type&;
+	using value_type = std::decay_t<decltype(*std::declval<iterator_type>())>;
+	using pointer = value_type*;
+	using reference = value_type&;
 	using difference_type = typename iterator_type::difference_type;
 	using iterator_category = typename iterator_type::iterator_category;
 	
@@ -35,33 +35,37 @@ public:
 	
 	indirect_iterator& operator++() { ++iterator_; return *this; }
 	indirect_iterator operator++(int) { return indirect_iterator(iterator_++); }
-	indirect_iterator& operator+=(difference_type n) { iterator += n; return *this; }
+	indirect_iterator& operator+=(difference_type n) { iterator_ += n; return *this; }
 	
 	indirect_iterator& operator--() { --iterator_; return *this; }
 	indirect_iterator operator--(int) { return indirect_iterator(iterator_--); }
-	indirect_iterator& operator-=(difference_type n) { iterator -= n; return *this; }
+	indirect_iterator& operator-=(difference_type n) { iterator_ -= n; return *this; }
 
 	reference operator[](difference_type n) { return *(iterator_[n]); }
 };
 
 
 template<typename Iterator>
-indirect_iterator<Iterator> operator+(indirect_iterator<Iterator> it, indirect_iterator<Iterator>::difference_type n) {
+indirect_iterator<Iterator> operator+
+(indirect_iterator<Iterator> it, typename indirect_iterator<Iterator>::difference_type n) {
 	return indirect_iterator<Iterator>(it.base() + n);
 }
 
 template<typename Iterator>
-indirect_iterator<Iterator> operator-(indirect_iterator<Iterator> it, indirect_iterator<Iterator>::difference_type n) {
+indirect_iterator<Iterator> operator-
+(indirect_iterator<Iterator> it, typename indirect_iterator<Iterator>::difference_type n) {
 	return indirect_iterator<Iterator>(it.base() - n);
 }
 
 template<typename Iterator>
-indirect_iterator<Iterator> operator+(indirect_iterator<Iterator>::difference_type n, indirect_iterator<Iterator> it) {
+indirect_iterator<Iterator> operator+
+(typename indirect_iterator<Iterator>::difference_type n, indirect_iterator<Iterator> it) {
 	return indirect_iterator<Iterator>(n + it.base());
 }
 
 template<typename Iterator>
-indirect_iterator<Iterator>::difference_type operator-(indirect_iterator<Iterator> a, indirect_iterator<Iterator> b) {
+typename indirect_iterator<Iterator>::difference_type operator-
+(indirect_iterator<Iterator> a, indirect_iterator<Iterator> b) {
 	return (a.base() - b.base());
 }
 

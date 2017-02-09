@@ -2,7 +2,7 @@
 #define TFF_LO_NODE_H_
 
 #include "../common.h"
-#include "../ring/read_handle.h"
+#include "types.h"
 #include "node_request_connection.h"
 
 #include <vector>
@@ -13,12 +13,10 @@ namespace tff {
 class node_graph;
 class node_input;
 class node_output;
+class node_read_handle;
 
 /// Node in flow graph.
 class node {
-public:
-	using ring_type = rqueue<ring>;
-	
 private:
 	enum class stage { initial, request_connection, setup };
 	
@@ -43,8 +41,8 @@ private:
 
 	node(const node&) = delete;
 	node(node&&) = delete;
-	node& operator(const node&) = delete;
-	node& operator(node&&) = delete;
+	node& operator=(const node&) = delete;
+	node& operator=(node&&) = delete;
 	
 protected:
 	node(node_graph&, const std::string& name);
@@ -63,14 +61,16 @@ public:
 	bool has_request_sender() const { return (request_sender_ != nullptr); }
 	const node_request_connection& request_sender() const { Assert(has_request_sender()); return *request_sender_; }
 	node_request_connection& request_sender() { Assert(has_request_sender()); return *request_sender_; }
-	const node& request_sender_node() const { request_sender().sender(); }
-	node& request_sender_node() { request_sender().sender(); }
+	const node& request_sender_node() const { return request_sender().sender(); }
+	node& request_sender_node() { return request_sender().sender(); }
 	const auto& request_receivers() const { return request_receivers_; }
 
+	auto& inputs() { return inputs_; } // TODO const_view to vector
+	auto& outputs() { return outputs_; }
 	const auto& inputs() const { return inputs_; }
 	const auto& outputs() const { return outputs_; }
-	bool is_source() const { return (inputs_.size() == 0); }
-	bool is_sink() const { return (outputs_.size() == 0); }
+	bool is_source() const;
+	bool is_sink() const;
 	
 	virtual void setup();
 	virtual thread_index_type input_reader_thread(input_index_type) const = 0;
