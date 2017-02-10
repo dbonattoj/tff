@@ -14,21 +14,25 @@
 
 #ifdef _MSC_VER
 	#define TFF_ASSUME(__invariant__) __assume(__invariant__)
+	#define TFF_LIKELY(__condition__) (__condition__)
+	#define TFF_UNLIKELY(__condition__) (__condition__)
 #else
 	#define TFF_ASSUME(__invariant__) __builtin_assume(__invariant__)
+	#define TFF_LIKELY(__condition__) __builtin_expect(!!(__condition__), 1)
+	#define TFF_UNLIKELY(__condition__) __builtin_expect(!!(__condition__), 0)
 #endif
 
 
 #if TFF_DEBUG_BUILD
 	#define TFF_ASSERT_CRIT_MSG_(__condition__, __msg__) \
-		if(! (__condition__)) throw ::tff::failed_assertion(__msg__ " at " __FILE__ ":" TFF_STRINGIZE(__LINE__))
+		if(! TFF_UNLIKELY(__condition__)) throw ::tff::failed_assertion(__msg__ " at " __FILE__ ":" TFF_STRINGIZE(__LINE__))
 	#define TFF_ASSERT_MSG_(__condition__, __msg__) \
-		if(! (__condition__)) throw ::tff::failed_assertion(__msg__ " at " __FILE__ ":" TFF_STRINGIZE(__LINE__))
+		if(! TFF_UNLIKELY(__condition__)) throw ::tff::failed_assertion(__msg__ " at " __FILE__ ":" TFF_STRINGIZE(__LINE__))
 #else
 	#define TFF_ASSERT_CRIT_MSG_(__condition__, __msg__) \
 		(void)0
 	#define TFF_ASSERT_MSG_(__condition__, __msg__) \
-		if(! (__condition__)) throw ::tff::failed_assertion(__msg__ " at " __FILE__ ":" TFF_STRINGIZE(__LINE__))
+		if(! TFF_UNLIKELY(__condition__)) throw ::tff::failed_assertion(__msg__ " at " __FILE__ ":" TFF_STRINGIZE(__LINE__))
 #endif
 
 

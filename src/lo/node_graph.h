@@ -30,6 +30,8 @@ public:
 	node_graph();
 	~node_graph();
 	
+	const auto& nodes() const { return nodes_; }
+	
 	thread_index_type new_thread_index() { return ++last_thread_index_; }
 	static thread_index_type root_thread_index() { return 0; }
 	
