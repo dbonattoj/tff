@@ -3,11 +3,13 @@
 
 #include <iosfwd>
 #include <string>
+#include "../types.h"
 #include "../../utility/uid_pool.h"
 
-namespace mf { namespace flow {
+namespace tff {
 
 class node_graph;
+class node;
 class processing_node;
 
 class node_graph_visualization {
@@ -17,7 +19,6 @@ private:
 	uid_pool uids_;
 
 	bool thread_index_colors_ = false;
-	bool with_state_ = true;
 	
 	void generate_node_(std::ostream&, const node&);
 	void generate_processing_node_body_(std::ostream&, const processing_node&);
@@ -39,6 +40,6 @@ public:
 
 void export_node_graph_visualization(const node_graph&, const std::string& filename);
 
-}}
+}
 
 #endif

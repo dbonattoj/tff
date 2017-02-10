@@ -34,7 +34,7 @@ void node_graph_visualization::generate_node_(std::ostream& str, const node& nd)
 	str << R"(<TD WIDTH="20"></TD>)";
 	for(const node_input& in : nd.inputs()) {
 		const std::string& input_uid = uids_.uid(in, "in");
-		if(in != nd.inputs().begin()) str << R"(<TD WIDTH="10"></TD>)";
+		if(&in != &*nd.inputs().begin()) str << R"(<TD WIDTH="10"></TD>)";
 		str << R"(<TD BORDER="1" CELLPADDING="1">)";
 		str << R"(<FONT POINT-SIZE="10">)" << filter_name_(in.name()) << R"(</FONT>)";
 		str << R"(</TD>)";
@@ -51,7 +51,7 @@ void node_graph_visualization::generate_node_(std::ostream& str, const node& nd)
 	str << R"(<TD WIDTH="20"></TD>)";
 	for(const node_input& out : nd.outputs()) {
 		const std::string& output_uids = uids_.uid(out, "out");
-		if(in != nd.outputs().begin()) str << R"(<TD WIDTH="10"></TD>)";
+		if(&in != &*nd.outputs().begin()) str << R"(<TD WIDTH="10"></TD>)";
 		str << R"(<TD BORDER="1" CELLPADDING="1">)";
 		str << R"(<FONT POINT-SIZE="10">)" << filter_name_(out.name()) << R"(</FONT>)";
 		str << R"(</TD>)";
