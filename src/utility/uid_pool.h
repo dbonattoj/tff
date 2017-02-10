@@ -17,7 +17,7 @@ public:
 	void clear() { uids_.clear(); }
 	
 	template<typename T>
-	const std::string& uid(const T& obj, const std::string& prefix = "") {
+	const std::string& uid(const T& obj, const std::string& prefix = "_") {
 		const void* address = std::addressof(obj);
 		auto it = uids_.find(address);
 		if(it != uids_.end()) {
