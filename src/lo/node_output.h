@@ -14,6 +14,8 @@ private:
 	node& node_;
 	output_index_type index_;
 	
+	std::string name_ = "out";
+	
 	node_input* connected_input_ = nullptr;
 	
 	node_output(const node_output&) = delete;
@@ -26,6 +28,9 @@ public:
 	const node& this_node() const { return node_; }
 	node& this_node() { return node_; }
 	output_index_type index() const { return index_; }
+
+	const std::string& name() const { return name_; }
+	void set_name(const std::string& nm) { name_ = nm; }
 
 	void input_has_connected(node_input&);
 	void input_has_disconnected();

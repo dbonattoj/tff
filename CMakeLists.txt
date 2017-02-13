@@ -9,6 +9,7 @@ add_compile_options(-Wall -Wextra -Wno-sign-compare)
 # library
 file(GLOB_RECURSE TFF_SRC "src/*.cc" "src/*.h" "src/*.tcc" "src/*.icc")
 add_library(tff SHARED ${TFF_SRC})
+target_link_libraries(tff pthread atomic)
 
 # tests
 file(GLOB_RECURSE TFF_TEST_SRC "test/*.cc" "test/*.h" "test/*.tcc" "test/*.icc")

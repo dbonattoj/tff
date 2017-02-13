@@ -31,6 +31,7 @@ public:
 	~node_graph();
 	
 	const auto& nodes() const { return nodes_; }
+	const sink_node& sink() const { Assert(sink_ != nullptr); return *sink_; }
 	
 	thread_index_type new_thread_index() { return ++last_thread_index_; }
 	static thread_index_type root_thread_index() { return 0; }
@@ -38,7 +39,7 @@ public:
 	template<typename Node, typename... Args>
 	Node& add_node(Args&&... args) {
 		static_assert(std::is_base_of<node, Node>::value, "node must be derived from class `node`");
-		return nodes_.emplace_back<Node>(std::forward<Args>(args)...);
+		return nodes_.emplace_back<Node>(*this, std::forward<Args>(args)...);
 	}
 	
 	template<typename Node, typename... Args>

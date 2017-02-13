@@ -16,10 +16,10 @@ private:
 	node& node_;
 	input_index_type index_;
 	
+	std::string name_ = "in";
+	
 	time_window window_;
 	node_output* connected_output_ = nullptr;
-	
-	std::string name_;
 	
 	bool activated_ = false;
 
@@ -38,6 +38,9 @@ public:
 	
 	time_window window() const { return window_; }
 	void set_window(time_window win) { window_ = win; }
+	
+	const std::string& name() const { return name_; }
+	void set_name(const std::string& nm) { name_ = nm; }
 	
 	void connect(node_output&);
 	void disconnect();

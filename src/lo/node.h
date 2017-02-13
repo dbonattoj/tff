@@ -6,7 +6,7 @@
 #include "types.h"
 #include "node_request_connection.h"
 
-#include <vector>
+#include <deque>
 #include <string>
 
 namespace tff {
@@ -26,11 +26,11 @@ private:
 	
 	stage stage_ = stage::initial;
 	
-	std::vector<node_request_connection> request_receivers_;
+	std::deque<node_request_connection> request_receivers_;
 	node_request_connection* request_sender_ = nullptr;
 	
-	unique_ptr_vector<node_input> inputs_;
-	unique_ptr_vector<node_output> outputs_;
+	std::deque<node_input> inputs_;
+	std::deque<node_output> outputs_;
 	
 	bool request_chain_contains_(const node& q_indirect_sender) const;
 	void add_request_receiver_(node& receiver, time_window window);
@@ -58,6 +58,8 @@ public:
 	
 	const node_graph& graph() const { return graph_; }
 	node_graph& graph() { return graph_; }
+	
+	const std::string& name() const { return name_; }
 	
 	bool has_request_sender() const { return (request_sender_ != nullptr); }
 	const node_request_connection& request_sender() const { Assert(has_request_sender()); return *request_sender_; }

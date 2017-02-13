@@ -4,6 +4,9 @@
 
 namespace tff {
 
+sync_node::sync_node(node_graph& gr, const std::string& name) :
+	processing_node(gr, name) { }
+
 void sync_node::setup() {
 	processing_node::setup();
 	

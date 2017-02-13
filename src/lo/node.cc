@@ -33,6 +33,11 @@ bool node::is_sink() const {
 }
 
 
+void node::setup() {
+	
+}
+
+
 void node::request(time_span span) {
 	if(span.begin < 0) span.begin = 0;
 	

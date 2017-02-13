@@ -11,7 +11,7 @@ private:
 	void write_(rqueue_type::write_handle&);
 	
 public:
-	explicit sync_node(node_graph&);
+	explicit sync_node(node_graph&, const std::string& name);
 	
 	thread_index_type input_reader_thread(input_index_type) const override;
 	
