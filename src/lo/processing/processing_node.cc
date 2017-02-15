@@ -154,6 +154,16 @@ void processing_node::stop() {
 }
 
 
+thread_index_type processing_node::input_reader_thread(input_index_type) const {
+	return this->processing_thread();
+}
+
+
+thread_index_type processing_node::request_sender_thread() const {
+	return this->processing_thread();
+}
+
+
 auto processing_node::read_output(time_span span, output_index_type idx) -> node_read_handle {
 	rqueue_type::read_handle queue_handle = queue_->read(span);
 	channel_index_type channel_idx = output_channels_.at(idx);

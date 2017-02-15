@@ -13,7 +13,7 @@ private:
 public:
 	explicit sync_node(node_graph&, const std::string& name);
 	
-	thread_index_type input_reader_thread(input_index_type) const override;
+	thread_index_type processing_thread() const override;
 	
 	void setup() override;
 };

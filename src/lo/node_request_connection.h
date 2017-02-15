@@ -2,6 +2,7 @@
 #define TFF_NODE_REQUEST_CONNECTION_H_
 
 #include "../common.h"
+#include "types.h"
 #include "node_graph_relation.h"
 
 namespace tff {
@@ -28,6 +29,8 @@ public:
 	node& sender() { return sender_; }
 	const node& receiver() const { return receiver_; }
 	node& receiver() { return receiver_; }
+	
+	thread_index_type sender_thread() const;
 };
 
 }

@@ -1,4 +1,5 @@
 #include "sink_node.h"
+#include "../node_output.h"
 #include "../node_graph.h"
 #include "../ring/ring.h"
 #include "../ring/frame_metadata.h"
@@ -12,6 +13,9 @@ sink_node::sink_node(node_graph& gr, const std::string& name) :
 
 void sink_node::setup() {
 	processing_node::setup();
+
+	if(outputs().size() != 0) throw invalid_flow_graph("sink_node must have no output");
+
 	processing_node::setup_ring_(rqueue_variant::sync, 1);
 	rqueue_().set_sync_writer(std::bind(&sink_node::write_, this, std::placeholders::_1));
 }
@@ -28,7 +32,7 @@ void sink_node::setup_graph() {
 }
 
 
-thread_index_type sink_node::input_reader_thread(input_index_type) const {
+thread_index_type sink_node::processing_thread() const {
 	return graph().root_thread_index();
 }
 

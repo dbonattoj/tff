@@ -9,20 +9,13 @@
 
 namespace tff {
 
+class processing_handler;
 class processing_job;
-
-
-class processing_handler {
-public:
-	virtual void handler_pre_process_(processing_job&) = 0;
-	virtual void handler_process_(processing_job&) = 0;
-};
-
 
 class processing_node : public node {
 private:
 	ring_format format_;
-	std::unique_ptr<rqueue_type> queue_;
+	std::unique_ptr<rqueue_type> queue_; // TODO change to optional<>
 	std::map<output_index_type, channel_index_type> output_channels_;
 	
 	processing_handler* handler_ = nullptr;
@@ -51,6 +44,12 @@ public:
 	node_input& add_input();
 	node_output& add_output(channel_index_type);
 	
+	bool has_handler() const { return (handler_ != nullptr); }
+	void set_handler(processing_handler& hd) { handler_ = &hd; }
+	processing_handler& handler() const { Assert(handler_ != nullptr); return *handler_; }
+	
+	virtual thread_index_type processing_thread() const = 0;
+	
 	void setup() override;
 	void request(time_span) override;
 	void launch() override;
@@ -58,6 +57,8 @@ public:
 	
 	time_unit current_time() const { return current_time_; }
 
+	thread_index_type input_reader_thread(input_index_type) const final override;
+	thread_index_type request_sender_thread() const final override;
 	node_read_handle read_output(time_span, output_index_type) final override;
 };
 

@@ -2,7 +2,6 @@
 #define TFF_LO_NODE_H_
 
 #include "../common.h"
-#include "../utility/unique_ptr_vector.h"
 #include "types.h"
 #include "node_request_connection.h"
 
@@ -31,6 +30,9 @@ private:
 	
 	std::deque<node_input> inputs_;
 	std::deque<node_output> outputs_;
+	
+	// deque instead of vector so that pointers/references do not get invalidated
+	// when new inputs/outputs/request_connections get added
 	
 	bool request_chain_contains_(const node& q_indirect_sender) const;
 	void add_request_receiver_(node& receiver, time_window window);
@@ -72,11 +74,12 @@ public:
 	auto& outputs() { return outputs_; }
 	const auto& inputs() const { return inputs_; }
 	const auto& outputs() const { return outputs_; }
-	bool is_source() const;
-	bool is_sink() const;
+	bool is_source() const { return inputs_.empty(); }
+	bool is_sink() const { return outputs_.empty(); }
 	
 	virtual void setup();
 	virtual thread_index_type input_reader_thread(input_index_type) const = 0;
+	virtual thread_index_type request_sender_thread() const = 0;
 	
 	virtual void request(time_span);
 	virtual void launch();

@@ -18,10 +18,11 @@ private:
 	std::string graph_id_ = "G";
 	uid_pool uids_;
 
-	bool thread_index_colors_ = false;
+	bool thread_index_colors_ = true;
 	
 	void generate_node_(std::ostream&, const node&);
-	void generate_processing_node_body_(std::ostream&, const processing_node&);
+	void generate_node_body_(std::ostream&, const node&);
+	void generate_node_body_(std::ostream&, const processing_node&);
 	
 	void generate_node_input_connections_(std::ostream&, const node&);
 	void generate_node_request_receiver_connections_(std::ostream&, const node&);

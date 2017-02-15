@@ -24,8 +24,9 @@ struct time_span {
 	time_unit begin;
 	time_unit end;
 	
-	time_span() = default;
-	time_span(time_unit b, time_unit e) : begin(b), end(e) { }
+	time_span() : begin(undefined_time), end(undefined_time) { }
+	time_span(time_unit begin_, time_unit end_) : begin(begin_), end(end_)
+		{ Assert_crit(begin_ <= end_); }
 	
 	time_unit duration() const { return end - begin; }
 };
@@ -37,7 +38,9 @@ struct time_window {
 	
 	time_window() : past(0), future(0) { }
 	time_window(time_unit past_, time_unit future_) : past(past_), future(future_)
-		{ Assert(past >= 0 && future >= 0); }
+		{ Assert_crit(past >= 0 && future >= 0); }
+	
+	time_unit duration() const { return past + 1 + future; }
 };
 
 

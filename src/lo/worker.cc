@@ -1,16 +1,17 @@
 #include "worker.h"
+#include "../os/thread.h"
 
 namespace tff {
 
 void worker::thread_main_() {
-	//set_this_thread_name(name_);
+	set_this_thread_name(name_);
 	
 	std::unique_lock<std::mutex> lock(mutex_);
 	for(;;) {
 		cv_.wait(lock);
 
 		if(state_ == launch) {
-			this->thread_main_();
+			this->worker_main_();
 			state_ = idle;
 		} else if(state_ == idle) {
 			continue;

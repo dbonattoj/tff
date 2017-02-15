@@ -23,18 +23,12 @@ node_output& node::add_output_() {
 }
 
 
-bool node::is_source() const {
-	return (inputs_.size() == 0);
-}
-
-
-bool node::is_sink() const {
-	return (outputs_.size() == 0);
-}
-
-
 void node::setup() {
-	
+	for(const node_output& out : outputs())
+		if(! out.is_connected()) throw invalid_flow_graph("all node outputs must be connected");
+
+	for(const node_input& in : inputs())
+		if(! in.is_connected()) throw invalid_flow_graph("all node inputs must be connected");
 }
 
 

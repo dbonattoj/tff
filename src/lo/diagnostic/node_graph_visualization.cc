@@ -1,4 +1,5 @@
 #include "node_graph_visualization.h"
+#include "node_rtti.h"
 #include "../node_graph.h"
 #include "../node.h"
 #include "../node_input.h"
@@ -32,29 +33,33 @@ void node_graph_visualization::generate_node_(std::ostream& str, const node& nd)
 	str << '\t' << node_uid << " [shape=plaintext label=<\n";
 	str << R"(<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0">)";
 
+	// inputs
 	str << R"(<TR><TD BORDER="0"><TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0"><TR>)";
 	str << R"(<TD WIDTH="20"></TD>)";
 	for(const node_input& in : nd.inputs()) {
 		const std::string& input_uid = uids_.uid(in, "in");
+		const std::string& thread_col = thread_index_color_(in.reader_thread());
 		if(&in != &*nd.inputs().begin()) str << R"(<TD WIDTH="10"></TD>)";
-		str << R"(<TD BORDER="1" CELLPADDING="1" PORT=")" << input_uid << R"(">)";
+		str << R"(<TD BORDER="1" CELLPADDING="1" PORT=")" << input_uid << R"(" COLOR=")" << thread_col << R"(">)";
 		str << R"(<FONT POINT-SIZE="10">)" << filter_name_(in.name()) << R"(</FONT>)";
 		str << R"(</TD>)";
 	}
 	str << R"(<TD WIDTH="20"></TD>)";
 	str << R"(</TR></TABLE></TD></TR>)";
 	
-	str << R"(<TR><TD BORDER="1" STYLE="ROUNDED" CELLPADDING="4" COLOR="black">)";
-	if(const auto* proc_nd = dynamic_cast<const processing_node*>(&nd)) generate_processing_node_body_(str, *proc_nd);
-	else throw std::runtime_error("unknown node type");
-	str << R"(</TD></TR>)";
+	// body: depends on node type
+	node_downcast_dispatch(nd, [&str, this](const auto& concrete_nd) {
+		this->generate_node_body_(str, concrete_nd);
+	});
 	
+	// outputs
 	str << R"(<TR><TD BORDER="0"><TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0"><TR>)";
 	str << R"(<TD WIDTH="20"></TD>)";
 	for(const node_output& out : nd.outputs()) {
 		const std::string& output_uid = uids_.uid(out, "out");
+		const std::string& thread_col = thread_index_color_(out.reader_thread());
 		if(&out != &*nd.outputs().begin()) str << R"(<TD WIDTH="10"></TD>)";
-		str << R"(<TD BORDER="1" CELLPADDING="1" PORT=")" << output_uid << R"(">)";
+		str << R"(<TD BORDER="1" CELLPADDING="1" PORT=")" << output_uid << R"(" COLOR=")" << thread_col << R"(">)";
 		str << R"(<FONT POINT-SIZE="10">)" << filter_name_(out.name()) << R"(</FONT>)";
 		str << R"(</TD>)";
 	}
@@ -66,8 +71,27 @@ void node_graph_visualization::generate_node_(std::ostream& str, const node& nd)
 }
 
 
-void node_graph_visualization::generate_processing_node_body_(std::ostream& str, const processing_node& nd) {
+void node_graph_visualization::generate_node_body_(std::ostream& str, const node& nd) {
+	str << R"(<TR><TD BORDER="1" STYLE="ROUNDED" CELLPADDING="4" COLOR="black">)";
 	str << filter_name_(nd.name());
+	str << R"(</TD></TR>)";
+}
+
+
+void node_graph_visualization::generate_node_body_(std::ostream& str, const processing_node& nd) {
+	const std::string& thread_col = thread_index_color_(nd.processing_thread());
+	str << R"(<TR><TD BORDER="1" STYLE="ROUNDED" CELLPADDING="4" COLOR=")" << thread_col << R"(">)";
+	str << filter_name_(nd.name());
+	str << R"(<BR/><FONT POINT-SIZE="10">)";
+	if(is_async_node(nd)) {
+		str << R"(async_node<BR/>)";
+	} else if(is_sync_node(nd)) {
+		str << R"(sync_node<BR/>)";
+	} else if(is_sink_node(nd)) {
+		str << R"(sink_node<BR/>)";
+	}
+	str << R"(</FONT>)";
+	str << R"(</TD></TR>)";
 }
 
 	
@@ -86,10 +110,11 @@ void node_graph_visualization::generate_node_input_connections_(std::ostream& st
 		std::string arrow_shape, style;
 		arrow_shape = "normal";
 		style = "";
-
-		str << '\t' << in_node_uid << ':' << in_uid << " -> " << conn_out_node_uid << ':' << conn_out_uid << " [";
+		
+		str << '\t' << conn_out_node_uid << ':' << conn_out_uid << " -> " << in_node_uid << ':' << in_uid << " [";
 		str << "style=\"" << style << "\", ";
 		str << "arrowhead=\"" << arrow_shape << "\", ";
+		str << "color=" << thread_index_color_(in.reader_thread()) << ", ";
 		str << "headlabel=<" << label << ">, ";
 		str << "fontsize=10, labelangle=45, labeldistance=2.0";
 		str << "];\n";
@@ -122,6 +147,7 @@ void node_graph_visualization::generate_node_request_receiver_connections_(std::
 		
 		str << "style=\"" << style << "\", ";
 		str << "arrowhead=\"" << arrow_shape << "\", ";
+		str << "color=" << thread_index_color_(req.sender_thread()) << ", ";
 		str << "headlabel=<" << label << ">, ";
 		str << "fontsize=10, labelangle=45, labeldistance=2.0, ";
 		str << "constraint=false";
@@ -142,8 +168,8 @@ void node_graph_visualization::generate_ranks_(std::ostream& str) {
 	
 std::string node_graph_visualization::time_window_string_(const time_window& win) {
 	if(win.past == 0 && win.future == 0) return "";
-	else if(win.past != 0) return "[-" + std::to_string(win.past) + "]";
-	else if(win.future != 0) return "[+" + std::to_string(win.future) + "]";
+	else if(win.future == 0) return "[-" + std::to_string(win.past) + "]";
+	else if(win.past == 0) return "[+" + std::to_string(win.future) + "]";
 	else return "[-" + std::to_string(win.past) + ",+" + std::to_string(win.future) + "]";
 }
 
