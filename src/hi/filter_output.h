@@ -7,16 +7,23 @@
 namespace tff {
 
 class filter;
+class filter_input_base;
 class filter_output_format;
 class opaque_ndarray_format;
 
 
+class filter_edge_base;
 template<std::size_t Output_dim, typename Output_elem> class filter_edge_output_base;
 
 
 class filter_output_base {
 public:
-	virtual opaque_ndarray_format ndarray_format(const filter_output_format&) const = 0;
+	virtual const std::string& name() const = 0;
+	
+	virtual std::size_t edges_count() const = 0;
+	virtual const filter_edge_base& edge_at(std::ptrdiff_t) const = 0;
+	
+	virtual opaque_ndarray_format ndarray_format() const = 0;
 };
 
 
@@ -27,13 +34,16 @@ public:
 	using elem_type = Output_elem;
 
 	using edge_base_type = filter_edge_output_base<Output_dim, Output_elem>;
+	using frame_shape_type = ndsize<Output_dim>;
 	
 private:
 	filter& filter_;
 	std::string name_;
 	
 	ref_vector<edge_base_type> edges_;
-
+	
+	optional<frame_shape_type> frame_shape_;
+	
 public:
 	explicit filter_output(filter& filt) :
 		filter_(filt) { }
@@ -42,9 +52,19 @@ public:
 	const filter& this_filter() const { return filter_; }
 
 	void set_name(const std::string& name) { name_ = name; }
-	const std::string& name() const { return name_; }
+	const std::string& name() const override { return name_; }
+	
+	auto& edges() { return edges_; }
+	const auto& edges() const { return edges_; }
+	std::size_t edges_count() const override;
+	const filter& connected_filter_at_edge(std::ptrdiff_t i) const override;
+	void edge_has_connected(edge_base_type&);
+	
+	void define_frame_shape(const frame_shape_type&);
+	bool frame_shape_is_defined() const;
+	const frame_shape_type& frame_shape();
 
-	opaque_ndarray_format ndarray_format(const filter_output_format&) const override;
+	opaque_ndarray_format ndarray_format() const override;
 };
 
 }

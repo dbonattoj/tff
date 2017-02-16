@@ -131,6 +131,11 @@ node_output& processing_node::add_output(channel_index_type chan) {
 }
 
 
+node_output& processing_node::add_output(channel_index_type chan) {
+	return node::add_output_();
+}
+
+
 void processing_node::setup() {
 	node::setup();
 }
@@ -165,6 +170,8 @@ thread_index_type processing_node::request_sender_thread() const {
 
 
 auto processing_node::read_output(time_span span, output_index_type idx) -> node_read_handle {
+	// TODO support no channel (for pull by final sink_node)
+	// and parameter channel
 	rqueue_type::read_handle queue_handle = queue_->read(span);
 	channel_index_type channel_idx = output_channels_.at(idx);
 	return node_read_handle(

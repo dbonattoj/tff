@@ -8,17 +8,18 @@ namespace tff {
 
 class filter_input_base;
 class filter_output_base;
-class filter_graph_installation;
+class filter_installation_guide;
 
 class filter {
 private:
 	ref_vector<filter_input_base> inputs_;
 	ref_vector<filter_output_base> outputs_;
 	
+	bool was_setup_ = false;
 	std::string name_;
 	
 protected:
-	virtual void install_(filter_graph_installation_guide&) const = 0;
+	virtual void install_() = 0;
 	
 public:
 	virtual ~filter() = default;
@@ -36,7 +37,7 @@ public:
 	void register_input(filter_input_base&);
 	void register_output(filter_output_base&);
 	
-	void propagate_install(filter_graph_installation_guide&) const;
+	void propagate_install(filter_installation_guide&);
 };
 
 };

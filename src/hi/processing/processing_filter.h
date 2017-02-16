@@ -6,11 +6,23 @@
 
 namespace tff {
 
-class filter_graph_installation;
 class processing_job;
+class filter_installation_guide;
+
+class processing_filter_base : public filter, public processing_handler {
+protected:
+	static thread_local processing_filter_base* current_in_construction_ = nullptr;
+
+public:
+	processing_filter_base& current_in_construction() {
+		Assert(current_in_construction_ != nullptr);
+		return *current_in_construction_;
+	}
+};
+
 
 template<typename Box>
-class processing_filter : public filter, private processing_handler {
+class processing_filter : public processing_filter_base {
 public:
 	using box_type = Box;
 	
@@ -23,7 +35,7 @@ private:
 	void handler_process_(processing_job&) override;
 	
 protected:
-	void install_(filter_graph_installation_guide&) const override;
+	void install_(filter_installation_guide&) override;
 	
 public:
 	processing_filter();

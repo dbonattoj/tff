@@ -43,6 +43,7 @@ public:
 	
 	node_input& add_input();
 	node_output& add_output(channel_index_type);
+	node_output& add_output();
 	
 	bool has_handler() const { return (handler_ != nullptr); }
 	void set_handler(processing_handler& hd) { handler_ = &hd; }

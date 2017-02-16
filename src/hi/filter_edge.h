@@ -14,29 +14,32 @@ template<std::size_t Input_dim, typename Input_elem> class filter_input;
 template<std::size_t Output_dim, typename Output_elem> class filter_output;
 
 
+class filter_edge_base {
+public:
+	virtual ~filter_edge_base() = 0;
+	virtual filter_output_base& origin() const = 0;
+	virtual filter& origin_filter() const = 0;
+	virtual filter_input_base& destination() const = 0;
+	virtual filter& destination_filter() const = 0;
+};
+
+
 template<std::size_t Input_dim, typename Input_elem>
-class filter_edge_input_base {
+class filter_edge_input_base : public virtual filter_edge_base {
 public:
 	using input_type = filter_input<Input_dim, Input_elem>;
 	using input_frame_shape_type = ndsize<Input_dim>;
 	using input_full_view_type = input_frame_window_view_type<Input_dim, Input_elem>;
 	
-	virtual filter_output_base& origin() const = 0;
-	virtual filter& origin_filter() const = 0;
 	virtual const input_frame_shape_type& input_frame_shape() const = 0;
-	
-	
 };
 
 
 template<std::size_t Output_dim, typename Output_elem>
-class filter_edge_output_base {
+class filter_edge_output_base : public virtual filter_edge_base {
 public:
 	using output_type = filter_input<Output_dim, Output_elem>;
 	using output_frame_shape_type = ndsize<Output_dim>;
-
-	virtual filter_input_base& destination() const = 0;
-	virtual filter& destination_filter() const = 0;
 };
 
 
@@ -63,7 +66,7 @@ protected:
 	filter_edge(input_type& in, output_type& out) : input_(in), output_(out) { }
 	
 public:
-	virtual ~filter_edge() = default;
+	~filter_edge() override = default;
 	
 	output_type& origin() const override { return output_; }
 	filter& origin_filter() const override { return output_.this_filter(); }
@@ -71,7 +74,6 @@ public:
 
 	input_type& destination() const override { return input_; }
 	filter& destination_filter() const override { return input_.this_filter(); }
-	const output_frame_shape_type& output_frame_shape() const override { return output_.frame_shape(); }
 };
 
 

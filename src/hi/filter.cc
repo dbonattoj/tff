@@ -14,13 +14,14 @@ void filter::register_output(filter_output_base& out) {
 }
 
 
-void filter::propagate_install(filter_graph_installation_guide& guide) const {
+void filter::propagate_install(filter_installation_guide&) const {
+	if(was_setup_) return;
 	for(filter_input_base& in : inputs()) {
 		if(! in.is_connected()) continue;
-		in.connected_filter().propagate_install(guide);
+		in.connected_filter().propagate_install();
 	}
-	
-	this->install_(guide);
+	this->install_();
+	was_setup_ = true;
 }
 
 };

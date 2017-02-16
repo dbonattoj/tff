@@ -27,6 +27,7 @@ TFF_DEFINE_EXCEPTION(failed_assertion, std::runtime_error);
 TFF_DEFINE_EXCEPTION(invalid_flow_graph, std::logic_error);
 
 TFF_DEFINE_EXCEPTION(invalid_filter_graph, std::logic_error);
+TFF_DEFINE_EXCEPTION(filter_box_error, std::logic_error);
 
 }
 

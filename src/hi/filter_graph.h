@@ -1,17 +1,24 @@
 #ifndef TFF_FILTER_GRAPH_H_
 #define TFF_FILTER_GRAPH_H_
 
+#include "../common.h"
 #include "filter_subgraph.h"
+#include "../lo/node_graph.h"
 
 namespace tff {
 
-class filter_graph_installation;
-
 class filter_graph : public filter_subgraph {
-public:
-	filter_graph();
+private:
+	optional<node_graph> installed_node_graph_;
 	
-	filter_graph_installation install() const;
+public:
+	void setup();
+	
+	time_unit current_time() const;
+	void run_until(time_unit last_frame);
+	void run_for(time_unit duration);
+	void run();
+	void seek(time_unit target_time);
 };
 
 }
