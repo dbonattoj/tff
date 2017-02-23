@@ -173,12 +173,19 @@ auto processing_node::read_output(time_span span, output_index_type idx) -> node
 	// TODO support no channel (for pull by final sink_node)
 	// and parameter channel
 	rqueue_type::read_handle queue_handle = queue_->read(span);
-	channel_index_type channel_idx = output_channels_.at(idx);
-	return node_read_handle(
-		std::move(queue_handle),
-		span.begin,
-		channel_idx
-	);
+	
+	auto channel_it = output_channels_.find(idx);
+	if(channel_it != output_channels_.end()) {
+		channel_index_type channel_idx = output_channels_.at(idx);
+		return node_read_handle(
+			std::move(queue_handle),
+			span.begin,
+			channel_idx
+		);
+
+	} else {
+		
+	}
 }
 
 
