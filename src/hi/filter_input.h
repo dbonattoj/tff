@@ -58,8 +58,10 @@ public:
 	
 	const frame_shape_type& frame_shape() const;
 	
-	template<std::size_t Output_dim, typename Output_elem>
-	void connect(filter_output<Output_dim, Output_elem>&);
+	void connect(filter_output<Input_dim, Input_elem>&);
+	
+	//template<std::size_t Output_dim, typename Output_elem>
+	//void connect(filter_output<Output_dim, Output_elem>&);
 };
 
 }

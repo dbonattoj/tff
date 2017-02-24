@@ -61,13 +61,13 @@ class filter_edge :
 	using base_out = filter_edge_output_base<Output_dim, Output_elem>;
 	
 	/*
-	origin node
+	origin filter
 	 [output]
 		|
-		|  ndarray_view_cast
+		|  cast
 		v
 	 [input]
-	destination node
+	destination filter
 	*/
 
 public:
@@ -79,15 +79,13 @@ public:
 	using caster_type = Caster;
 	
 private:
-	input_type& input_;
 	output_type& output_;
+	input_type& input_;
 	caster_type caster_;
 	
-	static input_full_view_type cast_view_(const output_full_view_type&);
-	static input_frame_shape_type cast_frame_shape_(const output_frame_shape_type&);
-	
 protected:
-	filter_edge(input_type& in, output_type& out) : input_(in), output_(out) { }
+	filter_edge(output_type& out, input_type& in, const caster_type& caster = caster_type()) :
+		output_(out), input_(in), caster_(caster) { }
 	
 public:
 	output_type& origin() const override { return output_; }
@@ -96,8 +94,15 @@ public:
 	input_type& destination() const override { return input_; }
 	filter& destination_filter() const override { return input_.this_filter(); }
 
-	input_full_view_type input_view_from_opaque(const input_ndarray_window_view_type&) const override;
-	input_frame_shape_type input_frame_shape() const override;
+	input_full_view_type input_view_from_opaque(const input_ndarray_window_view_type& out_opaque_vw) const override {
+		output_full_view_type out_vw = from_opaque<Output_dim, const Output_elem>(out_opaque_vw);
+		return caster_.cast_view(out_vw);
+	}
+	
+	input_frame_shape_type input_frame_shape() const override {
+		output_frame_shape_type output_shp = output_.frame_shape();
+		return caster_.cast_frame_shape(output_shp);
+	}
 };
 
 
