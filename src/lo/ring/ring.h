@@ -3,7 +3,7 @@
 
 #include "../types.h"
 #include "../../nd/nd.h"
-#include "frame_metadata.h"
+#include "frame_state.h"
 #include "ring_format.h"
 #include "opaque_ref_format.h"
 
@@ -14,8 +14,8 @@ namespace tff {
 
 /// Circular buffer containing a fixed number of frames.
 /** Number of _frames_ is fixed to _capacity_. Each _frame_ consists of several _channels_:
- ** - _Metadata_ channel containing state information etc.
- ** - _Ndarray_ channels containing opaque ndarray shaped data with given format.
+ ** - _State_ channel containing state information etc.
+ ** - _Data_ channels containing opaque nd-array data with given format.
  ** - _Parameter_ channels...
  ** Provides wraparound view to circular buffer segment, using underlying \ref ndarray_wraparound_view.
  ** To be accessed through \ref rqueue<ring>. */
@@ -25,11 +25,7 @@ private:
 	template<bool Mutable> class wraparound_view_;
 
 public:
-	using ndarray_opaque_format_type = opaque_ref_format<opaque_ndarray_format>;
-	//using parameter_opaque_format_type = void;
-
-	using ndarray_array_type = ndarray_opaque<1, ndarray_opaque_format_type>;
-	//using parameter_array_type = ndarray_opaque<1, parameter_opaque_format_type>;
+	using data_channel_container_type = ndarray_opaque<1, propagated_opaque_format_type>;
 	
 	using index_type = std::ptrdiff_t;
 	using frame_type = frame_view_<true>;
@@ -40,81 +36,89 @@ public:
 private:
 	std::size_t capacity_;
 	
-	ndarray<1, frame_metadata> metadata_channel_;
-	std::vector<ndarray_array_type> ndarray_channels_;
-	//std::vector<parameter_array_type> parameter_channels_;
+	ndarray<1, frame_state> state_channel_;
+	std::vector<data_channel_container_type> data_channels_;
 	
 public:
 	ring(std::size_t capacity, const ring_format& format);
 	
 	std::size_t capacity() const { return capacity_; }
 	
-	frame_type operator[](index_type);
-	const_frame_type operator[](index_type) const;
+	frame_type frame_view(index_type, time_unit);
+	const_frame_type frame_view(index_type, time_unit) const;
+	const_frame_type const_frame_view(index_type, time_unit) const;
 	
-	wraparound_view_type wraparound_view(index_type start, std::size_t dur);
-	const_wraparound_view_type wraparound_view(index_type start, std::size_t dur) const;
-	const_wraparound_view_type const_wraparound_view(index_type start, std::size_t dur) const;
+	wraparound_view_type wraparound_view(index_type start_idx, time_unit start_t, std::size_t dur);
+	const_wraparound_view_type wraparound_view(index_type start_idx, time_unit start_t, std::size_t dur) const;
+	const_wraparound_view_type const_wraparound_view(index_type start_idx, time_unit start_t, std::size_t dur) const;
 	
-	std::size_t ndarray_channels_count() const { return ndarray_channels_.size(); }
+	std::size_t data_channels_count() const { return data_channels_.size(); }
 };
 
 
+/// View to one frame of \ref ring.
 template<bool Mutable>
 class ring::frame_view_ {
 public:
-	using ring_type = std::conditional_t<Mutable, ring, const ring>;
-	using metadata_view_type = std::conditional_t<Mutable, frame_metadata&, const frame_metadata&>;
-	using ndarray_view_type = ndarray_opaque_view<0, Mutable, ndarray_opaque_format_type>;
+	using ring_type = const_if<!Mutable, ring>;
+	using state_view_type = const_if<!Mutable, frame_state>&;
+	using data_view_type = std::conditional_t<Mutable, mutable_data_frame_view_type, const_data_frame_view_type>;
 
 private:
 	ring_type& ring_;
-	std::ptrdiff_t index_;
+	index_type index_;
+	time_unit time_;
 	
 public:
-	frame_view_(ring_type& rng, std::ptrdiff_t idx) :
-		ring_(rng), index_(idx) { }
+	frame_view_(ring_type& rng, index_type idx, time_unit t) :
+		ring_(rng), index_(idx), time_(t) { }
 	
-	metadata_view_type metadata() const {
-		return ring_.metadata_channel_[index_];
+	time_unit time() const { return time_; }
+	
+	state_view_type state() const {
+		return ring_.state_channel_[index_];
 	}
 	
-	ndarray_view_type ndarray(channel_index_type i) const {
-		return ring_.ndarray_channels_.at(i)[index_];
+	data_view_type data(data_channel_index_type idx) const {
+		return ring_.data_channels_.at(idx)[index_];
 	}
 };
 
 
+/// View to segment of \ref ring.
 template<bool Mutable>
 class ring::wraparound_view_ {
 public:
-	using ring_type = std::conditional_t<Mutable, ring, const ring>;
-	using metadata_view_type = ndarray_wraparound_view<1, std::conditional_t<Mutable, frame_metadata, const frame_metadata>>;
-	using ndarray_view_type = ndarray_wraparound_opaque_view<1, Mutable, ndarray_opaque_format_type>;
+	using ring_type = const_if<!Mutable, ring>;
+	using state_view_type = std::conditional_t<Mutable, mutable_state_window_view_type, const_state_window_view_type>;
+	using data_view_type = std::conditional_t<Mutable, mutable_data_window_view_type, const_data_window_view_type>;
 
 private:
 	ring_type& ring_;
-	std::ptrdiff_t start_index_;
+	index_type start_index_;
+	time_unit start_time_;
 	std::size_t duration_;
 	
 public:
-	wraparound_view_(ring_type& rng, std::ptrdiff_t idx, std::size_t dur) :
-		ring_(rng), start_index_(idx), duration_(dur) { }
+	wraparound_view_(ring_type& rng, index_type start_idx, time_unit start_t, std::size_t dur) :
+		ring_(rng), start_index_(start_idx), start_time_(start_t), duration_(dur) { }
 	
-	metadata_view_type metadata() const {
-		return wraparound(
-			ring_.metadata_channel_.view(),
+	state_view_type state() const {
+		auto non_timed_vw = wraparound(
+			ring_.state_channel_.view(),
 			make_ndptrdiff(start_index_),
 			make_ndptrdiff(start_index_ + duration_)
 		);
+		return timed(non_timed_vw, start_time_);
 	}
 	
-	ndarray_view_type ndarray(channel_index_type chan) const {
-		return wraparound(
-			ring_.ndarray_channels_.at(chan).view(),
+	data_view_type data(data_channel_index_type chan) const {
+		auto non_timed_vw = wraparound(
+			ring_.data_channels_.at(chan).view(),
 			make_ndptrdiff(start_index_),
 			make_ndptrdiff(start_index_ + duration_)
 		);
+		return timed(non_timed_vw, start_time_);
 	}
 };
 

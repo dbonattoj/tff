@@ -2,6 +2,7 @@
 #define TFF_NODE_OUTPUT_H_
 
 #include "types.h"
+#include "ring/node_read_guide.h"
 
 namespace tff {
 
@@ -13,6 +14,7 @@ class node_output {
 private:
 	node& node_;
 	output_index_type index_;
+	node_read_guide guide_;
 	
 	std::string name_ = "out";
 	
@@ -22,8 +24,8 @@ private:
 	node_output& operator=(const node_output&) = delete;
 	
 public:
-	node_output(node& nd, output_index_type idx) :
-		node_(nd), index_(idx) { }
+	node_output(node& nd, output_index_type idx, const node_read_guide& guide) :
+		node_(nd), index_(idx), guide_(guide) { }
 	
 	const node& this_node() const { return node_; }
 	node& this_node() { return node_; }
@@ -31,7 +33,7 @@ public:
 
 	const std::string& name() const { return name_; }
 	void set_name(const std::string& nm) { name_ = nm; }
-
+	
 	void input_has_connected(node_input&);
 	void input_has_disconnected();
 	

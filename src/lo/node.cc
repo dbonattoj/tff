@@ -17,8 +17,8 @@ node_input& node::add_input_() {
 }
 
 
-node_output& node::add_output_() {
-	outputs_.emplace_back(*this, outputs_.size());
+node_output& node::add_output_(const node_read_guide& guide) {
+	outputs_.emplace_back(*this, outputs_.size(), guide);
 	return outputs_.back();
 }
 

@@ -4,7 +4,7 @@
 #include "../../rqueue/rqueue.h"
 #include "../types.h"
 #include "ring.h"
-#include <utility>
+#include "node_read_guide.h"
 
 namespace tff {
 
@@ -14,21 +14,20 @@ namespace tff {
 class node_read_handle {
 private:
 	rqueue_type::read_handle handle_;
-	time_unit start_time_;
-	channel_index_type ndarray_channel_index_;
+	node_read_guide guide_;
 	
 	node_read_handle(const node_read_handle&) = delete;
 	node_read_handle& operator=(const node_read_handle&) = delete;
 
 public:
-	node_read_handle(rqueue_type::read_handle&&, time_unit start_t, channel_index_type);
+	explicit node_read_handle(rqueue_type::read_handle&& handle, const node_read_guide& guide);
 	
 	node_read_handle(node_read_handle&&) = default;
 	node_read_handle& operator=(node_read_handle&&) = default;
 	
 	bool valid() const;
-	input_metadata_window_view_type metadata() const;
-	input_ndarray_window_view_type view() const;
+	const_state_window_view_type state() const;
+	const_data_window_view_type data() const;
 };
 
 }

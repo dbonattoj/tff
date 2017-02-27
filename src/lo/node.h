@@ -4,6 +4,7 @@
 #include "../common.h"
 #include "types.h"
 #include "node_request_connection.h"
+#include "ring/node_read_handle.h"
 
 #include <deque>
 #include <string>
@@ -51,7 +52,7 @@ protected:
 	node(node_graph&, const std::string& name);
 	
 	node_input& add_input_();
-	node_output& add_output_();
+	node_output& add_output_(const node_read_guide&);
 	
 	void sink_setup_();
 	
@@ -85,7 +86,7 @@ public:
 	virtual void launch();
 	virtual void stop();
 	
-	virtual node_read_handle read_output(time_span, output_index_type) = 0;
+	virtual node_read_handle read(time_span, const node_read_guide&) = 0;
 };
 
 

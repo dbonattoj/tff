@@ -5,7 +5,6 @@
 #include "../ring/ring.h"
 
 #include <memory>
-#include <map>
 
 namespace tff {
 
@@ -15,8 +14,7 @@ class processing_job;
 class processing_node : public node {
 private:
 	ring_format format_;
-	std::unique_ptr<rqueue_type> queue_; // TODO change to optional<>
-	std::map<output_index_type, channel_index_type> output_channels_;
+	optional<rqueue_type> queue_;
 	
 	processing_handler* handler_ = nullptr;
 	
@@ -38,12 +36,12 @@ protected:
 public:
 	processing_node(node_graph&, const std::string& name);
 	
-	channel_index_type add_channel(const opaque_ndarray_format&);
-	std::size_t channels_count() const;
+	data_channel_index_type add_data_channel(const opaque_ndarray_format&);
+	std::size_t data_channels_count() const;
 	
 	node_input& add_input();
-	node_output& add_output(channel_index_type);
-	node_output& add_output();
+	node_output& add_data_output(data_channel_index_type);
+	node_output& add_pull_only_output();
 	
 	bool has_handler() const { return (handler_ != nullptr); }
 	void set_handler(processing_handler& hd) { handler_ = &hd; }
@@ -60,7 +58,8 @@ public:
 
 	thread_index_type input_reader_thread(input_index_type) const final override;
 	thread_index_type request_sender_thread() const final override;
-	node_read_handle read_output(time_span, output_index_type) final override;
+	
+	node_read_handle read(time_span, const node_read_guide&) override;
 };
 
 

@@ -15,7 +15,7 @@ class sink_node;
 class node_graph {
 private:
 	unique_ptr_vector<node> nodes_;
-	sink_node* sink_ = nullptr;
+	sink_node& sink_;
 	bool was_setup_ = false;
 	
 	bool launched_ = false;
@@ -40,14 +40,6 @@ public:
 	Node& add_node(Args&&... args) {
 		static_assert(std::is_base_of<node, Node>::value, "node must be derived from class `node`");
 		return nodes_.emplace_back<Node>(*this, std::forward<Args>(args)...);
-	}
-	
-	template<typename Node, typename... Args>
-	Node& add_sink_node(Args&&... args) {
-		static_assert(std::is_base_of<sink_node, Node>::value, "sink node must be derived from class `sink_node`");
-		Node& sink = add_node<Node>(std::forward<Args>(args)...);
-		sink_ = &sink;
-		return sink;
 	}
 	
 	void setup();

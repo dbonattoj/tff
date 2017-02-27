@@ -1,27 +1,30 @@
 #include "node_read_handle.h"
+#include <utility>
 
 namespace tff {
 
-node_read_handle::node_read_handle(rqueue_type::read_handle&& handle, time_unit start_t, channel_index_type chan) :
-	handle_(std::move(handle)),
-	start_time_(start_t),
-	ndarray_channel_index_(chan) { }
-		
+node_read_handle::node_read_handle(rqueue_type::read_handle&& handle, const node_read_guide& guide) :
+	handle_(std::move(handle_)), guide_(guide) { }
+
 
 bool node_read_handle::valid() const {
 	return handle_.valid();
 }
 
 
-input_metadata_window_view_type node_read_handle::metadata() const {
-	Assert(valid());
-	return timed(handle_.view().metadata(), start_time_);
+node_read_guide::kind node_read_handle::kind() const {
+	return guide_.kind;
 }
 
 
-input_ndarray_window_view_type node_read_handle::view() const {
-	Assert(valid());
-	return timed(handle_.view().ndarray(ndarray_channel_index_), start_time_);
+const_state_window_view_type node_read_handle::state() const {
+	return handle_.view().state();
+}
+
+
+const_data_window_view_type node_read_handle::data() const {
+	Assert(guide_.kind == node_read_guide::data);
+	return handle_.view().ndarray(guide_.data_channel_index);
 }
 
 

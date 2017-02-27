@@ -48,7 +48,7 @@ thread_index_type node_output::reader_thread() const {
 
 	
 node_read_handle node_output::read(time_span span) {
-	return this_node().read_output(span, index_);
+	return this_node().read(span, guide_);
 }
 
 
