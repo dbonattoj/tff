@@ -11,10 +11,11 @@ class sink_node : public node {
 public:
 	sink_node(node_graph&, const std::string& name);
 
+	void setup_graph();
 	frame_state process(time_unit);
 	frame_state process_next();
-
-	void setup();
+	
+	void setup() override;
 	
 	node_input& add_input();
 	

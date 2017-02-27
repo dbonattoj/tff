@@ -28,10 +28,17 @@ frame_state sink_node::process_next() {
 	return process(current_time() + 1);
 }
 
-void sink_node::setup() {
-	if(outputs().size() != 0) throw invalid_flow_graph("sink_node must have no output");
+
+void sink_node::setup_graph() {
+	node::sink_setup_();
 }
 
+
+void sink_node::setup() {
+	node::setup();
+	
+	if(outputs().size() != 0) throw invalid_flow_graph("sink_node must have no output");
+}
 	
 time_unit sink_node::current_time() const {
 	return current_time_;

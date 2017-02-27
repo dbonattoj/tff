@@ -16,7 +16,7 @@ node_graph::~node_graph() {
 void node_graph::setup() {
 	Assert(! was_setup_);
 	Assert(sink_ != nullptr);
-	//sink_.setup_graph();
+	sink_.setup_graph();
 	was_setup_ = true;
 }
 
