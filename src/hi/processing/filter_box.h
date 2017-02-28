@@ -13,31 +13,16 @@ private:
 	filter& filter_;
 	
 protected:
-	template<std::size_t Dim, typename Elem> class input;
-	template<std::size_t Dim, typename Elem> class output;
-
+	template<std::size_t Dim, typename Elem> using input = processing_filter_input<Dim, Elem>;
+	template<std::size_t Dim, typename Elem> using output = processing_filter_output<Dim, Elem>;
+	
 	filter_box();
 	virtual ~filter_box() = default;
 	
 	void setup() { }
 	void pre_process(filter_processing_job&) { }
-	void process(filter_processsing_job&) { }
+	void process(filter_processing_job&) { }
 };
-
-
-template<std::size_t Dim, typename Elem>
-class filter_box::input : public processing_filter_input<Dim, Elem> {
-public:
-	input();
-};
-
-
-template<std::size_t Dim, typename Elem>
-class filter_box::output : public processing_filter_input<Dim, Elem> {
-public:
-	output();
-};
-
 
 }
 

@@ -2,6 +2,7 @@
 #define TFF_FILTER_OUTPUT_H_
 
 #include "../utility/ref_vector.h"
+#include "../lo/types.h"
 #include <string>
 
 namespace tff {
@@ -22,12 +23,17 @@ private:
 	filter_output_base& operator=(const filter_output_base&) = delete;
 
 public:
+	virtual ~filter_output_base() = default;
+	
 	virtual const std::string& name() const = 0;
 	
 	virtual std::size_t edges_count() const = 0;
 	virtual const filter_edge_base& edge_at(std::ptrdiff_t) const = 0;
 	
 	virtual opaque_ndarray_format ndarray_format() const = 0;
+
+	virtual data_channel_index_type data_channel_index() const { throw not_implemented(); }
+	virtual void set_data_channel_index(data_channel_index_type) { throw not_implemented(); }
 };
 
 

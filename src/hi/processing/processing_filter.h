@@ -64,14 +64,14 @@ public:
 template<std::size_t Input_dim, typename Input_elem>
 class processing_filter_input : public filter_input<Input_dim, Input_elem> {
 private:
-	input_index_type node_input_index_ = -1;
+	input_index_type input_index_ = -1;
 	
 public:
 	processing_filter_input() :
 		filter_input::filter_input(processing_filter_base::current_in_construction()) { }
 	
-	input_index_type node_input_index() const { return node_input_index_; }
-	void set_node_input_index(input_index_type idx) { node_input_index_ = idx; }
+	input_index_type input_index() const final override { return input_index_; }
+	void set_input_index(input_index_type idx) final override { input_index_ = idx; }
 };
 
 
@@ -80,14 +80,14 @@ public:
 template<std::size_t Output_dim, typename Output_elem>
 class processing_filter_output : public filter_output<Output_dim, Output_elem> {
 private:
-	data_channel_index_type node_data_channel_index_ = -1;
+	data_channel_index_type data_channel_index_ = -1;
 	
 public:
 	processing_filter_output() :
 		filter_output::filter_output(processing_filter_base::current_in_construction()) { }
 	
-	data_channel_index_type node_data_channel_index() const { return node_data_channel_index_; }
-	void set_node_data_channel_index(data_channel_index_type idx) { node_data_channel_index_ = idx; }
+	data_channel_index_type data_channel_index() const final override { return data_channel_index_; }
+	void set_data_channel_index(data_channel_index_type idx) final override { data_channel_index_ = idx; }
 };
 
 

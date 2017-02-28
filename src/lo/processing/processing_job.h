@@ -34,9 +34,9 @@ public:
 	const const_data_frame_view_type& input_view(input_index_type idx) const
 		{ return input_views_.at(idx); }
 	
-	bool has_channel_view(data_channel_index_type idx) const
+	bool has_data_channel_view(data_channel_index_type idx) const
 		{ return ! data_channel_views_.at(idx).is_null(); }
-	const mutable_data_window_view_type& channel_view(data_channel_index_type idx) const
+	const mutable_data_window_view_type& data_channel_view(data_channel_index_type idx) const
 		{ return data_channel_views_.at(idx); }
 
 	bool end_of_stream_was_marked() const { return end_of_stream_; }

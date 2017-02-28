@@ -46,7 +46,11 @@ void processing_filter<Box>::install_(filter_installation_guide& guide) {
 	// add inputs & connect
 	for(const filter_input_base& in : inputs()) {
 		if(! in.is_connected()) continue;
-		node_input& nd_in = nd->add_input();
+		node_input& nd_in = installed_node->add_input();
+		
+		Assert(in.input_index() != -1 || in.input_index() == nd_in.index(),
+			"node_inputs for processing_filter_input must have same index");
+		in.set_input_index(nd_in.index());
 		
 		nd_in.set_window(in.window());
 		
@@ -60,7 +64,11 @@ void processing_filter<Box>::install_(filter_installation_guide& guide) {
 	for(const filter_output& out : outputs()) {
 		// add data channel for the output
 		opaque_ndarray_format data_format = out.data_format();
-		data_channel_index_type chan_idx = nd->add_data_channel(data_format);
+		data_channel_index_type chan_idx = installed_node->add_data_channel(data_format);
+
+		Assert(out.data_channel_index() != -1 || out.data_channel_index() == chan_idx,
+			"data channels for processing_filter_output must have same index");
+		out.set_data_channel_index(chan_idx);
 		
 		// add output for each edge (for each output)
 		std::size_t edges_count = out.edges_count();

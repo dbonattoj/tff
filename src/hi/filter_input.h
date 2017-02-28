@@ -22,11 +22,16 @@ private:
 	filter_input_base& operator=(const filter_input_base&) = delete;
 	
 public:
+	virtual ~filter_input_base() = default;
+	
 	virtual const std::string& name() const = 0;
 	virtual time_window window() const = 0;
 
 	virtual bool is_connected() const = 0;
 	virtual filter_edge_base& edge() const = 0;
+	
+	virtual input_index_type input_index() const { throw not_implemented(); }
+	virtual void set_input_index(input_index_type) { throw not_implemented(); }
 };
 
 

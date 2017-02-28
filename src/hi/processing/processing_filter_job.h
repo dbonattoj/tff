@@ -33,11 +33,11 @@ public:
 	template<std::size_t Dim, typename Elem>
 	ndarray_view<Dim, Elem> out(filter_output<Dim, Elem&>);
 	
-	void set_activated(filter_input_base&, bool activated);
-	bool is_activated(const filter_input_base&) const;
+	void set_input_activated(filter_input_base&, bool activated);
+	bool is_input_activated(const filter_input_base&) const;
 	
-	void activate(filter_input_base& in) { set_activated(in, true); }
-	void deactivate(filter_input_base& in) { set_activated(in, false); }
+	void activate(filter_input_base& in) { set_input_activated(in, true); }
+	void deactivate(filter_input_base& in) { set_input_activated(in, false); }
 };
 
 #include "processing_filter_job.tcc"
