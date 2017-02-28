@@ -3,12 +3,10 @@
 namespace tff {
 
 namespace {
-
-template<typename T>
-bool is_a_or_derived_(const node& nd) {
-	return (dynamic_cast<const T*>(&nd) != nullptr);
-}
-
+	template<typename T>
+	bool is_a_or_derived_(const node& nd) {
+		return (dynamic_cast<const T*>(&nd) != nullptr);
+	}
 }
 
 bool is_processing_node(const node& nd) {

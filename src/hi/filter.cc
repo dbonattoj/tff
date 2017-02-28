@@ -15,15 +15,20 @@ void filter::register_output(filter_output_base& out) {
 }
 
 
-void filter::propagate_install(filter_installation_guide& guide) const {
+void filter::propagate_install_(filter_installation_guide& guide) const {
 	if(was_installed_) return;
 	for(filter_input_base& in : inputs()) {
 		if(! in.is_connected()) continue;
-		in.edge().origin_filter().propagate_install(guide);
+		in.edge().origin_filter().propagate_install_(guide);
 	}
 	// direct predecessors are installed. now install this
-	this->install_();
+	this->install_(guide);
 	was_installed_ = true;
+}
+
+
+void sink_propagate_install(filter_installation_guide& guide) {
+	propagate_install_(guide);
 }
 
 };

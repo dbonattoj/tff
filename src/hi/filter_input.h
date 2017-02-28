@@ -64,7 +64,7 @@ public:
 	time_window window() const { return window_; }
 	
 	bool is_connected() const override;
-	const filter_edge_base& edge() const override;
+	const edge_base_type& edge() const override;
 	
 	const frame_shape_type& frame_shape() const;
 	

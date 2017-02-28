@@ -101,5 +101,4 @@ void processing_filter<Box>::box_process_(processing_filter_job& job) {
 }
 
 
-
 }

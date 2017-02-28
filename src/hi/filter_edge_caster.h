@@ -1,9 +1,11 @@
 #ifndef TFF_FILTER_EDGE_CASTER_H_
 #define TFF_FILTER_EDGE_CASTER_H_
 
+#include "view_types.h"
+
 namespace tff {
 
-template<Dim, Elem>
+template<std::size_t Dim, typename Elem>
 class filter_null_edge_caster {
 public:
 	using output_frame_shape_type = ndsize<Dim>;

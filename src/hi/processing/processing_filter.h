@@ -90,8 +90,7 @@ public:
 	void set_data_channel_index(data_channel_index_type idx) final override { data_channel_index_ = idx; }
 };
 
-
-};
+}
 
 #include "processing_filter.tcc"
 

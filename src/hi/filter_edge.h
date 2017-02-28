@@ -32,7 +32,7 @@ public:
 	using input_frame_shape_type = ndsize<Input_dim>;
 	using input_full_view_type = filter_input_full_view<Input_dim, Input_elem>;
 	
-	virtual input_full_view_type input_view_from_opaque(const input_ndarray_window_view_type&) const = 0;
+	virtual input_full_view_type input_view_from_opaque(const const_data_window_view_type&) const = 0;
 	virtual input_frame_shape_type input_frame_shape() const = 0;
 };
 
@@ -53,7 +53,7 @@ template<
 	typename Input_elem,
 	typename Caster
 >
-class filter_edge :
+class filter_edge final :
 	public filter_edge_input_base<Input_dim, Input_elem>,
 	public filter_edge_output_base<Output_dim, Output_elem>
 {
@@ -94,7 +94,7 @@ public:
 	input_type& destination() const override { return input_; }
 	filter& destination_filter() const override { return input_.this_filter(); }
 
-	input_full_view_type input_view_from_opaque(const input_ndarray_window_view_type& out_opaque_vw) const override {
+	input_full_view_type input_view_from_opaque(const const_data_window_view_type& out_opaque_vw) const override {
 		output_full_view_type out_vw = from_opaque<Output_dim, const Output_elem>(out_opaque_vw);
 		return caster_.cast_view(out_vw);
 	}

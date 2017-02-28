@@ -21,9 +21,11 @@ private:
 	filter(const filter&) = delete;
 	filter& operator=(const filter&) = delete;
 	
+	void propagate_install_(filter_installation_guide&);
+
 protected:
 	filter() = default;
-	virtual void install_() = 0;
+	virtual void install_(filter_installation_guide&) = 0;
 	
 public:
 	virtual ~filter() = default;
@@ -41,7 +43,7 @@ public:
 	void register_input(filter_input_base&);
 	void register_output(filter_output_base&);
 	
-	void propagate_install(filter_installation_guide&);
+	void sink_propagate_install(filter_installation_guide&);
 };
 
 };

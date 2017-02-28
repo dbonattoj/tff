@@ -1,7 +1,7 @@
 #ifndef TFF_PROCESSING_FILTER_JOB_H_
 #define TFF_PROCESSING_FILTER_JOB_H_
 
-#include "../../nd/nd.h"
+#include "../view_types.h"
 
 namespace tff {
 
@@ -22,16 +22,16 @@ public:
 	time_unit time() const;
 	
 	template<std::size_t Dim, typename Elem>
-	ndarray_timed_wraparound_view<Dim + 1, const Elem> in_full(filter_input<Dim, Elem>&);
+	filter_input_full_view<Dim, Elem> in_full(filter_input<Dim, Elem>&);
 	
 	template<std::size_t Dim, typename Elem>
-	ndarray_view<Dim, const Elem> in(filter_input<Dim, Elem>&);
+	filter_input_view<Dim, Elem> in(filter_input<Dim, Elem>&);
 	
 	template<std::size_t Dim, typename Elem>
-	ndarray_view<Dim, const Elem> in(filter_input<Dim, Elem>&, time_unit t);
+	filter_input_view<Dim, Elem> in(filter_input<Dim, Elem>&, time_unit t);
 	
 	template<std::size_t Dim, typename Elem>
-	ndarray_view<Dim, Elem> out(filter_output<Dim, Elem&>);
+	filter_output_view<Dim, Elem> out(filter_output<Dim, Elem&>);
 	
 	void set_input_activated(filter_input_base&, bool activated);
 	bool is_input_activated(const filter_input_base&) const;
@@ -40,8 +40,8 @@ public:
 	void deactivate(filter_input_base& in) { set_input_activated(in, false); }
 };
 
-#include "processing_filter_job.tcc"
-
 }
+
+#include "processing_filter_job.tcc"
 
 #endif
