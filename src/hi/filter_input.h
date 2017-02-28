@@ -3,6 +3,7 @@
 
 #include "../common.h"
 #include "../nd/ndcoord.h"
+#include "../lo/types.h"
 #include <string>
 #include <memory>
 
@@ -16,6 +17,10 @@ class filter_output_base;
 template<std::size_t Output_dim, typename Output_elem> class filter_output;
 
 class filter_input_base {
+private:
+	filter_input_base(const filter_input_base&) = delete;
+	filter_input_base& operator=(const filter_input_base&) = delete;
+	
 public:
 	virtual const std::string& name() const = 0;
 	virtual time_window window() const = 0;

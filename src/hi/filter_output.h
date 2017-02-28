@@ -17,6 +17,10 @@ template<std::size_t Output_dim, typename Output_elem> class filter_edge_output_
 
 
 class filter_output_base {
+private:
+	filter_output_base(const filter_output_base&) = delete;
+	filter_output_base& operator=(const filter_output_base&) = delete;
+
 public:
 	virtual const std::string& name() const = 0;
 	
@@ -64,7 +68,7 @@ public:
 	bool frame_shape_is_defined() const;
 	const frame_shape_type& frame_shape();
 
-	opaque_ndarray_format ndarray_format() const override;
+	opaque_ndarray_format data_format() const override;
 };
 
 }

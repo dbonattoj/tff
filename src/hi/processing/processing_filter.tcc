@@ -2,14 +2,17 @@
 #include "../../lo/processing/sync_node.h"
 #include "../../lo/processing/async_node.h"
 #include "../filter_installation_guide.h"
+#include <utility>
 
 namespace tff {
 
 
-template<typename Box>
-void processing_filter<Box>::processing_filter() {
+template<typename Box> template<typename... Box_args>
+void processing_filter<Box>::processing_filter(Box_args&&... args) {
+	// filter_box (base class of concrete filter implemented by application), fetches current_in_construction_ in its
+	// constructor. that way the concrete filter class doesn't need this processing_filter as constructor argument
 	current_in_construction_ = this;
-	box_.emplace();
+	box_.emplace(std::forward<Box_args>(args)...);
 	current_in_construction_ = nullptr;
 }
 
@@ -35,10 +38,10 @@ void processing_filter<Box>::install_(filter_installation_guide& guide) {
 		sync_node& nd = nd_graph.add_node<sync_node>(node_name);
 		installed_node = &nd;
 	}
-	guide.set_processing_filter_node(*this, *nd);
+	guide.set_processing_filter_node(*this, *installed_node);
 	
 	// attach processing handler
-	nd.set_handler(*this);
+	installed_node->set_handler(*this);
 	
 	// add inputs & connect
 	for(const filter_input_base& in : inputs()) {
@@ -48,25 +51,47 @@ void processing_filter<Box>::install_(filter_installation_guide& guide) {
 		nd_in.set_window(in.window());
 		
 		filter_edge_base& edge = in.edge();
+		Assert(guide.has_edge(edge), "edge of processing_filter's input already must be guide");
 		node_output& nd_out = guide.edge_node_output(edge);
 		nd_in.connect(nd_out);
 	}
 	
 	// add channel for each output
 	for(const filter_output& out : outputs()) {
-		opaque_ndarray_format frame_format = out.ndarray_format();
-		channel_index_type chan_idx = nd->add_channel(frame_format);
+		// add data channel for the output
+		opaque_ndarray_format data_format = out.data_format();
+		data_channel_index_type chan_idx = nd->add_data_channel(data_format);
 		
 		// add output for each edge (for each output)
 		std::size_t edges_count = out.edges_count();
 		for(std::ptrdiff_t i = 0; i < edges_count; ++i) {
 			const filter_edge_base& edge = out.edge_at(i);
-			node_output& nd_out = nd->add_output(chan_idx);
+			node_output& nd_out = nd->add_data_output(chan_idx);
 			
+			// put (edge, nd_out) into guide, so that successor filter's installed node can connect to it
 			guide.set_edge_node_output(edge, nd_out);
 		}
 	}
+	
+	// if this is sink filter: add pull-only node output to connect to the node_graph's sink_node
+	if(is_sink()) {
+		node_output& pull_nd_out = nd->add_pull_only_output();
+		guide.add_sink_pull_node_output(pull_nd_out);
+	}
 }
+
+
+template<typename Box>
+void processing_filter<Box>::box_pre_process_(processing_filter_job& job) {
+	box_->pre_process(job);
+}
+
+
+template<typename Box>
+void processing_filter<Box>::box_process_(processing_filter_job& job) {
+	box_->process(job);
+}
+
 
 
 }

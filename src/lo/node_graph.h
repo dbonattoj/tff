@@ -15,7 +15,7 @@ class sink_node;
 class node_graph {
 private:
 	unique_ptr_vector<node> nodes_;
-	sink_node& sink_;
+	sink_node* sink_ = nullptr;
 	bool was_setup_ = false;
 	
 	bool launched_ = false;

@@ -42,9 +42,9 @@ auto filter_output<Output_dim, Output_elem>::frame_shape() -> const frame_shape_
 
 
 template<std::size_t Output_dim, typename Output_elem>
-opaque_ndarray_format filter_output<Output_dim, Output_elem>::ndarray_format() const {
+opaque_ndarray_format filter_output<Output_dim, Output_elem>::data_format() const {
 	Assert(frame_shape_is_defined());
-	return default_opaque_ndarray_format<Output_elem>(frame_shape_);
+	return default_opaque_ndarray_format<Output_elem>(*frame_shape_);
 }
 
 }

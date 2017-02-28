@@ -2,14 +2,14 @@
 #define TFF_SINK_NODE_H_
 
 #include "node.h"
-#include "lo/ring/frame_state.h"
+#include "ring/frame_state.h"
 #include <string>
 
 namespace tff {
 
 class sink_node : public node {
 public:
-	sink_node(node_graph&, const std::string& name);
+	explicit sink_node(node_graph&);
 
 	void setup_graph();
 	frame_state process(time_unit);

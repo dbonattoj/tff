@@ -3,9 +3,9 @@
 
 #include <cstddef>
 #include "ring/opaque_ref_format.h"
+#include "ring/frame_state.h"
 #include "../nd/nd.h"
 #include "../rqueue/rqueue.h"
-#include "lo/ring/frame_state.h"
 
 namespace tff {
 

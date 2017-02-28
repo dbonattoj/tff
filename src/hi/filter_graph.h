@@ -12,6 +12,7 @@ private:
 	optional<node_graph> installed_node_graph_;
 	
 public:
+	bool was_setup() const;
 	void setup();
 	
 	time_unit current_time() const;

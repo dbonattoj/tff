@@ -2,6 +2,7 @@
 #define TFF_UTILITY_REF_VECTOR_H_
 
 #include <vector>
+#include <stdexcept>
 #include "indirect_iterator.h"
 
 namespace tff {

@@ -2,8 +2,8 @@
 
 namespace tff {
 
-sink_node::sink_node(node_graph& gr, const std::string& name) :
-	node(gr, name) { }
+sink_node::sink_node(node_graph& gr) :
+	node(gr, "sink") { }
 
 
 frame_state sink_node::process(time_unit t) {

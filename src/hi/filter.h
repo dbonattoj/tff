@@ -15,10 +15,14 @@ private:
 	ref_vector<filter_input_base> inputs_;
 	ref_vector<filter_output_base> outputs_;
 	
-	bool was_setup_ = false;
+	bool was_installed_ = false;
 	std::string name_;
+
+	filter(const filter&) = delete;
+	filter& operator=(const filter&) = delete;
 	
 protected:
+	filter() = default;
 	virtual void install_() = 0;
 	
 public:
