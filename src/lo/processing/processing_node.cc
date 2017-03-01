@@ -143,19 +143,12 @@ void processing_node::setup() {
 }
 
 
-void processing_node::request(time_span span) {
-	node::forward_request_(span);
+void processing_node::queue_request_(time_span span) {
 	queue_->request(span);
 }
 
 
-void processing_node::launch() {
-	node::forward_launch_();
-}
-
-
-void processing_node::stop() {
-	node::forward_stop_();
+void processing_node::queue_stop_() {
 	queue_->stop();
 }
 
@@ -166,11 +159,11 @@ thread_index_type processing_node::input_reader_thread(input_index_type) const {
 
 
 thread_index_type processing_node::request_sender_thread() const {
-	return request_sender().sender_thread();
+	return this->processing_thread();
 }
 
 
-node_read_handle processing_node::read(time_span  span, const node_read_guide& guide) {
+node_read_handle processing_node::read(time_span span, const node_read_guide& guide) {
 	rqueue_type::read_handle queue_handle = queue_->read(span);
 	return node_read_handle(std::move(queue_handle), guide);
 }

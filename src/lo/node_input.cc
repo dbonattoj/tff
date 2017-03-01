@@ -58,6 +58,7 @@ void node_input::set_activated(bool act) {
 
 node_read_handle node_input::read_frame(time_unit t) {
 	time_span span(t - window_.past, t + window_.future + 1);
+	span = truncate(span);
 	return connected_output_->read(span);
 }
 

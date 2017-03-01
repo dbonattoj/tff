@@ -43,12 +43,14 @@ struct time_window {
 	time_unit duration() const { return past + 1 + future; }
 };
 
+time_window operator+(const time_window&, const time_window&);
 
 time_window max(const time_window&, const time_window&);
 time_window min(const time_window&, const time_window&);
 
 time_span expand(const time_span&, const time_window&);
 time_span expand_truncate(const time_span&, const time_window&);
+time_span truncate(time_span);
 
 };
 

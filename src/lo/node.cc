@@ -66,8 +66,8 @@ void node::add_request_receiver_(node& receiver, time_window window) {
 }
 
 
-bool node::accumulated_time_window_to_(const node& target_successor_node, time_window& out_window) const {
-	out_window = time_window(0, 0);
+bool node::accumulated_time_window_to_(const node& target_successor_node, time_window& window) const {
+	window = time_window(0, 0);
 
 	if(this == &target_successor_node) return true;
 	else if(is_sink()) return false;
@@ -77,10 +77,11 @@ bool node::accumulated_time_window_to_(const node& target_successor_node, time_w
 		const node_input& conn_in = out.connected_input();
 		const node& conn_node = conn_in.this_node();
 		
-		time_window partial_win;
+		time_window partial_win(0, 0);
 		bool connected_to_target = conn_node.accumulated_time_window_to_(target_successor_node, partial_win);
+
 		if(connected_to_target) {
-			out_window = max(out_window, max(conn_in.window(), partial_win));
+			window = max(window, partial_win + conn_in.window());
 			any_connected_to_target = true;
 		}
 	}

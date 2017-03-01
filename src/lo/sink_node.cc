@@ -49,14 +49,17 @@ void sink_node::setup() {
 node_input& sink_node::add_input() {
 	return node::add_input_();
 }
-	
+
+
 time_unit sink_node::current_time() const {
 	return current_time_;
 }
 
+
 thread_index_type sink_node::input_reader_thread(input_index_type) const {
 	return graph().root_thread_index();
 }
+
 
 thread_index_type sink_node::request_sender_thread() const {
 	return graph().root_thread_index();

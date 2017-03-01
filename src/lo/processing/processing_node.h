@@ -31,6 +31,9 @@ protected:
 	const rqueue_type& rqueue_() const { return *queue_; }
 	rqueue_type& rqueue_() { return *queue_; }
 	
+	void queue_request_(time_span);
+	void queue_stop_();
+	
 	void setup_ring_(rqueue_variant, std::size_t required_capacity);
 	
 public:
@@ -50,10 +53,6 @@ public:
 	virtual thread_index_type processing_thread() const = 0;
 	
 	void setup() override;
-	
-	void request(time_span) override;
-	void launch() override;
-	void stop() override;
 	
 	time_unit current_time() const { return current_time_; }
 

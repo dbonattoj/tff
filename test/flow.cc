@@ -11,6 +11,8 @@
 
 #include "../src/lo/diagnostic/node_graph_visualization.h"
 
+#define async_node sync_node
+
 using namespace tff;
 
 TEST_CASE("flow") {
@@ -24,7 +26,7 @@ TEST_CASE("flow") {
 			name_(nm), inputs_(inputs) { }
 		
 		static const int& in(processing_job& job, std::ptrdiff_t idx) {
-			return *reinterpret_cast<const int*>(job.input_view(idx)[0].start());
+			return *reinterpret_cast<const int*>(job.input_view(idx).at_time(job.time()).start());
 		}
 		static int& chan(processing_job& job, std::ptrdiff_t idx) {
 			return *reinterpret_cast<int*>(job.data_channel_view(idx).start());

@@ -18,6 +18,8 @@ void sync_node::setup() {
 			throw invalid_node_graph("sync_node outputs must all be on the processing thread");
 	
 	node_request_connection& req_sender = request_sender();
+	if(req_sender.sender_thread() != processing_thread())
+		throw invalid_node_graph("sync_node requests must come from the processing thread");
 	
 	std::size_t capacity = req_sender.window().past + 1 + req_sender.window().future;
 	
@@ -36,5 +38,23 @@ void sync_node::write_(rqueue_type::write_handle& handle) {
 thread_index_type sync_node::processing_thread() const {
 	return outputs().front().reader_thread();
 }
+
+	
+void sync_node::request(time_span span) {
+	node::forward_request_(span);
+	processing_node::queue_request_(span);
+}
+
+
+void sync_node::launch() {
+	node::forward_launch_();
+}
+
+
+void sync_node::stop() {
+	node::forward_stop_();
+	processing_node::queue_stop_();
+}
+
 
 }

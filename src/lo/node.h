@@ -37,7 +37,7 @@ private:
 	
 	bool request_chain_contains_(const node& q_indirect_sender) const;
 	void add_request_receiver_(node& receiver, time_window window);
-	bool accumulated_time_window_to_(const node& target_successor_node, time_window& out_window) const;
+	bool accumulated_time_window_to_(const node& target_successor_node, time_window& window) const;
 	void connect_to_request_sender_();
 	void propagate_request_connections_();
 	

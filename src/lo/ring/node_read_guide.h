@@ -28,6 +28,9 @@ public:
 		return guide;
 	}
 	
+	node_read_guide(const node_read_guide&) = default;
+	node_read_guide& operator=(const node_read_guide&) = default;
+	
 	bool is_pull_only() const { return (kind_ == pull_only_); }
 	
 	bool has_data_channel() const { return (kind_ == data_); }

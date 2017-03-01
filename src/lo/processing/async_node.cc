@@ -35,15 +35,19 @@ void async_node::setup() {
 }
 
 
-void async_node::request(time_span span) {
-	span.end += prefetch_duration_;
-	processing_node::request(span);
+void async_node::launch() {
+	worker_launch_();
 }
 
 
-void async_node::launch() {
-	worker_launch_();
-	processing_node::launch();
+void async_node::stop() {
+	processing_node::queue_stop_();
+}
+
+
+void async_node::request(time_span span) {
+	span.end += prefetch_duration_;
+	processing_node::queue_request_(span);
 }
 
 
@@ -53,15 +57,20 @@ void async_node::transitory_failure_() {
 
 
 void async_node::worker_main_() {
+	node::forward_launch_();
+	
 	for(;;) {
 		bool succeeded;
 		{
 			rqueue_type::write_handle handle = rqueue_().write();
 			if(handle.has_stopped()) break;
+			node::forward_request_(time_span(handle.time(), handle.time() + 1));
 			succeeded = processing_node::write_next_(handle);
 		}
 		if(! succeeded) transitory_failure_();
 	}
+	
+	node::forward_stop_();
 }
 
 

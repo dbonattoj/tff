@@ -19,7 +19,7 @@ public:
 
 	data_channel_index_type add_data_channel(const opaque_ndarray_format& frm) {
 		data_channel_formats_.push_back(frm);
-		return data_channel_formats_.size();
+		return data_channel_formats_.size() - 1;
 	}
 };
 

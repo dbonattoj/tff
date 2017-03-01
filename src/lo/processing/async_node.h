@@ -21,10 +21,12 @@ public:
 	time_unit prefetch_duration() const { return prefetch_duration_; }
 	
 	thread_index_type processing_thread() const override;
+
+	void setup() override;
 	
 	void request(time_span) override;
-	void setup() override;
 	void launch() override;
+	void stop() override;
 };
 
 }
