@@ -18,10 +18,10 @@ auto ring::frame_view(index_type idx, time_unit t) -> frame_type {
 	return frame_type(*this, idx, t);
 }
 auto ring::frame_view(index_type idx, time_unit t) const -> const_frame_type {
-	return const_frame_view(*this, idx, t);
+	return const_frame_type(*this, idx, t);
 }
-auto ring::const_frame_view(index_type idx, time_unit t) -> const_frame_type {
-	return const_frame_view(*this, idx, t);
+auto ring::const_frame_view(index_type idx, time_unit t) const -> const_frame_type {
+	return const_frame_type(*this, idx, t);
 }
 	
 

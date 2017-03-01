@@ -1,7 +1,6 @@
 #include "filter.h"
 #include "filter_installation_guide.h"
 #include "filter_input.h"
-#include "filter_edge.h"
 
 namespace tff {
 
@@ -15,7 +14,7 @@ void filter::register_output(filter_output_base& out) {
 }
 
 
-void filter::propagate_install_(filter_installation_guide& guide) const {
+void filter::propagate_install_(filter_installation_guide& guide) {
 	if(was_installed_) return;
 	for(filter_input_base& in : inputs()) {
 		if(! in.is_connected()) continue;
@@ -27,7 +26,7 @@ void filter::propagate_install_(filter_installation_guide& guide) const {
 }
 
 
-void sink_propagate_install(filter_installation_guide& guide) {
+void filter::sink_propagate_install(filter_installation_guide& guide) {
 	propagate_install_(guide);
 }
 

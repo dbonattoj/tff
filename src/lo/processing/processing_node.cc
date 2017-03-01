@@ -4,6 +4,7 @@
 #include "../node_output.h"
 #include "../ring/node_read_handle.h"
 #include "../../rqueue/rqueue.h"
+#include "processing_handler.h"
 
 namespace tff {
 
@@ -54,7 +55,7 @@ bool processing_node::write_next_(rqueue_type::write_handle& write_handle) {
 	if(! pre_processed) {
 		// handler failure on preprocess:
 		// write failure flag into metadata, and return
-		write_handle.frame().metadata().state = frame_state_flag::failure;
+		write_handle.frame().state().flag = frame_state_flag::failure;
 		return true;
 	}
 	
@@ -74,28 +75,28 @@ bool processing_node::write_next_(rqueue_type::write_handle& write_handle) {
 		if(! read_handle.valid()) return false;
 		
 		// propagate failure, or end of stream flag
-		frame_state input_frame_state = read_handle.state().at_time(current_time_).flag;
+		frame_state_flag input_frame_state = read_handle.state().at_time(current_time_).flag;
 		if(input_frame_state != frame_state_flag::success) {
 			write_handle.frame().state().flag = input_frame_state;
 			return true;
 		}
 		
-		// retain read handle, and add view to job object
-		job.set_input_view(input.index(), read_handle.view());
+		// add view to job object, and retain read handle
+		job.set_input_view(input.index(), read_handle.data());
 		open_read_handles.push_back(std::move(read_handle));
 	}
 	
 	// now let handler process the frame
 	bool processed = call_handler_process(job);
 	if(! processed) {
-		write_handle.frame().state().flag = frame_state::failure;
+		write_handle.frame().state().flag = frame_state_flag::failure;
 		return true;
 	}
 	
 	// close read handles now
 	open_read_handles.clear();
 	
-	write_handle.frame().state().flag = frame_state::success;
+	write_handle.frame().state().flag = frame_state_flag::success;
 	
 	write_handle.commit();
 	
@@ -105,7 +106,7 @@ bool processing_node::write_next_(rqueue_type::write_handle& write_handle) {
 
 void processing_node::setup_ring_(rqueue_variant variant, std::size_t required_capacity) {
 	Assert(! queue_);
-	queue_.emplace<rqueue_type>(variant, required_capacity, format_);
+	queue_.emplace(variant, required_capacity, format_);
 }
 
 
@@ -119,7 +120,7 @@ node_input& processing_node::add_input() {
 }
 
 
-data_channel_index_type processing_node::add_channel(const opaque_ndarray_format& frm) {
+data_channel_index_type processing_node::add_data_channel(const opaque_ndarray_format& frm) {
 	return format_.add_data_channel(frm);
 }
 

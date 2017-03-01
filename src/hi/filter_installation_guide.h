@@ -34,7 +34,7 @@ public:
 	node_output& edge_node_output(const filter_edge_base&) const;
 	
 	void add_sink_pull_node_output(node_output&);
-	const auto& sink_pull_node_outputs() const { return sink_pull_node_outputs_; }
+	auto& sink_pull_node_outputs() { return sink_pull_node_outputs_; }
 };
 
 }

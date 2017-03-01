@@ -12,12 +12,12 @@ processing_job::processing_job(processing_node& nd, time_unit t) :
 	data_channel_views_(nd.data_channels_count()) { }
 
 
-void processing_job::set_input_view(input_index_type idx, const const_data_frame_view_type& view) {
+void processing_job::set_input_view(input_index_type idx, const const_data_window_view_type& view) {
 	input_views_.at(idx).reset(view);
 }
 
 
-void processing_job::set_channel_view(data_channel_index_type idx, const mutable_data_window_view_type& view) {
+void processing_job::set_data_channel_view(data_channel_index_type idx, const mutable_data_frame_view_type& view) {
 	data_channel_views_.at(idx).reset(view);
 }
 

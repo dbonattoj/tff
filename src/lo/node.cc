@@ -1,6 +1,7 @@
 #include "node.h"
 #include "node_input.h"
 #include "node_output.h"
+#include "../utility/exception.h"
 
 namespace tff {
 
@@ -25,10 +26,10 @@ node_output& node::add_output_(const node_read_guide& guide) {
 
 void node::setup() {
 	for(const node_output& out : outputs())
-		if(! out.is_connected()) throw invalid_flow_graph("all node outputs must be connected");
+		if(! out.is_connected()) throw invalid_node_graph("all node outputs must be connected");
 
 	for(const node_input& in : inputs())
-		if(! in.is_connected()) throw invalid_flow_graph("all node inputs must be connected");
+		if(! in.is_connected()) throw invalid_node_graph("all node inputs must be connected");
 }
 
 
@@ -143,6 +144,11 @@ void node::sink_setup_() {
 	Assert(stage_ == stage::initial);
 	propagate_request_connections_();
 	propagate_setup_();
+}
+
+
+node_read_handle node::read(time_span, const node_read_guide&) {
+	throw not_implemented("cannot read from sink_node");
 }
 
 }

@@ -8,8 +8,8 @@
 	class __name__ : public ::tff::exception_derived<__base__> { \
 		using base = ::tff::exception_derived<__base__>; \
 	public: \
-		__name__(const std::string& what) : \
-			base(std::string(#__name__) + ": " + what) { } \
+		explicit __name__(const std::string& what = "") : \
+			base(what.empty() ? std::string(#__name__) : std::string(#__name__) + ": " + what) { } \
 	};
 
 namespace tff {

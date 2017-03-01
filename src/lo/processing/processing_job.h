@@ -13,8 +13,8 @@ class processing_job {
 private:
 	processing_node& node_;
 	time_unit time_;
-	std::vector<const_data_frame_view_type> input_views_;
-	std::vector<mutable_data_window_view_type> data_channel_views_;
+	std::vector<const_data_window_view_type> input_views_;
+	std::vector<mutable_data_frame_view_type> data_channel_views_;
 	
 	bool end_of_stream_ = false;
 	
@@ -24,19 +24,19 @@ private:
 public:
 	processing_job(processing_node&, time_unit t);
 	
-	void set_input_view(input_index_type, const const_data_frame_view_type&);
-	void set_data_channel_view(data_channel_index_type, const mutable_data_window_view_type&);
+	void set_input_view(input_index_type, const const_data_window_view_type&);
+	void set_data_channel_view(data_channel_index_type, const mutable_data_frame_view_type&);
 	
 	time_unit time() const { return time_; }
 	
 	bool has_input_view(input_index_type idx) const
 		{ return ! input_views_.at(idx).is_null(); }
-	const const_data_frame_view_type& input_view(input_index_type idx) const
+	const const_data_window_view_type& input_view(input_index_type idx) const
 		{ return input_views_.at(idx); }
 	
 	bool has_data_channel_view(data_channel_index_type idx) const
 		{ return ! data_channel_views_.at(idx).is_null(); }
-	const mutable_data_window_view_type& data_channel_view(data_channel_index_type idx) const
+	const mutable_data_frame_view_type& data_channel_view(data_channel_index_type idx) const
 		{ return data_channel_views_.at(idx); }
 
 	bool end_of_stream_was_marked() const { return end_of_stream_; }

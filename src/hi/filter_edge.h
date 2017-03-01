@@ -76,6 +76,7 @@ public:
 	using typename base_in::input_full_view_type;
 	using typename base_out::output_type;
 	using typename base_out::output_frame_shape_type;
+	using typename base_out::output_full_view_type;
 	using caster_type = Caster;
 	
 private:

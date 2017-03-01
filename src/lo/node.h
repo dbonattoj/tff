@@ -86,7 +86,7 @@ public:
 	virtual void launch();
 	virtual void stop();
 	
-	virtual node_read_handle read(time_span, const node_read_guide&) = 0;
+	virtual node_read_handle read(time_span, const node_read_guide&);
 };
 
 

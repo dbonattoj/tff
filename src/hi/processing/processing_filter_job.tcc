@@ -1,5 +1,6 @@
 #include "processing_filter_job.h"
 #include "../../lo/processing/processing_job.h"
+#include "../filter_input.h"
 
 namespace tff {
 
@@ -26,7 +27,7 @@ filter_input_view<Dim, Elem> processing_filter_job::in(filter_input<Dim, Elem>& 
 	
 
 template<std::size_t Dim, typename Elem>
-filter_input_view<Dim, Elem> processing_filter_job::in(filter_input<Dim, Elem>&, time_unit t) {
+filter_input_view<Dim, Elem> processing_filter_job::in(filter_input<Dim, Elem>& in, time_unit t) {
 	return in_full(in).at_time(t);
 }
 	

@@ -8,12 +8,15 @@
 namespace tff {
 
 class sink_node : public node {
+private:
+	time_unit current_time_ = 0;
+	
 public:
 	explicit sink_node(node_graph&);
 
 	void setup_graph();
-	frame_state process(time_unit);
-	frame_state process_next();
+	frame_state_flag process(time_unit);
+	frame_state_flag process_next();
 	
 	void setup() override;
 	

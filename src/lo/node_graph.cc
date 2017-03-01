@@ -1,5 +1,5 @@
 #include "node_graph.h"
-#include "processing/sink_node.h"
+#include "sink_node.h"
 
 namespace tff {
 
@@ -49,7 +49,7 @@ void node_graph::run_until(time_unit last_frame) {
 	Assert(was_setup_);
 	if(last_frame < next_run_start_time_) return;
 	launch();
-	frame_state state = sink_->process(next_run_start_time_);
+	frame_state_flag state = sink_->process(next_run_start_time_);
 	while(state == frame_state_flag::success && current_time() < last_frame)
 		state = sink_->process_next();
 }
@@ -64,7 +64,7 @@ void node_graph::run_for(time_unit duration) {
 void node_graph::run() {
 	Assert(was_setup_);
 	launch();
-	frame_state state = sink_->process(next_run_start_time_);
+	frame_state_flag state = sink_->process(next_run_start_time_);
 	while(state == frame_state_flag::success)
 		state = sink_->process_next();
 }

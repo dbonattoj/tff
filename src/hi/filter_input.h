@@ -4,6 +4,7 @@
 #include "../common.h"
 #include "../nd/ndcoord.h"
 #include "../lo/types.h"
+#include "../utility/exception.h"
 #include <string>
 #include <memory>
 

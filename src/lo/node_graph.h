@@ -31,6 +31,7 @@ public:
 	~node_graph();
 	
 	const auto& nodes() const { return nodes_; }
+	sink_node& sink() { Assert(sink_ != nullptr); return *sink_; }
 	const sink_node& sink() const { Assert(sink_ != nullptr); return *sink_; }
 	
 	thread_index_type new_thread_index() { return ++last_thread_index_; }

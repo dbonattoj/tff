@@ -17,7 +17,7 @@ private:
 	processing_job& node_job_;
 	
 public:
-	explicit processing_filter_job(processing_job& job) : node_job_(job) { }
+	explicit processing_filter_job(processing_job& job);
 	
 	time_unit time() const;
 	

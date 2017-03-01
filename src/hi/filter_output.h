@@ -30,7 +30,8 @@ public:
 	virtual std::size_t edges_count() const = 0;
 	virtual const filter_edge_base& edge_at(std::ptrdiff_t) const = 0;
 	
-	virtual opaque_ndarray_format ndarray_format() const = 0;
+	virtual bool frame_shape_is_defined() const = 0;
+	virtual opaque_ndarray_format data_format() const = 0;
 
 	virtual data_channel_index_type data_channel_index() const { throw not_implemented(); }
 	virtual void set_data_channel_index(data_channel_index_type) { throw not_implemented(); }
@@ -67,11 +68,12 @@ public:
 	auto& edges() { return edges_; }
 	const auto& edges() const { return edges_; }
 	std::size_t edges_count() const override;
-	const filter& connected_filter_at_edge(std::ptrdiff_t i) const override;
+	const filter_edge_base& edge_at(std::ptrdiff_t) const override;
+	
 	void edge_has_connected(edge_base_type&);
 	
 	void define_frame_shape(const frame_shape_type&);
-	bool frame_shape_is_defined() const;
+	bool frame_shape_is_defined() const override;
 	const frame_shape_type& frame_shape();
 
 	opaque_ndarray_format data_format() const override;

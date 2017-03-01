@@ -1,4 +1,7 @@
 #include "sink_node.h"
+#include "node_input.h"
+#include "node_output.h"
+#include "node_graph.h"
 
 namespace tff {
 
@@ -6,7 +9,7 @@ sink_node::sink_node(node_graph& gr) :
 	node(gr, "sink") { }
 
 
-frame_state sink_node::process(time_unit t) {
+frame_state_flag sink_node::process(time_unit t) {
 	time_span span(t, t + 1);
 	request(span);
 	
@@ -16,15 +19,15 @@ frame_state sink_node::process(time_unit t) {
 		node_read_handle read_handle = input.read_frame(current_time_);
 		if(! read_handle.valid()) throw flow_synchronization_error("transitory failure in sink node");
 		
-		frame_state input_frame_state_flag = read_handle.state().at_time(current_time_).flag;
-		if(input_frame_state != frame_state_flag::success) return input_frame_state_flag;
+		frame_state_flag input_frame_state = read_handle.state().at_time(current_time_).flag;
+		if(input_frame_state != frame_state_flag::success) return input_frame_state;
 	}
 
 	return frame_state_flag::success;
 }
 
 
-frame_state sink_node::process_next() {
+frame_state_flag sink_node::process_next() {
 	return process(current_time() + 1);
 }
 
@@ -37,7 +40,7 @@ void sink_node::setup_graph() {
 void sink_node::setup() {
 	node::setup();
 	
-	if(outputs().size() != 0) throw invalid_flow_graph("sink_node must have no output");
+	if(outputs().size() != 0) throw invalid_node_graph("sink_node must have no output");
 }
 	
 time_unit sink_node::current_time() const {

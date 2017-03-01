@@ -1,5 +1,6 @@
 #include "filter_graph.h"
 #include "filter_installation_guide.h"
+#include "../lo/sink_node.h"
 #include <exception>
 
 namespace tff {
@@ -15,12 +16,12 @@ void filter_graph::setup() {
 	
 	try {
 		filter_installation_guide guide(*installed_node_graph_);
-		for(const filter& filt : filters())
-			if(filt.is_sink()) filt.propagate_install(guide);
+		for(filter& filt : filters())
+			if(filt.is_sink()) filt.sink_propagate_install(guide);
 		
-		for(const node_output& pull_nd_out : guide.sink_pull_node_outputs()) {
-			node_input& sink_nd_in = installed_node_graph_.sink().add_input();
-			sink_nd_in.connect(pull_nd_out);
+		for(node_output* pull_nd_out : guide.sink_pull_node_outputs()) {
+			node_input& sink_nd_in = installed_node_graph_->sink().add_input();
+			sink_nd_in.connect(*pull_nd_out);
 		}
 			
 		

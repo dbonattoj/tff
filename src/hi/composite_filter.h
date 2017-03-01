@@ -6,7 +6,7 @@
 #include <memory>
 
 namespace tff {
-
+/*
 class composite_filter : public filter {
 private:
 	std::shared_ptr<filter_subgraph> subgraph_;
@@ -23,7 +23,7 @@ public:
 	
 	composite_filter shallow_copy() const;
 };
-
+*/
 }
 
 #endif

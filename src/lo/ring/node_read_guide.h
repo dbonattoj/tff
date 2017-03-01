@@ -13,13 +13,20 @@ private:
 		data_channel_index_type data_channel_index_;
 	};
 	
-	node_read_guide() { }
+	node_read_guide() = default;
 	
 public:
-	static node_read_guide pull_only()
-		{ return {pull_only_, -1}; }
-	static node_read_guide data(data_channel_index_type chan_idx)
-		{ return {data_, chan_idx}; }
+	static node_read_guide pull_only() {
+		node_read_guide guide;
+		guide.kind_ = pull_only_;
+		return guide;
+	}
+	static node_read_guide data(data_channel_index_type chan_idx) {
+		node_read_guide guide;
+		guide.kind_ = data_;
+		guide.data_channel_index_ = chan_idx;
+		return guide;
+	}
 	
 	bool is_pull_only() const { return (kind_ == pull_only_); }
 	

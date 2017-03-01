@@ -19,7 +19,7 @@ thread_index_type async_node::processing_thread() const {
 void async_node::setup() {
 	processing_node::setup();
 
-	if(outputs().size() == 0) throw invalid_flow_graph("async_node must have at least one output");
+	if(outputs().size() == 0) throw invalid_node_graph("async_node must have at least one output");
 	
 	bool different_output_reader_threads = false;
 	thread_index_type first_output_reader_thread = outputs().front().reader_thread();

@@ -1,3 +1,4 @@
+#include "filter_output.h"
 #include "filter_edge.h"
 #include "../nd/nd.h"
 
@@ -6,7 +7,7 @@ namespace tff {
 
 template<std::size_t Output_dim, typename Output_elem>
 void filter_output<Output_dim, Output_elem>::edge_has_connected(edge_base_type& edge) {
-	edge_base_type.push_back(edge);
+	edges_.push_back(edge);
 }
 
 
