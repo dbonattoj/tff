@@ -7,9 +7,9 @@
 
 namespace tff {
 
-class sink_node : public node {
+class sink_node final : public node {
 private:
-	time_unit current_time_ = 0;
+	time_unit current_time_ = -1;
 	
 public:
 	explicit sink_node(node_graph&);
@@ -26,6 +26,11 @@ public:
 
 	thread_index_type input_reader_thread(input_index_type) const final override;
 	thread_index_type request_sender_thread() const final override;
+	
+	void request(time_span) override;
+	void launch() override;
+	void stop() override;
+
 };
 
 }

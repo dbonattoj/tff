@@ -137,23 +137,25 @@ node_output& processing_node::add_pull_only_output() {
 
 void processing_node::setup() {
 	node::setup();
+	
+	if(handler_ == nullptr) throw invalid_node_graph("processing_node handler not set");
+	if(! has_request_sender()) throw invalid_node_graph("processing_node has not request sender");
 }
 
 
 void processing_node::request(time_span span) {
-	if(span.begin < 0) span.begin = 0;
-	node::request(span);
+	node::forward_request_(span);
 	queue_->request(span);
 }
 
 
 void processing_node::launch() {
-	node::launch();
+	node::forward_launch_();
 }
 
 
 void processing_node::stop() {
-	node::stop();
+	node::forward_stop_();
 	queue_->stop();
 }
 
@@ -164,7 +166,7 @@ thread_index_type processing_node::input_reader_thread(input_index_type) const {
 
 
 thread_index_type processing_node::request_sender_thread() const {
-	return this->processing_thread();
+	return request_sender().sender_thread();
 }
 
 

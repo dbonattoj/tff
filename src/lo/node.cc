@@ -33,21 +33,19 @@ void node::setup() {
 }
 
 
-void node::request(time_span span) {
-	if(span.begin < 0) span.begin = 0;
-	
+void node::forward_request_(time_span span) {
 	for(node_request_connection& req : request_receivers_)
-		req.receiver().request(expand(span, req.window()));
+		req.receiver().request(expand_truncate(span, req.window()));
 }
 
 
-void node::launch() {
+void node::forward_launch_() {
 	for(node_request_connection& req : request_receivers_)
 		req.receiver().launch();
 }
 
 
-void node::stop() {
+void node::forward_stop_() {
 	for(node_request_connection& req : request_receivers_)
 		req.receiver().stop();
 }

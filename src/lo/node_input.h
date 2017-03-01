@@ -21,7 +21,7 @@ private:
 	time_window window_;
 	node_output* connected_output_ = nullptr;
 	
-	bool activated_ = false;
+	bool activated_ = true;
 
 	node_input(const node_input&) = delete;
 	node_input& operator=(const node_input&) = delete;

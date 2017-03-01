@@ -14,11 +14,17 @@ time_window min(const time_window& a, const time_window& b) {
 }
 
 
-time_span expand(const time_span& span, const time_window& win, bool truncate_begin) {
+time_span expand(const time_span& span, const time_window& win) {
 	time_unit begin = span.begin - win.past;
 	time_unit end = span.end + win.future;
-	if(truncate_begin && (begin < 0)) begin = 0;
 	return time_span(begin, end);
+}
+
+
+time_span expand_truncate(const time_span& span, const time_window& win) {
+	time_span expanded_span = expand(span, win);
+	if(expanded_span.begin < 0) expanded_span.begin = 0;
+	return expanded_span;
 }
 
 

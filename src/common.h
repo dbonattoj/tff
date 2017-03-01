@@ -47,7 +47,8 @@ struct time_window {
 time_window max(const time_window&, const time_window&);
 time_window min(const time_window&, const time_window&);
 
-time_span expand(const time_span&, const time_window&, bool truncate_begin = true);
+time_span expand(const time_span&, const time_window&);
+time_span expand_truncate(const time_span&, const time_window&);
 
 };
 

@@ -10,6 +10,8 @@ sink_node::sink_node(node_graph& gr) :
 
 
 frame_state_flag sink_node::process(time_unit t) {
+	current_time_ = t;
+	
 	time_span span(t, t + 1);
 	request(span);
 	
@@ -42,6 +44,11 @@ void sink_node::setup() {
 	
 	if(outputs().size() != 0) throw invalid_node_graph("sink_node must have no output");
 }
+
+
+node_input& sink_node::add_input() {
+	return node::add_input_();
+}
 	
 time_unit sink_node::current_time() const {
 	return current_time_;
@@ -54,6 +61,22 @@ thread_index_type sink_node::input_reader_thread(input_index_type) const {
 thread_index_type sink_node::request_sender_thread() const {
 	return graph().root_thread_index();
 }
+
+
+void sink_node::request(time_span span) {
+	node::forward_request_(span);
+}
+
+
+void sink_node::launch() {
+	node::forward_launch_();
+}
+
+
+void sink_node::stop() {
+	node::forward_stop_();
+}
+
 
 
 }

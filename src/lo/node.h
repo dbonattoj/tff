@@ -56,6 +56,10 @@ protected:
 	
 	void sink_setup_();
 	
+	void forward_request_(time_span);
+	void forward_launch_();
+	void forward_stop_();
+	
 public:
 	virtual ~node();
 	
@@ -82,9 +86,9 @@ public:
 	virtual thread_index_type input_reader_thread(input_index_type) const = 0;
 	virtual thread_index_type request_sender_thread() const = 0;
 	
-	virtual void request(time_span);
-	virtual void launch();
-	virtual void stop();
+	virtual void request(time_span) = 0;
+	virtual void launch() = 0;
+	virtual void stop() = 0;
 	
 	virtual node_read_handle read(time_span, const node_read_guide&);
 };

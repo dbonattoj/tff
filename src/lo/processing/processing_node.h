@@ -50,6 +50,7 @@ public:
 	virtual thread_index_type processing_thread() const = 0;
 	
 	void setup() override;
+	
 	void request(time_span) override;
 	void launch() override;
 	void stop() override;

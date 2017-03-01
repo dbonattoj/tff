@@ -4,11 +4,11 @@
 
 namespace tff {
 
-processing_filter_job::processing_filter_job(processing_job& job) :
+inline processing_filter_job::processing_filter_job(processing_job& job) :
 	node_job_(job) { }
 
 
-time_unit processing_filter_job::time() const {
+inline time_unit processing_filter_job::time() const {
 	return node_job_.time();
 }
 
