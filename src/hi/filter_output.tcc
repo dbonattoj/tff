@@ -4,7 +4,6 @@
 
 namespace tff {
 
-
 template<std::size_t Output_dim, typename Output_elem>
 void filter_output<Output_dim, Output_elem>::edge_has_connected(edge_base_type& edge) {
 	edges_.push_back(edge);

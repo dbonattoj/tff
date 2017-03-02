@@ -58,7 +58,7 @@ void node_graph::run_until(time_unit last_frame) {
 
 void node_graph::run_for(time_unit duration) {
 	Assert(was_setup_);
-	run_until(current_time() + duration);
+	run_until(next_run_start_time_ + duration);
 }
 
 

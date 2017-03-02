@@ -40,13 +40,13 @@ TEST_CASE("flow") {
 		
 		void handler_process_(processing_job& job) override {
 			std::lock_guard<std::mutex> lock(out_lock);
-			std::cout << name_ << " does " << job.time() << std::endl;
+		//	std::cout << name_ << " does " << job.time() << std::endl;
 			if(end_time != -1 && job.time() >= end_time) {
 				job.mark_end_of_stream();
 				return;
 			}
 			for(std::ptrdiff_t i = 0; i < inputs_; ++i) if(in(job, i) != job.time()) {
-				std::cerr << name_ << " wrong input" << std::endl;
+				std::cerr << name_ << " failed" << std::endl;
 				std::terminate();
 			}
 			chan(job, 0) = job.time();
@@ -59,6 +59,7 @@ TEST_CASE("flow") {
 	
 	auto& Sin1 = gr.sink().add_input();
 	auto& Sin2 = gr.sink().add_input();
+	auto& Sin3 = gr.sink().add_input();
 
 	auto& A = gr.add_node<sync_node>("A");
 	handler Ahand("A", 1);
@@ -98,6 +99,7 @@ TEST_CASE("flow") {
 	data_channel_index_type Fchan = F.add_data_channel(frm);
 	auto& Fout1 = F.add_data_output(Fchan);
 	auto& Fout2 = F.add_data_output(Fchan);
+	auto& Fout3 = F.add_data_output(Fchan);
 
 	auto& E = gr.add_node<sync_node>("E");
 	handler Ehand("E", 1);
@@ -127,6 +129,7 @@ TEST_CASE("flow") {
 	Din1.connect(Fout2);
 	Din2.connect(Gout1);
 	Ein.connect(Gout2);
+	Sin3.connect(Fout3);
 	
 	Fhand.end_time = 100;
 	
@@ -134,10 +137,9 @@ TEST_CASE("flow") {
 	
 	export_node_graph_visualization(gr, "lo.gv");
 
-	for(;;) {
-		gr.run();
-		gr.seek(50);
-		gr.run();
-	}
-		
+	gr.run();
+	gr.seek(50);
+	gr.run_for(10);
+	gr.seek(70);
+	gr.run();
 }

@@ -27,6 +27,8 @@ frame_state_flag sink_node::process(time_unit t) {
 		if(input_frame_state != frame_state_flag::success) return input_frame_state;
 	}
 
+	std::cout << "did "<< t << std::endl;
+	
 	return frame_state_flag::success;
 }
 

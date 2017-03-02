@@ -19,15 +19,28 @@ template<std::size_t Output_dim, typename Output_elem> class filter_output;
 
 class filter_input_base {
 private:
+	filter& filter_;
+	std::string name_;
+	time_window window_;
+
 	filter_input_base(const filter_input_base&) = delete;
 	filter_input_base& operator=(const filter_input_base&) = delete;
+	
+protected:
+	explicit filter_input_base(filter&);
 	
 public:
 	virtual ~filter_input_base() = default;
 	
-	virtual const std::string& name() const = 0;
-	virtual time_window window() const = 0;
+	filter& this_filter() { return filter_; }
+	const filter& this_filter() const { return filter_; }
 
+	void set_name(const std::string& name) { name_ = name; }
+	const std::string& name() const { return name_; }
+	
+	void set_window(time_window win) { window_ = win; }
+	time_window window() const { return window_; }
+	
 	virtual bool is_connected() const = 0;
 	virtual filter_edge_base& edge() const = 0;
 	
@@ -46,23 +59,11 @@ public:
 	using frame_shape_type = ndsize<Input_dim>;
 	
 private:
-	filter& filter_;
-	std::string name_;
 	std::unique_ptr<edge_base_type> edge_;
-	time_window window_;
 	
 public:
 	explicit filter_input(filter& filt) :
-		filter_(filt) { }
-	
-	filter& this_filter() { return filter_; }
-	const filter& this_filter() const { return filter_; }
-
-	void set_name(const std::string& name) { name_ = name; }
-	const std::string& name() const override { return name_; }
-	
-	void set_window(time_window win) { window_ = win; }
-	time_window window() const { return window_; }
+		filter_input_base(filt) { }
 	
 	bool is_connected() const override;
 	const edge_base_type& edge() const override;
