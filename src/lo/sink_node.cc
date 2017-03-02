@@ -21,7 +21,6 @@ frame_state_flag sink_node::process(time_unit t) {
 		if(! input.is_activated()) continue;
 		
 		node_read_handle read_handle = input.read_frame(current_time_);
-		if(! read_handle.valid()) std::cout << "sink trans fail reading " << current_time_ << " from " << input.connected_node().name() << std::endl;
 		if(! read_handle.valid()) throw flow_synchronization_error("transitory failure in sink node");
 		
 		frame_state_flag input_frame_state = read_handle.state().at_time(current_time_).flag;

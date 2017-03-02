@@ -33,8 +33,11 @@ void sync_node::setup() {
 
 void sync_node::write_(rqueue_type::write_handle& handle) {
 	if(handle.has_stopped()) return;
+
+	//std::cout << name() << ":" << &handle.frame().state().flag << std::endl;
+	handle.frame().state().flag = frame_state_flag::failure;
+
 	bool write_success = processing_node::write_next_(handle);
-	if(! write_success) std::cout << name() << " write fail " << handle.time() << std::endl;
 	if(write_success) handle.commit();
 }
 

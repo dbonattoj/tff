@@ -10,6 +10,8 @@
 #include <vector>
 #include <type_traits>
 
+#include <iostream>
+
 namespace tff {
 
 /// Circular buffer containing a fixed number of frames.

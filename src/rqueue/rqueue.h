@@ -180,6 +180,10 @@ public:
 		if(queue_ != nullptr) queue_->base_->end_write(true);
 		committed_ = true;
 	}
+	void cancel() {
+		if(queue_ != nullptr) queue_->base_->end_write(false);
+		committed_ = true;
+	}
 	
 	bool was_committed() const { return committed_; }
 	bool linked_to_queue() const { return (queue_ != nullptr); }

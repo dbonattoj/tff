@@ -57,6 +57,7 @@ bool processing_node::write_next_(rqueue_type::write_handle& write_handle) {
 	if(! pre_processed) {
 		// handler failure on preprocess:
 		// write failure flag into metadata, and return
+		std::cout << "preprocess fail" << std::endl;
 		write_handle.frame().state().flag = frame_state_flag::failure;
 		return true;
 	}
@@ -78,8 +79,8 @@ bool processing_node::write_next_(rqueue_type::write_handle& write_handle) {
 		
 		// propagate failure, or end of stream flag
 		frame_state_flag input_frame_state = read_handle.state().at_time(current_time_).flag;
+		Assert(input_frame_state != frame_state_flag::undefined);
 		if(input_frame_state != frame_state_flag::success) {
-			std::cout << "nonsuccess flag at " << current_time_ << std::endl;
 			write_handle.frame().state().flag = input_frame_state;
 			return true;
 		}
@@ -92,6 +93,7 @@ bool processing_node::write_next_(rqueue_type::write_handle& write_handle) {
 	// now let handler process the frame
 	bool processed = call_handler_process(job);
 	if(! processed) {
+		std::cout << "process fail" << std::endl;
 		write_handle.frame().state().flag = frame_state_flag::failure;
 		return true;
 	} else if(job.end_of_stream_was_marked()) {
@@ -103,8 +105,6 @@ bool processing_node::write_next_(rqueue_type::write_handle& write_handle) {
 	open_read_handles.clear();
 	
 	write_handle.frame().state().flag = frame_state_flag::success;
-	
-	write_handle.commit();
 	
 	return true;
 }

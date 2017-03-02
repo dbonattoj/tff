@@ -11,7 +11,11 @@
 
 #include "../src/lo/diagnostic/node_graph_visualization.h"
 
+#include <mutex>
+
 using namespace tff;
+
+static std::mutex out_lock;
 
 TEST_CASE("flow") {
 	class handler : public processing_handler {
@@ -35,12 +39,16 @@ TEST_CASE("flow") {
 		void handler_pre_process_(processing_job&) override { }
 		
 		void handler_process_(processing_job& job) override {
-			std::cout << name_ << "(" << job.time() << ")" << std::endl;
+			std::lock_guard<std::mutex> lock(out_lock);
+			std::cout << name_ << " does " << job.time() << std::endl;
 			if(end_time != -1 && job.time() >= end_time) {
 				job.mark_end_of_stream();
 				return;
 			}
-			for(std::ptrdiff_t i = 0; i < inputs_; ++i) REQUIRE(in(job, i) == job.time());
+			for(std::ptrdiff_t i = 0; i < inputs_; ++i) if(in(job, i) != job.time()) {
+				std::cerr << name_ << " wrong input" << std::endl;
+				std::terminate();
+			}
 			chan(job, 0) = job.time();
 		}
 	};
@@ -120,12 +128,16 @@ TEST_CASE("flow") {
 	Din2.connect(Gout1);
 	Ein.connect(Gout2);
 	
-	Fhand.end_time = 10;
+	Fhand.end_time = 100;
 	
 	gr.setup();
 	
 	export_node_graph_visualization(gr, "lo.gv");
 
-	gr.run();
-	
+	for(;;) {
+		gr.run();
+		gr.seek(50);
+		gr.run();
+	}
+		
 }

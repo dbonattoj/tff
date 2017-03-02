@@ -4,6 +4,8 @@
 #include "../../rqueue/rqueue.h"
 #include <thread>
 
+#include <iostream>
+
 namespace tff {
 
 async_node::async_node(node_graph& gr, const std::string& name) :
@@ -61,14 +63,24 @@ void async_node::worker_main_() {
 	
 	for(;;) {
 		bool succeeded;
-		{
-			rqueue_type::write_handle handle = rqueue_().write();
-			if(handle.has_stopped()) break;
-			node::forward_request_(time_span(handle.time(), handle.time() + 1));
-			succeeded = processing_node::write_next_(handle);
-			if(succeeded) handle.commit();
+		
+		rqueue_type::write_handle handle = rqueue_().write();
+		
+		if(handle.has_stopped()) break;
+		
+		//std::cout << name() << ":" << &handle.frame().state().flag << std::endl;
+		handle.frame().state().flag = frame_state_flag::failure;
+
+		
+		node::forward_request_(time_span(handle.time(), handle.time() + 1));
+		
+		succeeded = processing_node::write_next_(handle);
+		if(succeeded) {
+			handle.commit();
+		} else {
+			transitory_failure_();
+			handle.cancel();
 		}
-		if(! succeeded) transitory_failure_();
 	}
 	
 	node::forward_stop_();

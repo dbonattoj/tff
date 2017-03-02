@@ -1,5 +1,6 @@
 #include "node_graph.h"
 #include "sink_node.h"
+#include <iostream>
 
 namespace tff {
 
@@ -67,6 +68,8 @@ void node_graph::run() {
 	frame_state_flag state = sink_->process(next_run_start_time_);
 	while(state == frame_state_flag::success)
 		state = sink_->process_next();
+	
+	std::cout << "final state: " << (int)state << std::endl;
 }
 
 
