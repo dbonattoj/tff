@@ -11,8 +11,6 @@
 
 #include "../src/lo/diagnostic/node_graph_visualization.h"
 
-#define async_node sync_node
-
 using namespace tff;
 
 TEST_CASE("flow") {
@@ -22,6 +20,8 @@ TEST_CASE("flow") {
 		std::size_t inputs_;
 		
 	public:
+		time_unit end_time = -1;
+
 		handler(const std::string& nm, std::size_t inputs) :
 			name_(nm), inputs_(inputs) { }
 		
@@ -36,6 +36,10 @@ TEST_CASE("flow") {
 		
 		void handler_process_(processing_job& job) override {
 			std::cout << name_ << "(" << job.time() << ")" << std::endl;
+			if(end_time != -1 && job.time() >= end_time) {
+				job.mark_end_of_stream();
+				return;
+			}
 			for(std::ptrdiff_t i = 0; i < inputs_; ++i) REQUIRE(in(job, i) == job.time());
 			chan(job, 0) = job.time();
 		}
@@ -116,10 +120,12 @@ TEST_CASE("flow") {
 	Din2.connect(Gout1);
 	Ein.connect(Gout2);
 	
+	Fhand.end_time = 10;
+	
 	gr.setup();
 	
 	export_node_graph_visualization(gr, "lo.gv");
 
-	gr.run_for(10);
+	gr.run();
 	
 }

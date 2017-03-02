@@ -66,6 +66,7 @@ void async_node::worker_main_() {
 			if(handle.has_stopped()) break;
 			node::forward_request_(time_span(handle.time(), handle.time() + 1));
 			succeeded = processing_node::write_next_(handle);
+			if(succeeded) handle.commit();
 		}
 		if(! succeeded) transitory_failure_();
 	}

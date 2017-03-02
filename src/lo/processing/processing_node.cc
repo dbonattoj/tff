@@ -6,6 +6,8 @@
 #include "../../rqueue/rqueue.h"
 #include "processing_handler.h"
 
+#include <iostream>
+
 namespace tff {
 
 
@@ -77,6 +79,7 @@ bool processing_node::write_next_(rqueue_type::write_handle& write_handle) {
 		// propagate failure, or end of stream flag
 		frame_state_flag input_frame_state = read_handle.state().at_time(current_time_).flag;
 		if(input_frame_state != frame_state_flag::success) {
+			std::cout << "nonsuccess flag at " << current_time_ << std::endl;
 			write_handle.frame().state().flag = input_frame_state;
 			return true;
 		}
@@ -90,6 +93,9 @@ bool processing_node::write_next_(rqueue_type::write_handle& write_handle) {
 	bool processed = call_handler_process(job);
 	if(! processed) {
 		write_handle.frame().state().flag = frame_state_flag::failure;
+		return true;
+	} else if(job.end_of_stream_was_marked()) {
+		write_handle.frame().state().flag = frame_state_flag::end_of_stream;
 		return true;
 	}
 	
