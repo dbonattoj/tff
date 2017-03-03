@@ -23,13 +23,16 @@ void filter_graph::setup() {
 			node_input& sink_nd_in = installed_node_graph_->sink().add_input();
 			sink_nd_in.connect(*pull_nd_out);
 		}
-			
+		
+		installed_node_graph_->setup();
+		
 		
 	} catch(const std::exception&) {
 		installed_node_graph_.reset();
 		throw;
 	}
 }
+
 
 
 time_unit filter_graph::current_time() const {

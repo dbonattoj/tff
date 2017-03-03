@@ -4,6 +4,7 @@
 #include "../common.h"
 #include "filter_subgraph.h"
 #include "../lo/node_graph.h"
+#include <set>
 
 namespace tff {
 

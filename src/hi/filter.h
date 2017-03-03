@@ -17,6 +17,7 @@ private:
 	
 	bool was_installed_ = false;
 	std::string name_;
+	bool sink_ = false;
 
 	filter(const filter&) = delete;
 	filter& operator=(const filter&) = delete;
@@ -33,12 +34,13 @@ public:
 	void set_name(const std::string& nm) { name_ = nm; }
 	const std::string& name() const { return name_; }
 	
+	void set_is_sink(bool snk) { sink_ = snk; }
+	bool is_sink() const { return sink_; }
+	
 	auto& inputs() { return inputs_; }
 	auto& outputs() { return outputs_; }
 	const auto& inputs() const { return inputs_; }
 	const auto& outputs() const { return outputs_; }
-	bool is_source() const { return inputs_.empty(); }
-	bool is_sink() const { return outputs_.empty(); }
 	
 	void register_input(filter_input_base&);
 	void register_output(filter_output_base&);
