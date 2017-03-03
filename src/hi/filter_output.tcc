@@ -20,6 +20,10 @@ template<std::size_t Output_dim, typename Output_elem>
 const filter_edge_base& filter_output<Output_dim, Output_elem>::edge_at(std::ptrdiff_t i) const {
 	return edges_.at(i);
 }
+template<std::size_t Output_dim, typename Output_elem>
+filter_edge_base& filter_output<Output_dim, Output_elem>::edge_at(std::ptrdiff_t i) {
+	return edges_.at(i);
+}
 
 
 template<std::size_t Output_dim, typename Output_elem>
@@ -35,9 +39,9 @@ bool filter_output<Output_dim, Output_elem>::frame_shape_is_defined() const {
 
 
 template<std::size_t Output_dim, typename Output_elem>
-auto filter_output<Output_dim, Output_elem>::frame_shape() -> const frame_shape_type& {
+auto filter_output<Output_dim, Output_elem>::frame_shape() const -> const frame_shape_type& {
 	Assert(frame_shape_is_defined());
-	return *frame_shape;
+	return *frame_shape_;
 }
 
 

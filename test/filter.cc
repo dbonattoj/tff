@@ -8,6 +8,7 @@
 using namespace tff;
 
 class test_filter : public filter_box {
+public:
 	input<1, int> in;
 	output<1, int> out;
 	
@@ -25,6 +26,6 @@ TEST_CASE("filter") {
 	
 	auto& a = graph.add_processing_filter<test_filter>();
 	auto& b = graph.add_processing_filter<test_filter>();
-	b.in.connect(a.out);
+	b->in.connect(a->out);
 	
 }

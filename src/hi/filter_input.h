@@ -5,14 +5,13 @@
 #include "../nd/ndcoord.h"
 #include "../lo/types.h"
 #include "../utility/exception.h"
+#include "filter_edge.h"
 #include <string>
 #include <memory>
 
 namespace tff {
 
 class filter;
-class filter_edge_base;
-template<std::size_t Input_dim, typename Input_elem> class filter_edge_input_base;
 
 class filter_output_base;
 template<std::size_t Output_dim, typename Output_elem> class filter_output;
@@ -42,7 +41,8 @@ public:
 	time_window window() const { return window_; }
 	
 	virtual bool is_connected() const = 0;
-	virtual filter_edge_base& edge() const = 0;
+	virtual const filter_edge_base& edge() const = 0;
+	virtual filter_edge_base& edge() = 0;
 	
 	virtual input_index_type input_index() const { throw not_implemented(); }
 	virtual void set_input_index(input_index_type) { throw not_implemented(); }
@@ -67,8 +67,9 @@ public:
 	
 	bool is_connected() const override;
 	const edge_base_type& edge() const override;
+	edge_base_type& edge() override;
 	
-	const frame_shape_type& frame_shape() const;
+	frame_shape_type frame_shape() const;
 	
 	void connect(filter_output<Input_dim, Input_elem>&);
 	

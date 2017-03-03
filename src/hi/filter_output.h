@@ -39,6 +39,7 @@ public:
 	
 	virtual std::size_t edges_count() const = 0;
 	virtual const filter_edge_base& edge_at(std::ptrdiff_t) const = 0;
+	virtual filter_edge_base& edge_at(std::ptrdiff_t) = 0;
 	
 	virtual bool frame_shape_is_defined() const = 0;
 	virtual opaque_ndarray_format data_format() const = 0;
@@ -70,12 +71,13 @@ public:
 	const auto& edges() const { return edges_; }
 	std::size_t edges_count() const override;
 	const filter_edge_base& edge_at(std::ptrdiff_t) const override;
+	filter_edge_base& edge_at(std::ptrdiff_t) override;
 	
 	void edge_has_connected(edge_base_type&);
 	
 	void define_frame_shape(const frame_shape_type&);
 	bool frame_shape_is_defined() const override;
-	const frame_shape_type& frame_shape();
+	const frame_shape_type& frame_shape() const;
 
 	opaque_ndarray_format data_format() const override;
 };

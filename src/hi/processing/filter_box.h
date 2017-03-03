@@ -5,7 +5,7 @@
 
 namespace tff {
 
-class filter_processing_job;
+class processing_filter_job;
 
 /// Base class for application filter implementation.
 class filter_box {
@@ -19,9 +19,10 @@ protected:
 	filter_box();
 	virtual ~filter_box() = default;
 	
+public:
 	void setup() { }
-	void pre_process(filter_processing_job&) { }
-	void process(filter_processing_job&) { }
+	void pre_process(processing_filter_job&) { }
+	void process(processing_filter_job&) { }
 };
 
 }

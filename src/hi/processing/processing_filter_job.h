@@ -31,7 +31,7 @@ public:
 	filter_input_view<Dim, Elem> in(filter_input<Dim, Elem>&, time_unit t);
 	
 	template<std::size_t Dim, typename Elem>
-	filter_output_view<Dim, Elem> out(filter_output<Dim, Elem&>);
+	filter_output_view<Dim, Elem> out(filter_output<Dim, Elem>&);
 	
 	void set_input_activated(filter_input_base&, bool activated);
 	bool is_input_activated(const filter_input_base&) const;

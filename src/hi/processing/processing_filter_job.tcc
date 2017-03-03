@@ -22,19 +22,19 @@ filter_input_full_view<Dim, Elem> processing_filter_job::in_full(filter_input<Di
 
 template<std::size_t Dim, typename Elem>
 filter_input_view<Dim, Elem> processing_filter_job::in(filter_input<Dim, Elem>& in) {
-	return in_full(in).at_time(time());
+	return in_full(in).at_time(time()).non_wraparound();
 }
 	
 
 template<std::size_t Dim, typename Elem>
 filter_input_view<Dim, Elem> processing_filter_job::in(filter_input<Dim, Elem>& in, time_unit t) {
-	return in_full(in).at_time(t);
+	return in_full(in).at_time(t).non_wraparound();
 }
 	
 
 template<std::size_t Dim, typename Elem>
-filter_output_view<Dim, Elem> processing_filter_job::out(filter_output<Dim, Elem&> out) {
-	auto opaque_vw = node_job_.data_channel_view(out);
+filter_output_view<Dim, Elem> processing_filter_job::out(filter_output<Dim, Elem>& out) {
+	auto opaque_vw = node_job_.data_channel_view(out.data_channel_index());
 	return from_opaque<Dim, Elem>(opaque_vw);
 }
 	

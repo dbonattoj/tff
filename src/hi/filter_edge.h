@@ -17,11 +17,19 @@ template<std::size_t Output_dim, typename Output_elem> class filter_output;
 
 class filter_edge_base {
 public:
-	virtual ~filter_edge_base() = 0;
-	virtual filter_output_base& origin() const = 0;
-	virtual filter& origin_filter() const = 0;
-	virtual filter_input_base& destination() const = 0;
-	virtual filter& destination_filter() const = 0;
+	virtual ~filter_edge_base() = default;
+	
+	virtual const filter_output_base& origin() const = 0;
+	virtual filter_output_base& origin() = 0;
+	
+	const filter& origin_filter() const;
+	filter& origin_filter();
+	
+	virtual const filter_input_base& destination() const = 0;
+	virtual filter_input_base& destination() = 0;
+	
+	const filter& destination_filter() const;
+	filter& destination_filter();
 };
 
 
@@ -32,6 +40,16 @@ public:
 	using input_frame_shape_type = ndsize<Input_dim>;
 	using input_full_view_type = filter_input_full_view<Input_dim, Input_elem>;
 	
+private:
+	input_type& input_;
+	
+protected:
+	explicit filter_edge_input_base(input_type& input) : input_(input) { }
+	
+public:
+	const input_type& destination() const override { return input_; }
+	input_type& destination() override { return input_; }
+	
 	virtual input_full_view_type input_view_from_opaque(const const_data_window_view_type&) const = 0;
 	virtual input_frame_shape_type input_frame_shape() const = 0;
 };
@@ -40,12 +58,23 @@ public:
 template<std::size_t Output_dim, typename Output_elem>
 class filter_edge_output_base : public virtual filter_edge_base {
 public:
-	using output_type = filter_input<Output_dim, Output_elem>;
+	using output_type = filter_output<Output_dim, Output_elem>;
 	using output_frame_shape_type = ndsize<Output_dim>;
 	using output_full_view_type = filter_input_full_view<Output_dim, Output_elem>;
+	
+private:
+	output_type& output_;
+	
+protected:
+	explicit filter_edge_output_base(output_type& output) : output_(output) { }
+	
+public:
+	const output_type& origin() const override { return output_; }
+	output_type& origin() override { return output_; }
 };
 
 
+/// Edge connecting a filter output (_origin_) to a filter input (_destination_).
 template<
 	std::size_t Output_dim,
 	typename Output_elem,
@@ -54,8 +83,8 @@ template<
 	typename Caster
 >
 class filter_edge final :
-	public filter_edge_input_base<Input_dim, Input_elem>,
-	public filter_edge_output_base<Output_dim, Output_elem>
+	public filter_edge_output_base<Output_dim, Output_elem>,
+	public filter_edge_input_base<Input_dim, Input_elem>
 {
 	using base_in = filter_edge_input_base<Input_dim, Input_elem>;
 	using base_out = filter_edge_output_base<Output_dim, Output_elem>;
@@ -71,37 +100,28 @@ class filter_edge final :
 	*/
 
 public:
-	using typename base_in::input_type;
-	using typename base_in::input_frame_shape_type;
-	using typename base_in::input_full_view_type;
 	using typename base_out::output_type;
 	using typename base_out::output_frame_shape_type;
 	using typename base_out::output_full_view_type;
+	using typename base_in::input_type;
+	using typename base_in::input_frame_shape_type;
+	using typename base_in::input_full_view_type;
 	using caster_type = Caster;
 	
 private:
-	output_type& output_;
-	input_type& input_;
 	caster_type caster_;
 	
-protected:
-	filter_edge(output_type& out, input_type& in, const caster_type& caster = caster_type()) :
-		output_(out), input_(in), caster_(caster) { }
-	
 public:
-	output_type& origin() const override { return output_; }
-	filter& origin_filter() const override { return output_.this_filter(); }
-
-	input_type& destination() const override { return input_; }
-	filter& destination_filter() const override { return input_.this_filter(); }
-
+	filter_edge(output_type& out, input_type& in, const caster_type& caster = caster_type()) :
+		base_out(out), base_in(in), caster_(caster) { }
+	
 	input_full_view_type input_view_from_opaque(const const_data_window_view_type& out_opaque_vw) const override {
-		output_full_view_type out_vw = from_opaque<Output_dim, const Output_elem>(out_opaque_vw);
+		output_full_view_type out_vw = from_opaque<Output_dim + 1, const Output_elem>(out_opaque_vw);
 		return caster_.cast_view(out_vw);
 	}
 	
 	input_frame_shape_type input_frame_shape() const override {
-		output_frame_shape_type output_shp = output_.frame_shape();
+		output_frame_shape_type output_shp = base_out::origin().frame_shape();
 		return caster_.cast_frame_shape(output_shp);
 	}
 };
