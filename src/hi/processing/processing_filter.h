@@ -52,6 +52,9 @@ public:
 	const box_type& box() const { return *box_; }
 	box_type& box() { return *box_; }
 	
+	void set_asynchronous(bool async) { asynchronous_ = async; }
+	bool is_asynchronous() const { return asynchronous_; }
+	
 	const box_type& operator*() const { return box(); }
 	box_type& operator*() { return box(); }
 	const box_type* operator->() const { return &box(); }

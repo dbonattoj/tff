@@ -15,6 +15,11 @@ void filter_graph::setup() {
 	installed_node_graph_.emplace();
 	
 	try {
+		// setup filters source-to-sink
+		for(filter& filt : filters())
+			if(filt.is_sink()) filt.sink_propagate_setup();
+
+		// install filters sink-to-source
 		filter_installation_guide guide(*installed_node_graph_);
 		for(filter& filt : filters())
 			if(filt.is_sink()) filt.sink_propagate_install(guide);
@@ -24,6 +29,7 @@ void filter_graph::setup() {
 			sink_nd_in.connect(*pull_nd_out);
 		}
 		
+		// setup the node graph
 		installed_node_graph_->setup();
 		
 		

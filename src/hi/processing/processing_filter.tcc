@@ -23,6 +23,14 @@ processing_filter<Box>::processing_filter(Box_args&&... args) {
 
 template<typename Box>
 void processing_filter<Box>::install_(filter_installation_guide& guide) {
+	
+	/*
+	 *
+	 * TODO: change: now called sink-to-source
+	 * + add setup_()
+	 *
+	 * */
+	 */
 	// setup filter box
 	box_->setup();
 	for(const filter_output_base& out : outputs())

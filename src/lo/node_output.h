@@ -25,7 +25,7 @@ private:
 	
 public:
 	node_output(node& nd, output_index_type idx, const node_read_guide& guide) :
-		node_(nd), index_(idx), guide_(guide) { }
+		node_(nd), index_(idx), guide_(guide), name_(guide.is_pull_only() ? "pull" : "out") { }
 	
 	const node& this_node() const { return node_; }
 	node& this_node() { return node_; }

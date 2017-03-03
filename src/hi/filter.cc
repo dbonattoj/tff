@@ -14,15 +14,41 @@ void filter::register_output(filter_output_base& out) {
 }
 
 
+void filter::propagate_setup_() {
+	Assert(stage_ == stage::initial || stage_ == stage::was_setup);
+	if(stage_ == stage::was_setup) return;
+	for(filter_input_base& in : inputs()) {
+		if(! in.is_connected()) continue;
+		in.edge().origin_filter().propagate_setup_();
+	}
+	// direct predecessors are setup. now setup this
+	this->setup_();
+	stage_ == stage::was_setup;
+}
+
+
 void filter::propagate_install_(filter_installation_guide& guide) {
-	if(was_installed_) return;
+	Assert(stage_ == stage::was_setup || stage_ == stage::was_installed);
+	
+	if(stage_ == stage::was_setup) return;
+	
+	for(filter_output_base& out : outputs()) for(std::ptrdiff_t i = 0; i < out.edges_count(); ++i) {
+		filter& destination_filter = out.edge_at(i).destination_filter();
+		if(destination_filter.stage_ != stage::was_setup) return;
+	}
+	
+	this->install_(guide);
+	stage_ = stage::was_installed;
+	
 	for(filter_input_base& in : inputs()) {
 		if(! in.is_connected()) continue;
 		in.edge().origin_filter().propagate_install_(guide);
 	}
-	// direct predecessors are installed. now install this
-	this->install_(guide);
-	was_installed_ = true;
+}
+
+
+void filter::sink_propagate_setup() {
+	propagate_setup_();
 }
 
 

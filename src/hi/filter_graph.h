@@ -16,6 +16,8 @@ public:
 	bool was_setup() const;
 	void setup();
 	
+	const node_graph& installed_node_graph() { Assert(was_setup()); return *installed_node_graph_; }
+	
 	time_unit current_time() const;
 	void run_until(time_unit last_frame);
 	void run_for(time_unit duration);
