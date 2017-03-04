@@ -21,7 +21,7 @@ void filter::propagate_setup_() {
 		if(! in.is_connected()) continue;
 		in.edge().origin_filter().propagate_setup_();
 	}
-	// direct predecessors are setup. now setup this
+	// direct predecessors are setup, now setup this
 	this->setup_();
 	stage_ == stage::was_setup;
 }
@@ -36,7 +36,8 @@ void filter::propagate_install_(filter_installation_guide& guide) {
 		filter& destination_filter = out.edge_at(i).destination_filter();
 		if(destination_filter.stage_ != stage::was_setup) return;
 	}
-	
+
+	// direct successors are installed, now install this
 	this->install_(guide);
 	stage_ = stage::was_installed;
 	

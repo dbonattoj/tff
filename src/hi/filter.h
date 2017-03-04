@@ -49,7 +49,7 @@ public:
 	void register_input(filter_input_base&);
 	void register_output(filter_output_base&);
 	
-	void sink_propagate_setup(filter_installation_guide&);
+	void sink_propagate_setup();
 	void sink_propagate_install(filter_installation_guide&);
 };
 

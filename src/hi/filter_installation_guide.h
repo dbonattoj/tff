@@ -3,11 +3,12 @@
 
 #include <map>
 #include <vector>
+#include "../utility/ref_vector.h"
 
 namespace tff {
 
 class node_graph;
-class node_output;
+class node_input;
 class processing_filter_base;
 class processing_node;
 class filter_edge_base;
@@ -16,8 +17,8 @@ class filter_installation_guide {
 private:
 	node_graph& node_graph_;
 	std::map<const processing_filter_base*, processing_node*> processing_filter_nodes_;
-	std::map<const filter_edge_base*, node_output*> edge_node_outputs_;
-	std::vector<node_output*> sink_pull_node_outputs_;
+	std::map<const filter_edge_base*, node_input*> edge_node_inputs_;
+
 
 public:
 	explicit filter_installation_guide(node_graph& gr) : node_graph_(gr) { }
@@ -30,11 +31,8 @@ public:
 	processing_node& processing_filter_node(const processing_filter_base&) const;
 	
 	bool has_edge(const filter_edge_base&) const;
-	void set_edge_node_output(const filter_edge_base&, node_output&);
-	node_output& edge_node_output(const filter_edge_base&) const;
-	
-	void add_sink_pull_node_output(node_output&);
-	auto& sink_pull_node_outputs() { return sink_pull_node_outputs_; }
+	void set_edge_node_input(const filter_edge_base&, node_input&);
+	node_input& edge_node_input(const filter_edge_base&) const;
 };
 
 }

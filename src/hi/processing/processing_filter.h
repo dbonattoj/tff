@@ -43,6 +43,7 @@ private:
 	void box_process_(processing_filter_job&) override;
 	
 protected:
+	void setup_() override;
 	void install_(filter_installation_guide&) override;
 	
 public:

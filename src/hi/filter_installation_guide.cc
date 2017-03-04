@@ -2,7 +2,7 @@
 #include "filter_edge.h"
 #include "processing/processing_filter.h"
 #include "../lo/processing/processing_node.h"
-#include "../lo/node_output.h"
+#include "../lo/node_input.h"
 
 namespace tff {
 
@@ -26,28 +26,22 @@ processing_node& filter_installation_guide::processing_filter_node(const process
 
 
 bool filter_installation_guide::has_edge(const filter_edge_base& edge) const {
-	auto it = edge_node_outputs_.find(&edge);
-	return (it != edge_node_outputs_.end());
+	auto it = edge_node_inputs_.find(&edge);
+	return (it != edge_node_inputs_.end());
 }
 
 
-void filter_installation_guide::set_edge_node_output(const filter_edge_base& edge, node_output& out) {
-	auto result = edge_node_outputs_.emplace(std::make_pair(&edge, &out));
-	Assert(result.second, "cannot insert node output multiple times for same edge");
+void filter_installation_guide::set_edge_node_input(const filter_edge_base& edge, node_input& in) {
+	auto result = edge_node_inputs_.emplace(std::make_pair(&edge, &in));
+	Assert(result.second, "cannot insert node input multiple times for same edge");
 }
 
 
-node_output& filter_installation_guide::edge_node_output(const filter_edge_base& edge) const {
-	auto it = edge_node_outputs_.find(&edge);
-	Assert(it != edge_node_outputs_.end());
+node_input& filter_installation_guide::edge_node_input(const filter_edge_base& edge) const {
+	auto it = edge_node_inputs_.find(&edge);
+	Assert(it != edge_node_inputs_.end());
 	return *(it->second);
 }
-
-
-void filter_installation_guide::add_sink_pull_node_output(node_output& out) {
-	sink_pull_node_outputs_.push_back(&out);
-}
-
 
 
 }

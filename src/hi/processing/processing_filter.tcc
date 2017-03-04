@@ -22,28 +22,24 @@ processing_filter<Box>::processing_filter(Box_args&&... args) {
 
 
 template<typename Box>
-void processing_filter<Box>::install_(filter_installation_guide& guide) {
-	
-	/*
-	 *
-	 * TODO: change: now called sink-to-source
-	 * + add setup_()
-	 *
-	 * */
-	 */
-	// setup filter box
+void processing_filter<Box>::setup_() {
 	box_->setup();
 	for(const filter_output_base& out : outputs())
 		if(! out.frame_shape_is_defined())
 			throw filter_box_error("filter box did not define frame shape for all connected outputs");
+}
 
-	
+
+template<typename Box>
+void processing_filter<Box>::install_(filter_installation_guide& guide) {
 	node_graph& nd_graph = guide.this_node_graph();
 	std::string node_name = name();
+
+	bool asynchronous_node = false;
 	
 	// create processing node
 	processing_node* installed_node = nullptr;
-	if(asynchronous_) {
+	if(asynchronous_node) {
 		async_node& nd = nd_graph.add_node<async_node>(node_name);
 		nd.set_prefetch_duration(prefetch_duration_);
 		installed_node = &nd;
@@ -55,8 +51,8 @@ void processing_filter<Box>::install_(filter_installation_guide& guide) {
 	
 	// attach processing handler
 	installed_node->set_handler(*this);
-	
-	// add inputs & connect
+
+	// add inputs
 	for(filter_input_base& in : inputs()) {
 		if(! in.is_connected()) continue;
 		node_input& nd_in = installed_node->add_input();
@@ -67,10 +63,9 @@ void processing_filter<Box>::install_(filter_installation_guide& guide) {
 		
 		nd_in.set_window(in.window());
 		
+		// put (edge, nd_in) into guide, so that predecessor filter's installed node can connect to it
 		filter_edge_base& edge = in.edge();
-		Assert(guide.has_edge(edge), "edge of processing_filter's input already must be guide");
-		node_output& nd_out = guide.edge_node_output(edge);
-		nd_in.connect(nd_out);
+		guide.set_edge_node_input(edge, nd_in);
 	}
 	
 	// add channel for each output
@@ -84,20 +79,15 @@ void processing_filter<Box>::install_(filter_installation_guide& guide) {
 		out.set_data_channel_index(chan_idx);
 		
 		// add output for each edge (for each output)
-		std::size_t edges_count = out.edges_count();
-		for(std::ptrdiff_t i = 0; i < edges_count; ++i) {
+		for(std::ptrdiff_t i = 0; i < out.edges_count(); ++i) {
 			const filter_edge_base& edge = out.edge_at(i);
 			node_output& nd_out = installed_node->add_data_output(chan_idx);
-			
-			// put (edge, nd_out) into guide, so that successor filter's installed node can connect to it
-			guide.set_edge_node_output(edge, nd_out);
+
+			Assert(guide.has_edge(edge), "node_input of filter successor must already be in guide");
+			node_input& nd_in = guide.edge_node_input(edge);
+
+			nd_in.connect(nd_out);
 		}
-	}
-	
-	// if this is sink filter: add pull-only node output to connect to the node_graph's sink_node
-	if(is_sink()) {
-		node_output& pull_nd_out = installed_node->add_pull_only_output();
-		guide.add_sink_pull_node_output(pull_nd_out);
 	}
 }
 

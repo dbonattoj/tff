@@ -3,6 +3,7 @@
 
 #include <exception>
 #include <stdexcept>
+#include <string>
 
 #define TFF_DEFINE_EXCEPTION(__name__, __base__) \
 	class __name__ : public ::tff::exception_derived<__base__> { \

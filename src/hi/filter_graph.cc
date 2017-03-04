@@ -16,17 +16,18 @@ void filter_graph::setup() {
 	
 	try {
 		// setup filters source-to-sink
-		for(filter& filt : filters())
-			if(filt.is_sink()) filt.sink_propagate_setup();
+		for(filter& sink : filters())
+			if(sink.is_sink()) sink.sink_propagate_setup();
 
 		// install filters sink-to-source
 		filter_installation_guide guide(*installed_node_graph_);
-		for(filter& filt : filters())
-			if(filt.is_sink()) filt.sink_propagate_install(guide);
-		
-		for(node_output* pull_nd_out : guide.sink_pull_node_outputs()) {
-			node_input& sink_nd_in = installed_node_graph_->sink().add_input();
-			sink_nd_in.connect(*pull_nd_out);
+		for(filter& sink : filters()) if(sink.is_sink()) {
+			sink.sink_propagate_install(guide);
+
+			processing_node& nd = guide.processing_filter_node(sink);
+			node_output& pull_output = nd.add_pull_only_output();
+			node_input& pull_input = installed_node_graph_->sink().add_input();
+			pull_input.connect(pull_output);
 		}
 		
 		// setup the node graph
