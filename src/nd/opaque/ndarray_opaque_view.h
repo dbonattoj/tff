@@ -37,7 +37,6 @@ pod_array_format tail_pod_format(const ndarray_opaque_view<Dim, Mutable, Frame_f
 		return frame_pod_format;
 		
 	} else if(frame_pod_format.is_contiguous()) {
-		std::size_t frame_padding = vw.default_strides_padding(Dim - Tail_dim);
 		std::size_t elem_size = frame_pod_format.size();
 		std::size_t elem_align = frame_pod_format.elem_alignment();
 		std::size_t length = tail<Tail_dim>(vw.shape()).product();

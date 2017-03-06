@@ -44,6 +44,7 @@ void async_node::launch() {
 
 void async_node::stop() {
 	processing_node::queue_stop_();
+	worker_wait_idle_();
 }
 
 

@@ -32,7 +32,9 @@ protected:
 	/// Schedules call to worker_main_() on the separate thread.
 	/** If worker_main_() is still executing, blocks until it is finished. */
 	void worker_launch_();
-	
+
+	void worker_wait_idle_();
+
 public:
 	worker(thread_index_type index, const std::string& name);
 	virtual ~worker();

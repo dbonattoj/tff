@@ -87,7 +87,7 @@ void filter_graph_visualization::generate_pulled_(std::ostream& str) {
 
 
 void filter_graph_visualization::generate_ranks_(std::ostream& str) {
-	str << "\t{rank=sink; sink}";
+	str << "\t{rank=sink; sink}\n";
 }
 
 	

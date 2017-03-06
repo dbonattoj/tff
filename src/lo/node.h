@@ -2,6 +2,8 @@
 #define TFF_LO_NODE_H_
 
 #include "../common.h"
+#include "node_input.h"
+#include "node_output.h"
 #include "types.h"
 #include "node_request_connection.h"
 #include "ring/node_read_handle.h"
@@ -12,8 +14,6 @@
 namespace tff {
 
 class node_graph;
-class node_input;
-class node_output;
 class node_read_handle;
 
 /// Node in flow graph.

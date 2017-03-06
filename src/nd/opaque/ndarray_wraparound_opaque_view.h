@@ -46,7 +46,6 @@ bool has_pod_format(const ndarray_wraparound_opaque_view<Dim, Mutable, Frame_for
 
 template<std::size_t Tail_dim, std::size_t Dim, bool Mutable, typename Frame_format>
 pod_array_format tail_pod_format(const ndarray_wraparound_opaque_view<Dim, Mutable, Frame_format>& vw) {
-	pod_array_format frame_pod_format = vw.frame_format().pod_format();
 	Assert(Tail_dim == 0);
 	return vw.frame_format().pod_format();
 }

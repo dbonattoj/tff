@@ -1,5 +1,8 @@
 #include "worker.h"
 #include "../os/thread.h"
+#include "../utility/assert.h"
+
+#include <iostream>
 
 namespace tff {
 
@@ -7,16 +10,12 @@ void worker::thread_main_() {
 	set_this_thread_name(name_);
 	
 	std::unique_lock<std::mutex> lock(mutex_);
-	for(;;) {
-		cv_.wait(lock);
-
-		if(state_ == launch) {
+	while(state_ != kill) {
+		if(state_ == idle) {
+			cv_.wait(lock);
+		} else if(state_ == launch) {
 			this->worker_main_();
 			state_ = idle;
-		} else if(state_ == idle) {
-			continue;
-		} else if(state_ == kill) {
-			break;
 		}
 	}
 }
@@ -28,6 +27,12 @@ void worker::worker_launch_() {
 		state_ = launch;
 	}
 	cv_.notify_one();
+}
+
+
+void worker::worker_wait_idle_(){
+	std::lock_guard<std::mutex> lock(mutex_);
+	Assert(state_ == idle);
 }
 
 
