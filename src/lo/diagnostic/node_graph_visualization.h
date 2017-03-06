@@ -28,7 +28,7 @@ private:
 	void generate_node_request_receiver_connections_(std::ostream&, const node&);
 	void generate_ranks_(std::ostream&);
 	
-	static std::string filter_name_(const std::string&);
+	static std::string name_(const std::string&);
 	static std::string time_window_string_(const time_window&);
 	std::string thread_index_color_(thread_index_type) const;
 	

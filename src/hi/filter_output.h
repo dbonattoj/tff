@@ -20,8 +20,9 @@ template<std::size_t Output_dim, typename Output_elem> class filter_edge_output_
 class filter_output_base {
 private:
 	filter& filter_;
-	std::string name_;
-
+	std::string name_ = "out";
+	bool buffer_required_ = false;
+	
 	filter_output_base(const filter_output_base&) = delete;
 	filter_output_base& operator=(const filter_output_base&) = delete;
 	
@@ -40,6 +41,7 @@ public:
 	virtual std::size_t edges_count() const = 0;
 	virtual const filter_edge_base& edge_at(std::ptrdiff_t) const = 0;
 	virtual filter_edge_base& edge_at(std::ptrdiff_t) = 0;
+	bool is_connected() const { return (this->edges_count() > 0); }
 	
 	virtual bool frame_shape_is_defined() const = 0;
 	virtual opaque_ndarray_format data_format() const = 0;

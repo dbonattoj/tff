@@ -43,6 +43,7 @@ void sync_node::write_(rqueue_type::write_handle& handle) {
 
 
 thread_index_type sync_node::processing_thread() const {
+	Assert(outputs().size() >= 1);
 	return outputs().front().reader_thread();
 }
 

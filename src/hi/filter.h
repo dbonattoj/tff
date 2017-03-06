@@ -19,13 +19,10 @@ private:
 	
 	stage stage_ = stage::initial;
 	std::string name_;
-	bool sink_ = false;
+	bool pulled_ = false;
 
 	filter(const filter&) = delete;
 	filter& operator=(const filter&) = delete;
-	
-	void propagate_setup_();
-	void propagate_install_(filter_installation_guide&);
 
 protected:
 	filter() = default;
@@ -38,8 +35,8 @@ public:
 	void set_name(const std::string& nm) { name_ = nm; }
 	const std::string& name() const { return name_; }
 	
-	void set_is_sink(bool snk) { sink_ = snk; }
-	bool is_sink() const { return sink_; }
+	void set_is_pulled(bool pulled) { pulled_ = pulled; }
+	bool is_pulled() const { return pulled_; }
 	
 	auto& inputs() { return inputs_; }
 	auto& outputs() { return outputs_; }
@@ -49,8 +46,9 @@ public:
 	void register_input(filter_input_base&);
 	void register_output(filter_output_base&);
 	
-	void sink_propagate_setup();
-	void sink_propagate_install(filter_installation_guide&);
+	void propagate_prepare_install(filter_installation_guide&) const;
+	void propagate_setup();
+	void propagate_install(filter_installation_guide&);
 };
 
 };

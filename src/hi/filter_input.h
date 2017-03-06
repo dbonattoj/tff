@@ -19,7 +19,7 @@ template<std::size_t Output_dim, typename Output_elem> class filter_output;
 class filter_input_base {
 private:
 	filter& filter_;
-	std::string name_;
+	std::string name_ = "in";
 	time_window window_;
 
 	filter_input_base(const filter_input_base&) = delete;

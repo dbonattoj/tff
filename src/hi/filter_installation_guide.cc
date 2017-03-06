@@ -1,26 +1,37 @@
 #include "filter_installation_guide.h"
 #include "filter_edge.h"
-#include "processing/processing_filter.h"
+#include "filter.h"
 #include "../lo/processing/processing_node.h"
 #include "../lo/node_input.h"
 
 namespace tff {
 
-bool filter_installation_guide::has_processing_filter(const processing_filter_base& filt) const {
-	auto it = processing_filter_nodes_.find(&filt);
-	return (it != processing_filter_nodes_.end());
+bool filter_installation_guide::has_filter_to_install(const filter& filt) const {
+	auto it = filters_to_install_.find(&filt);
+	return (it != filters_to_install_.end());
 }
 
 
-void filter_installation_guide::set_processing_filter_node(const processing_filter_base& filt, processing_node& nd) {
-	auto result = processing_filter_nodes_.emplace(std::make_pair(&filt, &nd));
+void filter_installation_guide::add_filter_to_install(const filter& filt) {
+	filters_to_install_.insert(&filt);
+}
+
+
+bool filter_installation_guide::has_filter_processing_node(const filter& filt) const {
+	auto it = filter_processing_nodes_.find(&filt);
+	return (it != filter_processing_nodes_.end());
+}
+
+
+void filter_installation_guide::set_filter_processing_node(const filter& filt, processing_node& nd) {
+	auto result = filter_processing_nodes_.emplace(std::make_pair(&filt, &nd));
 	Assert(result.second, "cannot insert processing node into guide multiple times for same filter");
 }
 
 
-processing_node& filter_installation_guide::processing_filter_node(const processing_filter_base& filt) const {
-	auto it = processing_filter_nodes_.find(&filt);
-	Assert(it != processing_filter_nodes_.end());
+processing_node& filter_installation_guide::filter_processing_node(const filter& filt) const {
+	auto it = filter_processing_nodes_.find(&filt);
+	Assert(it != filter_processing_nodes_.end());
 	return *(it->second);
 }
 

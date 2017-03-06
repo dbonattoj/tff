@@ -11,24 +11,31 @@ bool filter_graph::was_setup() const {
 }
 
 
+ref_vector<filter> filter_graph::pulled_filters_() {
+	ref_vector<filter> pulled_filters;
+	for(filter& filt : filters()) if(filt.is_pulled()) pulled_filters.push_back(filt);
+	return pulled_filters;
+}
+
+
 void filter_graph::setup() {
 	installed_node_graph_.emplace();
 	
 	try {
+		ref_vector<filter> pulled = pulled_filters_();
+		filter_installation_guide guide(*installed_node_graph_);
+	
+		// install filters sink-to-source
+		for(const filter& pulled_filt : pulled)
+			pulled_filt.propagate_prepare_install(guide);
+	
 		// setup filters source-to-sink
-		for(filter& sink : filters())
-			if(sink.is_sink()) sink.sink_propagate_setup();
+		for(filter& pulled_filt : pulled)
+			pulled_filt.propagate_setup();
 
 		// install filters sink-to-source
-		filter_installation_guide guide(*installed_node_graph_);
-		for(filter& sink : filters()) if(sink.is_sink()) {
-			sink.sink_propagate_install(guide);
-
-			processing_node& nd = guide.processing_filter_node(sink);
-			node_output& pull_output = nd.add_pull_only_output();
-			node_input& pull_input = installed_node_graph_->sink().add_input();
-			pull_input.connect(pull_output);
-		}
+		for(filter& pulled_filt : pulled)
+			pulled_filt.propagate_install(guide);
 		
 		// setup the node graph
 		installed_node_graph_->setup();

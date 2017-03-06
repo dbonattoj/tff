@@ -2,21 +2,21 @@
 #define TFF_FILTER_INSTALLATION_GUIDE_H_
 
 #include <map>
-#include <vector>
-#include "../utility/ref_vector.h"
+#include <set>
 
 namespace tff {
 
 class node_graph;
 class node_input;
-class processing_filter_base;
+class filter;
 class processing_node;
 class filter_edge_base;
 
 class filter_installation_guide {
 private:
 	node_graph& node_graph_;
-	std::map<const processing_filter_base*, processing_node*> processing_filter_nodes_;
+	std::set<const filter*> filters_to_install_;
+	std::map<const filter*, processing_node*> filter_processing_nodes_;
 	std::map<const filter_edge_base*, node_input*> edge_node_inputs_;
 
 
@@ -26,9 +26,12 @@ public:
 	
 	node_graph& this_node_graph() const { return node_graph_; }
 	
-	bool has_processing_filter(const processing_filter_base&) const;
-	void set_processing_filter_node(const processing_filter_base&, processing_node&);
-	processing_node& processing_filter_node(const processing_filter_base&) const;
+	bool has_filter_to_install(const filter&) const;
+	void add_filter_to_install(const filter&);
+	
+	bool has_filter_processing_node(const filter&) const;
+	void set_filter_processing_node(const filter&, processing_node&);
+	processing_node& filter_processing_node(const filter&) const;
 	
 	bool has_edge(const filter_edge_base&) const;
 	void set_edge_node_input(const filter_edge_base&, node_input&);

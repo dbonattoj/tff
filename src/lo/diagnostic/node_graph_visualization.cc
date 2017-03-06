@@ -41,7 +41,7 @@ void node_graph_visualization::generate_node_(std::ostream& str, const node& nd)
 		const std::string& thread_col = thread_index_color_(in.reader_thread());
 		if(&in != &*nd.inputs().begin()) str << R"(<TD WIDTH="10"></TD>)";
 		str << R"(<TD BORDER="1" CELLPADDING="1" PORT=")" << input_uid << R"(" COLOR=")" << thread_col << R"(">)";
-		str << R"(<FONT POINT-SIZE="10">)" << filter_name_(in.name()) << R"(</FONT>)";
+		str << R"(<FONT POINT-SIZE="10">)" << name_(in.name()) << R"(</FONT>)";
 		str << R"(</TD>)";
 	}
 	str << R"(<TD WIDTH="20"></TD>)";
@@ -60,7 +60,7 @@ void node_graph_visualization::generate_node_(std::ostream& str, const node& nd)
 		const std::string& thread_col = thread_index_color_(out.reader_thread());
 		if(&out != &*nd.outputs().begin()) str << R"(<TD WIDTH="10"></TD>)";
 		str << R"(<TD BORDER="1" CELLPADDING="1" PORT=")" << output_uid << R"(" COLOR=")" << thread_col << R"(">)";
-		str << R"(<FONT POINT-SIZE="10">)" << filter_name_(out.name()) << R"(</FONT>)";
+		str << R"(<FONT POINT-SIZE="10">)" << name_(out.name()) << R"(</FONT>)";
 		str << R"(</TD>)";
 	}
 	str << R"(<TD WIDTH="20"></TD>)";
@@ -73,7 +73,7 @@ void node_graph_visualization::generate_node_(std::ostream& str, const node& nd)
 
 void node_graph_visualization::generate_node_body_(std::ostream& str, const node& nd) {
 	str << R"(<TR><TD BORDER="1" STYLE="ROUNDED" CELLPADDING="4" COLOR="black">)";
-	str << filter_name_(nd.name());
+	str << name_(nd.name());
 	str << R"(</TD></TR>)";
 }
 
@@ -81,7 +81,7 @@ void node_graph_visualization::generate_node_body_(std::ostream& str, const node
 void node_graph_visualization::generate_node_body_(std::ostream& str, const processing_node& nd) {
 	const std::string& thread_col = thread_index_color_(nd.processing_thread());
 	str << R"(<TR><TD BORDER="1" STYLE="ROUNDED" CELLPADDING="4" COLOR=")" << thread_col << R"(">)";
-	str << filter_name_(nd.name());
+	str << name_(nd.name());
 	str << R"(<BR/><FONT POINT-SIZE="10">)";
 	if(is_async_node(nd)) {
 		str << R"(async_node<BR/>)";
@@ -181,7 +181,7 @@ std::string node_graph_visualization::thread_index_color_(thread_index_type tid)
 }
 
 
-std::string node_graph_visualization::filter_name_(const std::string& name) {
+std::string node_graph_visualization::name_(const std::string& name) {
 	if(name.empty()) return "&nbsp;&nbsp;&nbsp;&nbsp;";
 	else return name;
 }

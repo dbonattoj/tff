@@ -6,6 +6,7 @@
 #include "../src/hi/processing/processing_filter.h"
 #include "../src/hi/processing/processing_filter_job.h"
 #include "../src/lo/diagnostic/node_graph_visualization.h"
+#include "../src/hi/diagnostic/filter_graph_visualization.h"
 
 using namespace tff;
 
@@ -49,7 +50,8 @@ public:
 	
 	void setup() {
 		std::cout << "setup Passthrough" << std::endl;
-		out.define_frame_shape(in.frame_shape());
+		if(in.is_connected()) out.define_frame_shape(in.frame_shape());
+		else out.define_frame_shape(make_ndsize(1));
 	}
 	
 	void process(processing_filter_job& job) {
@@ -79,24 +81,26 @@ TEST_CASE("filter") {
 	auto& a = graph.add_processing_filter<Source>(); a.set_name("A");
 	auto& b = graph.add_processing_filter<Tee>(); b.set_name("B");
 	auto& c = graph.add_processing_filter<Passthrough>(); c.set_name("C");
-	auto& d = graph.add_processing_filter<Passthrough>(); d.set_name("D");
+	auto& d = graph.add_processing_filter<Merge>(); d.set_name("D");
 	auto& e = graph.add_processing_filter<Passthrough>(); e.set_name("E");
 	auto& f = graph.add_processing_filter<Merge>(); f.set_name("F");
 	
 	b->in.connect(a->out);
-	c->in.connect(b->out1);
-	d->in.connect(c->out);
-	d->in.set_window(time_window(2, 0));
+	d->in1.connect(b->out2);
+	d->in2.connect(c->out);
+	d->in2.set_window(time_window(2, 0));
 	d.set_asynchronous(true);
 	e->in.connect(b->out2);
-	f->in1.connect(d->out);
-	f->in2.connect(e->out);
-	f.set_is_sink(true);
-	a.set_is_sink(true);
+	f->in1.connect(e->out);
+	f->in2.connect(d->out);
+	c->in.connect(a->out);
+	f.set_is_pulled(true);
+	a.set_is_pulled(true);
 	
 	graph.setup();
 
 	graph.run_for(10);
 	
+	export_filter_graph_visualization(graph, "hi.gv");
 	export_node_graph_visualization(graph.installed_node_graph(), "lo.gv");
 }
