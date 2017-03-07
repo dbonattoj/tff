@@ -18,7 +18,6 @@ using namespace tff;
 static std::mutex out_lock;
 
 TEST_CASE("flow") {
-	return;
 	class handler : public processing_handler {
 	private:
 		std::string name_;

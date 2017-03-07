@@ -32,7 +32,9 @@ void worker::worker_launch_() {
 
 void worker::worker_wait_idle_(){
 	std::lock_guard<std::mutex> lock(mutex_);
-	Assert(state_ == idle);
+	state_ = idle;
+	// might have been called just after worker_launch_(), before worker acquired the lock:
+	// in that case, reset state to idle to prevent worker from launching
 }
 
 
