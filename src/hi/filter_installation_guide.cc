@@ -6,17 +6,6 @@
 
 namespace tff {
 
-bool filter_installation_guide::has_filter_to_install(const filter& filt) const {
-	auto it = filters_to_install_.find(&filt);
-	return (it != filters_to_install_.end());
-}
-
-
-void filter_installation_guide::add_filter_to_install(const filter& filt) {
-	filters_to_install_.insert(&filt);
-}
-
-
 bool filter_installation_guide::has_filter_processing_node(const filter& filt) const {
 	auto it = filter_processing_nodes_.find(&filt);
 	return (it != filter_processing_nodes_.end());
@@ -36,23 +25,23 @@ processing_node& filter_installation_guide::filter_processing_node(const filter&
 }
 
 
-bool filter_installation_guide::has_edge(const filter_edge_base& edge) const {
-	auto it = edge_node_inputs_.find(&edge);
-	return (it != edge_node_inputs_.end());
+bool filter_installation_guide::has_successor_edge_node_inputs(const filter_edge_base& edge) const {
+	auto it = successor_edge_node_inputs_.find(&edge);
+	return (it != successor_edge_node_inputs_.end());
 }
 
 
-void filter_installation_guide::set_edge_node_input(const filter_edge_base& edge, node_input& in) {
-	auto result = edge_node_inputs_.emplace(std::make_pair(&edge, &in));
-	Assert(result.second, "cannot insert node input multiple times for same edge");
+void filter_installation_guide::add_successor_edge_node_input(const filter_edge_base& edge, node_input& in) {
+	successor_edge_node_inputs_.emplace(std::make_pair(&edge, &in));
 }
 
 
-node_input& filter_installation_guide::edge_node_input(const filter_edge_base& edge) const {
-	auto it = edge_node_inputs_.find(&edge);
-	Assert(it != edge_node_inputs_.end());
-	return *(it->second);
+ref_vector<node_input> filter_installation_guide::successor_edge_node_inputs(const filter_edge_base& edge) const {
+	auto it_range = successor_edge_node_inputs_.equal_range(&edge);
+	ref_vector<node_input> inputs;
+	for(auto it = it_range.first; it != it_range.second; ++it)
+		inputs.push_back(*it->second);
+	return inputs;
 }
-
 
 }

@@ -13,7 +13,6 @@ namespace tff {
 using std::experimental::optional;
 using std::experimental::nullopt;
 
-struct time_span;
 
 /// Signed type representing frame time index, duration or difference
 using time_unit = std::ptrdiff_t;

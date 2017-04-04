@@ -1,6 +1,10 @@
 #ifndef TFF_UTILITY_MISC_H_
 #define TFF_UTILITY_MISC_H_
 
+#include <type_traits>
+#include <cstdint>
+#include <memory>
+
 namespace tff {
 
 using byte = std::uint8_t;

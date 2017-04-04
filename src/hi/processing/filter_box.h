@@ -7,17 +7,16 @@ namespace tff {
 
 class processing_filter_job;
 
-/// Base class for application filter implementation.
+/// Base for application-defined processing filter box.
 class filter_box {
 private:
-	filter& filter_;
+	processing_filter_base& filter_;
 	
 protected:
 	template<std::size_t Dim, typename Elem> using input = processing_filter_input<Dim, Elem>;
 	template<std::size_t Dim, typename Elem> using output = processing_filter_output<Dim, Elem>;
 	
 	filter_box();
-	virtual ~filter_box() = default;
 	
 public:
 	void setup() { }

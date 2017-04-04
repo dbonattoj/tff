@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <stdexcept>
+#include <algorithm>
+#include <iterator>
+#include <type_traits>
 #include "indirect_iterator.h"
 
 namespace tff {
@@ -13,7 +16,7 @@ namespace tff {
  ** Replaces `std::vector<T*>` or `std::vector<std:reference_wrapper<T>>`. Iteration using `indirect_iterator`.
  ** Container owns the _references_, but not the referenced objects.
  ** \a T can be const or non-const, and \ref ref_vector will give same access. */
-template<typename T, typename Allocator = std::allocator<T>>
+template<typename T, typename Allocator = std::allocator<std::add_pointer_t<T>>>
 class ref_vector {
 public:
 	using value_type = T;
@@ -84,11 +87,28 @@ public:
 	void swap(ref_vector& other) { vector_.swap(other.vector_); }
 };
 
+
 template<typename T, typename Allocator>
 void swap(ref_vector<T, Allocator>& a, ref_vector<T, Allocator>& b) {
 	std::swap(a.base(), b.base());
 }
 
-}
+
+template<typename To, typename From, typename Allocator>
+ref_vector<To, Allocator> static_ref_vector_cast(const ref_vector<From, Allocator>&);
+
+template<typename To, typename From, typename Allocator>
+ref_vector<To, Allocator> dynamic_ref_vector_cast(const ref_vector<From, Allocator>&);
+
+template<typename To, typename From, typename Allocator>
+ref_vector<To, Allocator> const_ref_vector_cast(const ref_vector<From, Allocator>&);
+
+template<typename To, typename From, typename Allocator>
+ref_vector<To, Allocator> reinterpret_ref_vector_cast(const ref_vector<From, Allocator>&);
+
+
+};
+
+#include "ref_vector.tcc"
 
 #endif

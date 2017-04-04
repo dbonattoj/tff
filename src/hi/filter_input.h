@@ -16,6 +16,7 @@ class filter;
 class filter_output_base;
 template<std::size_t Output_dim, typename Output_elem> class filter_output;
 
+/// Input of filter, type-erased base class.
 class filter_input_base {
 private:
 	filter& filter_;
@@ -46,9 +47,14 @@ public:
 	
 	virtual input_index_type input_index() const { throw not_implemented(); }
 	virtual void set_input_index(input_index_type) { throw not_implemented(); }
+	
+	virtual std::size_t internal_edges_count() const { throw not_implemented(); }
+	virtual const filter_edge_base& internal_edge_at(std::ptrdiff_t) const { throw not_implemented(); }
+	virtual filter_edge_base& internal_edge_at(std::ptrdiff_t) { throw not_implemented(); }
 };
 
 
+/// Input of filter, base class with concrete frame data type.
 template<std::size_t Input_dim, typename Input_elem>
 class filter_input : public filter_input_base {
 public:
@@ -61,6 +67,10 @@ public:
 private:
 	std::unique_ptr<edge_base_type> edge_;
 	
+protected:
+	void set_edge_(std::unique_ptr<edge_base_type>);
+	void delete_edge_();
+	
 public:
 	explicit filter_input(filter& filt) :
 		filter_input_base(filt) { }
@@ -70,11 +80,6 @@ public:
 	edge_base_type& edge() override;
 	
 	frame_shape_type frame_shape() const;
-	
-	void connect(filter_output<Input_dim, Input_elem>&);
-	
-	//template<std::size_t Output_dim, typename Output_elem>
-	//void connect(filter_output<Output_dim, Output_elem>&);
 };
 
 }

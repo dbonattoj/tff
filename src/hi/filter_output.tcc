@@ -1,12 +1,21 @@
 #include "filter_output.h"
 #include "filter_edge.h"
 #include "../nd/nd.h"
+#include <algorithm>
 
 namespace tff {
 
 template<std::size_t Output_dim, typename Output_elem>
 void filter_output<Output_dim, Output_elem>::edge_has_connected(edge_base_type& edge) {
 	edges_.push_back(edge);
+}
+
+
+template<std::size_t Output_dim, typename Output_elem>
+void filter_output<Output_dim, Output_elem>::edge_has_disconnected(edge_base_type& edge) {
+	auto cmp = [](const edge_base_type& a, const edge_base_type& b) { return (&a == &b); };
+	auto it = std::find(edges_.begin(), edges_.end(), cmp);
+	if(it != edges_.end()) edges_.erase(it);
 }
 
 
@@ -23,32 +32,6 @@ const filter_edge_base& filter_output<Output_dim, Output_elem>::edge_at(std::ptr
 template<std::size_t Output_dim, typename Output_elem>
 filter_edge_base& filter_output<Output_dim, Output_elem>::edge_at(std::ptrdiff_t i) {
 	return edges_.at(i);
-}
-
-
-template<std::size_t Output_dim, typename Output_elem>
-void filter_output<Output_dim, Output_elem>::define_frame_shape(const frame_shape_type& shp) {
-	frame_shape_ = shp;
-}
-
-
-template<std::size_t Output_dim, typename Output_elem>
-bool filter_output<Output_dim, Output_elem>::frame_shape_is_defined() const {
-	return frame_shape_.has_value();
-}
-
-
-template<std::size_t Output_dim, typename Output_elem>
-auto filter_output<Output_dim, Output_elem>::frame_shape() const -> const frame_shape_type& {
-	Assert(frame_shape_is_defined());
-	return *frame_shape_;
-}
-
-
-template<std::size_t Output_dim, typename Output_elem>
-opaque_ndarray_format filter_output<Output_dim, Output_elem>::data_format() const {
-	Assert(frame_shape_is_defined());
-	return default_opaque_ndarray_format<Output_elem>(*frame_shape_);
 }
 
 }

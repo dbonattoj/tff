@@ -4,6 +4,7 @@
 #include "view_types.h"
 #include "../lo/types.h"
 #include "../nd/nd.h"
+#include "filter_graph_relation.h"
 
 namespace tff {
 
@@ -14,25 +15,26 @@ class filter_output_base;
 template<std::size_t Input_dim, typename Input_elem> class filter_input;
 template<std::size_t Output_dim, typename Output_elem> class filter_output;
 
-
+/// Edge connecting filters, base class.
 class filter_edge_base {
 public:
 	virtual ~filter_edge_base() = default;
 	
-	virtual const filter_output_base& origin() const = 0;
-	virtual filter_output_base& origin() = 0;
-	
+	virtual bool has_origin() const = 0;
+	virtual const filter_output_base& origin() const;
+	virtual filter_output_base& origin();
 	const filter& origin_filter() const;
 	filter& origin_filter();
 	
-	virtual const filter_input_base& destination() const = 0;
-	virtual filter_input_base& destination() = 0;
-	
+	virtual bool has_destination() const = 0;
+	virtual const filter_input_base& destination() const;
+	virtual filter_input_base& destination();
 	const filter& destination_filter() const;
 	filter& destination_filter();
 };
 
 
+/// Edge connected to a filter's input, base class.
 template<std::size_t Input_dim, typename Input_elem>
 class filter_edge_input_base : public virtual filter_edge_base {
 public:
@@ -47,6 +49,7 @@ protected:
 	explicit filter_edge_input_base(input_type& input) : input_(input) { }
 	
 public:
+	bool has_destination() const override { return true; }
 	const input_type& destination() const override { return input_; }
 	input_type& destination() override { return input_; }
 	
@@ -55,6 +58,7 @@ public:
 };
 
 
+/// Edge connected to a filter's output, base class.
 template<std::size_t Output_dim, typename Output_elem>
 class filter_edge_output_base : public virtual filter_edge_base {
 public:
@@ -69,6 +73,7 @@ protected:
 	explicit filter_edge_output_base(output_type& output) : output_(output) { }
 	
 public:
+	bool has_origin() const override { return true; }
 	const output_type& origin() const override { return output_; }
 	output_type& origin() override { return output_; }
 };
@@ -113,7 +118,14 @@ private:
 	
 public:
 	filter_edge(output_type& out, input_type& in, const caster_type& caster = caster_type()) :
-		base_out(out), base_in(in), caster_(caster) { }
+		base_out(out), base_in(in), caster_(caster)
+	{
+		if(&out.this_filter().graph() != in.this_filter().graph())
+			throw invalid_filter_graph("filter edge must be between filters in same subgraph");
+		
+		if(! precedes_strict(out.this_filter(), in.this_filter()))
+			throw invalid_filter_graph("filter edge origin filter must strictly precede destination filter");
+	}
 	
 	input_full_view_type input_view_from_opaque(const const_data_window_view_type& out_opaque_vw) const override {
 		output_full_view_type out_vw = from_opaque<Output_dim + 1, const Output_elem>(out_opaque_vw);

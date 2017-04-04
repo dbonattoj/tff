@@ -5,35 +5,26 @@
 
 namespace tff {
 
-
 bool filter_graph::was_setup() const {
 	return installed_node_graph_.has_value();
 }
 
 
-ref_vector<filter> filter_graph::pulled_filters_() {
-	ref_vector<filter> pulled_filters;
-	for(filter& filt : filters()) if(filt.is_pulled()) pulled_filters.push_back(filt);
-	return pulled_filters;
-}
-
-
 void filter_graph::setup() {
-	installed_node_graph_.emplace();
-	
 	try {
-		ref_vector<filter> pulled = pulled_filters_();
-		filter_installation_guide guide(*installed_node_graph_);
-	
-		// install filters sink-to-source
-		for(const filter& pulled_filt : pulled)
-			pulled_filt.propagate_prepare_install(guide);
-	
-		// setup filters source-to-sink
+		ref_vector<filter> pulled = pulled_filters();
+		
+		// setup filters in source-to-sink order
 		for(filter& pulled_filt : pulled)
 			pulled_filt.propagate_setup();
-
-		// install filters sink-to-source
+		
+		// orphaned filters (that are not predecessors of a pulled filter)
+		// are left on stage==initial, and were not setup
+		
+		installed_node_graph_.emplace();
+		
+		// install non-orphaned filters in sink-to-source order
+		filter_installation_guide guide(*installed_node_graph_);
 		for(filter& pulled_filt : pulled)
 			pulled_filt.propagate_install(guide);
 		

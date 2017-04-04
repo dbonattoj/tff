@@ -17,6 +17,7 @@ class filter_edge_base;
 template<std::size_t Output_dim, typename Output_elem> class filter_edge_output_base;
 
 
+/// Output of filter, type-erased base class.
 class filter_output_base {
 private:
 	filter& filter_;
@@ -48,9 +49,14 @@ public:
 
 	virtual data_channel_index_type data_channel_index() const { throw not_implemented(); }
 	virtual void set_data_channel_index(data_channel_index_type) { throw not_implemented(); }
+
+	virtual bool has_internal_edge() const { throw not_implemented(); }
+	virtual filter_edge_base& internal_edge() { throw not_implemented(); }
+	virtual const filter_edge_base& internal_edge() const { throw not_implemented(); }
 };
 
 
+/// Output of filter, base class with concrete frame data type.
 template<std::size_t Output_dim, typename Output_elem>
 class filter_output : public filter_output_base {
 public:
@@ -63,8 +69,6 @@ public:
 private:
 	ref_vector<edge_base_type> edges_;
 	
-	optional<frame_shape_type> frame_shape_;
-	
 public:
 	explicit filter_output(filter& filt) :
 		filter_output_base(filt) { }
@@ -76,12 +80,9 @@ public:
 	filter_edge_base& edge_at(std::ptrdiff_t) override;
 	
 	void edge_has_connected(edge_base_type&);
+	void edge_has_disconnected(edge_base_type&);
 	
-	void define_frame_shape(const frame_shape_type&);
-	bool frame_shape_is_defined() const override;
-	const frame_shape_type& frame_shape() const;
-
-	opaque_ndarray_format data_format() const override;
+	virtual const frame_shape_type& frame_shape() const = 0;
 };
 
 }

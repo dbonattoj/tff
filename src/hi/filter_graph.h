@@ -8,11 +8,10 @@
 
 namespace tff {
 
+/// Root graph containing filters.
 class filter_graph : public filter_subgraph {
 private:
 	optional<node_graph> installed_node_graph_;
-	
-	ref_vector<filter> pulled_filters_();
 	
 public:
 	bool was_setup() const;

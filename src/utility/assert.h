@@ -25,14 +25,17 @@
 
 #if TFF_DEBUG_BUILD
 	#define TFF_ASSERT_CRIT_MSG_(__condition__, __msg__) \
-		if(! TFF_UNLIKELY(__condition__)) throw ::tff::failed_assertion(__msg__ " at " __FILE__ ":" TFF_STRINGIZE(__LINE__))
+		if(! TFF_UNLIKELY(static_cast<bool>(__condition__))) \
+			throw ::tff::failed_assertion(__msg__ " at " __FILE__ ":" TFF_STRINGIZE(__LINE__))
 	#define TFF_ASSERT_MSG_(__condition__, __msg__) \
-		if(! TFF_UNLIKELY(__condition__)) throw ::tff::failed_assertion(__msg__ " at " __FILE__ ":" TFF_STRINGIZE(__LINE__))
+		if(! TFF_UNLIKELY(static_cast<bool>(__condition__))) \
+			throw ::tff::failed_assertion(__msg__ " at " __FILE__ ":" TFF_STRINGIZE(__LINE__))
 #else
 	#define TFF_ASSERT_CRIT_MSG_(__condition__, __msg__) \
 		(void)0
 	#define TFF_ASSERT_MSG_(__condition__, __msg__) \
-		if(! TFF_UNLIKELY(__condition__)) throw ::tff::failed_assertion(__msg__ " at " __FILE__ ":" TFF_STRINGIZE(__LINE__))
+		if(! TFF_UNLIKELY(static_cast<bool>(__condition__))) \
+			throw ::tff::failed_assertion(__msg__ " at " __FILE__ ":" TFF_STRINGIZE(__LINE__))
 #endif
 
 

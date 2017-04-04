@@ -9,7 +9,9 @@ namespace tff {
 class filter_input_base;
 class filter_output_base;
 class filter_installation_guide;
+class filter_subgraph;
 
+/// Filter in filter graph, base class.
 class filter {
 private:
 	enum class stage { initial, was_setup, was_installed };
@@ -17,20 +19,25 @@ private:
 	ref_vector<filter_input_base> inputs_;
 	ref_vector<filter_output_base> outputs_;
 	
-	stage stage_ = stage::initial;
+	filter_subgraph& graph_;
 	std::string name_;
 	bool pulled_ = false;
+
+	stage stage_ = stage::initial;
 
 	filter(const filter&) = delete;
 	filter& operator=(const filter&) = delete;
 
 protected:
-	filter() = default;
+	explicit filter(filter_subgraph&);
 	virtual void setup_() = 0;
 	virtual void install_(filter_installation_guide&) = 0;
 	
 public:
 	virtual ~filter() = default;
+	
+	const filter_subgraph& graph() const { return graph_; }
+	filter_subgraph& graph() { return graph_; }
 	
 	void set_name(const std::string& nm) { name_ = nm; }
 	const std::string& name() const { return name_; }
@@ -46,7 +53,6 @@ public:
 	void register_input(filter_input_base&);
 	void register_output(filter_output_base&);
 	
-	void propagate_prepare_install(filter_installation_guide&) const;
 	void propagate_setup();
 	void propagate_install(filter_installation_guide&);
 };
