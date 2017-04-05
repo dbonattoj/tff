@@ -80,7 +80,7 @@ public:
 	filter_edge_base& edge_at(std::ptrdiff_t) override;
 	
 	void edge_has_connected(edge_base_type&);
-	void edge_has_disconnected(edge_base_type&);
+	void edge_has_disconnected(const filter_edge_base&);
 	
 	virtual const frame_shape_type& frame_shape() const = 0;
 };

@@ -48,8 +48,10 @@ template<std::size_t Input_dim, typename Input_elem>
 void processing_filter_input<Input_dim, Input_elem>::connect(filter_output<Input_dim, Input_elem>& out) {
 	using caster_type = filter_null_edge_caster<Input_dim, Input_elem>;
 	using edge_type = filter_edge<Input_dim, Input_elem, Input_dim, Input_elem, caster_type>;
-	base::set_edge_( std::make_unique<edge_type>(out, *this) );
-	out.edge_has_connected(base::edge());
+	
+	auto edge = std::make_unique<edge_type>(out, *this);
+	out.edge_has_connected(*edge);
+	base::set_edge_( std::move(edge) );
 }
 
 
@@ -57,7 +59,7 @@ template<std::size_t Input_dim, typename Input_elem>
 void processing_filter_input<Input_dim, Input_elem>::disconnect() {
 	auto edge = base::edge();
 	edge.origin().edge_has_disconnected(edge);
-	base::delete_edge();
+	base::delete_edge_();
 }
 
 

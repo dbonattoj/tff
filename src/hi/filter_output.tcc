@@ -12,9 +12,9 @@ void filter_output<Output_dim, Output_elem>::edge_has_connected(edge_base_type& 
 
 
 template<std::size_t Output_dim, typename Output_elem>
-void filter_output<Output_dim, Output_elem>::edge_has_disconnected(edge_base_type& edge) {
-	auto cmp = [](const edge_base_type& a, const edge_base_type& b) { return (&a == &b); };
-	auto it = std::find(edges_.begin(), edges_.end(), cmp);
+void filter_output<Output_dim, Output_elem>::edge_has_disconnected(const filter_edge_base& edge) {
+	auto cmp = [&edge](const edge_base_type& q_edge) { return (&edge == &q_edge); };
+	auto it = std::find_if(edges_.begin(), edges_.end(), cmp);
 	if(it != edges_.end()) edges_.erase(it);
 }
 
