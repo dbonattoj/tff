@@ -37,11 +37,12 @@ public:
 		vector_(alloc) { }
 	explicit ref_vector(size_type count, T& ref, const allocator_type& alloc = allocator_type()) :
 		vector_(count, &ref, alloc) { }
+	template<typename It> ref_vector(It begin, It end, const allocator_type& alloc = allocator_type());
 	ref_vector(const ref_vector& other) : vector_(other.vector_) { }
 	ref_vector(const ref_vector& other, const allocator_type& alloc) : vector_(other.vector_, alloc) { }
 	ref_vector(ref_vector&& other) : vector_(std::move(other.vector_)) { }
 	ref_vector(ref_vector&& other, const allocator_type& alloc) : vector_(std::move(other.vector_), alloc) { }
-
+	
 	ref_vector& operator=(const ref_vector&) = default;
 	ref_vector& operator=(ref_vector&&) = default;
 	
@@ -73,6 +74,7 @@ public:
 	void clear() { vector_.clear(); }
 	iterator insert(iterator pos, T& ref) { return iterator(vector_.insert(pos.base(), &ref)); }
 	iterator insert(iterator pos, size_type count, T& ref) { return iterator(vector_.insert(pos.base(), count, &ref)); }
+	template<typename It> iterator insert(iterator pos, It begin, It end);
 	iterator emplace(iterator pos, T& ref) { return iterator(vector_.insert(pos.base(), &ref)); }
 	iterator erase(iterator pos) { return iterator(vector_.erase(pos.base())); }
 	iterator erase(iterator begin, iterator end) { return iterator(vector_.erase(begin.base(), end.base())); }

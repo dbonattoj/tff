@@ -14,7 +14,7 @@ bool is_processing_filter(const filter& filt) {
 }
 
 
-bool is_enclosure_filter(const fitler& filt) {
+bool is_enclosure_filter(const filter& filt) {
 	return is_a_or_derived_<enclosure_filter_base>(filt);
 }
 
