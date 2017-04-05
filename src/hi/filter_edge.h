@@ -122,10 +122,9 @@ public:
 	{
 		if(&out.this_filter().graph() != &in.this_filter().graph())
 			throw invalid_filter_graph("filter edge must be between filters in same subgraph");
-		/*
+		
 		if(! precedes_strict(out.this_filter(), in.this_filter()))
 			throw invalid_filter_graph("filter edge origin filter must strictly precede destination filter");
-		 */
 	}
 	
 	input_full_view_type input_view_from_opaque(const const_data_window_view_type& out_opaque_vw) const override {

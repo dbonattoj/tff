@@ -29,4 +29,6 @@ bool precedes_strict(const filter& a, const filter& b) {
 	return false;
 }
 
+// TODO nontotal order (what if disconnected or invalid connected?, succeedes, succeedes_strict)
+
 }
