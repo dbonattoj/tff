@@ -30,6 +30,7 @@ void filter_graph_visualization::generate_filter_(std::ostream& str, const filte
 	// body
 	str << R"(<TR><TD BORDER="1" CELLPADDING="4" COLOR="black">)";
 	str << name_(filt.name());
+	if(filt.is_pulled()) str << R"(<BR/><FONT POINT-SIZE="10">(pulled)</FONT>)";
 	str << R"(</TD></TR>)";
 	
 	// outputs
@@ -78,16 +79,12 @@ void filter_graph_visualization::generate_filter_input_connections_(std::ostream
 }
 
 
-void filter_graph_visualization::generate_pulled_(std::ostream& str) {
-	for(const filter& filt : graph_.filters()) if(filt.is_pulled()) {
-		const std::string& conn_pulled_filter_uid = uids_.uid(filt, "filter");
-		str << '\t' << conn_pulled_filter_uid << " -> sink [style=normal];\n";
-	}
-}
-
-
 void filter_graph_visualization::generate_ranks_(std::ostream& str) {
-	str << "\t{rank=sink; sink}\n";
+	str << "\t{rank=sink;";
+	for(const filter& filt : graph_.filters()) if(filt.is_pulled()) {
+		str << ' ' << uids_.uid(filt, "filter");
+	}
+	str << "}\n";
 }
 
 	
@@ -112,10 +109,8 @@ filter_graph_visualization::filter_graph_visualization(const filter_subgraph& gr
 void filter_graph_visualization::generate(std::ostream& str) {
 	str << "digraph " << graph_id_ << "{\n";
 	str << "\trankdir=TB\n";
-	str << "\tsink [label=\"sink\"];\n";
 	for(const filter& filt : graph_.filters()) generate_filter_(str, filt);
 	for(const filter& filt : graph_.filters()) generate_filter_input_connections_(str, filt);
-	generate_pulled_(str);
 	generate_ranks_(str);
 	str << "}" << std::endl;
 }

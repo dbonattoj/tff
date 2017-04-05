@@ -79,23 +79,9 @@ TEST_CASE("filter") {
 	filter_graph graph;
 	
 	auto& a = graph.add_processing_filter<Source>(); a.set_name("A");
-	auto& b = graph.add_processing_filter<Tee>(); b.set_name("B");
-	auto& c = graph.add_processing_filter<Passthrough>(); c.set_name("C");
-	auto& d = graph.add_processing_filter<Merge>(); d.set_name("D");
-	auto& e = graph.add_processing_filter<Passthrough>(); e.set_name("E");
-	auto& f = graph.add_processing_filter<Merge>(); f.set_name("F");
-	
+	auto& b = graph.add_processing_filter<Passthrough>(); b.set_name("B");
 	b->in.connect(a->out);
-	d->in1.connect(b->out2);
-	d->in2.connect(c->out);
-	d->in2.set_window(time_window(2, 0));
-	d.set_asynchronous(true);
-	e->in.connect(b->out2);
-	f->in1.connect(e->out);
-	f->in2.connect(d->out);
-	c->in.connect(a->out);
-	f.set_is_pulled(true);
-	a.set_is_pulled(true);
+	b.set_is_pulled(true);
 	
 	graph.setup();
 

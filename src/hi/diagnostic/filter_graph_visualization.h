@@ -22,7 +22,6 @@ private:
 	
 	void generate_filter_input_connections_(std::ostream&, const filter&);
 	void generate_ranks_(std::ostream&);
-	void generate_pulled_(std::ostream&);
 	
 	static std::string name_(const std::string&);
 	static std::string time_window_string_(const time_window&);
