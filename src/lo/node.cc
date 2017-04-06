@@ -24,13 +24,16 @@ node_output& node::add_output_(const node_read_guide& guide) {
 }
 
 
-void node::setup() {
+void node::verify() const {
 	for(const node_output& out : outputs())
 		if(! out.is_connected()) throw invalid_node_graph("all node outputs must be connected");
 
 	for(const node_input& in : inputs())
 		if(! in.is_connected()) throw invalid_node_graph("all node inputs must be connected");
 }
+
+
+void node::setup() { }
 
 
 void node::forward_request_(time_span span) {

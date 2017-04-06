@@ -97,6 +97,7 @@ void node_graph_visualization::generate_node_body_(std::ostream& str, const proc
 	
 void node_graph_visualization::generate_node_input_connections_(std::ostream& str, const node& nd) {
 	for(const node_input& in : nd.inputs()) {
+		if(! in.is_connected()) continue;
 		const node_output& conn_out = in.connected_output();
 		
 		const std::string& in_uid = uids_.uid(in, "in");

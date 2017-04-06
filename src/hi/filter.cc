@@ -50,7 +50,7 @@ void filter::propagate_install(filter_installation_guide& guide) {
 	for(filter_output_base& out : outputs()) for(std::ptrdiff_t i = 0; i < out.edges_count(); ++i) {
 		if(! out.edge_at(i).has_destination()) continue;
 		filter& destination_filter = out.edge_at(i).destination_filter();
-		if(destination_filter.stage_ == stage::initial) return;
+		if(destination_filter.stage_ == stage::was_setup) return;
 	}
 
 	// non-orphaned direct successors are installed, now install this

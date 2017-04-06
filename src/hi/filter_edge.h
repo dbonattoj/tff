@@ -15,6 +15,7 @@ class filter_output_base;
 template<std::size_t Input_dim, typename Input_elem> class filter_input;
 template<std::size_t Output_dim, typename Output_elem> class filter_output;
 
+
 /// Edge connecting filters, base class.
 class filter_edge_base {
 public:
@@ -123,8 +124,8 @@ public:
 		if(&out.this_filter().graph() != &in.this_filter().graph())
 			throw invalid_filter_graph("filter edge must be between filters in same subgraph");
 		
-		if(! precedes_strict(out.this_filter(), in.this_filter()))
-			throw invalid_filter_graph("filter edge origin filter must strictly precede destination filter");
+		if(succeedes(out.this_filter(), in.this_filter()))
+			throw invalid_filter_graph("filter edge origin filter must not succeede destination filter");
 	}
 	
 	input_full_view_type input_view_from_opaque(const const_data_window_view_type& out_opaque_vw) const override {

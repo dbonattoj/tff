@@ -15,7 +15,6 @@
 
 namespace tff {
 
-
 class exception : public std::exception {
 private:
 	std::string type_;

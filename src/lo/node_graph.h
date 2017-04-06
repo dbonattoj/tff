@@ -23,6 +23,8 @@ private:
 	
 	thread_index_type last_thread_index_ = 0;
 	
+	void verify_() const;
+	
 	node_graph(const node_graph&) = delete;
 	node_graph& operator=(const node_graph&) = delete;
 	

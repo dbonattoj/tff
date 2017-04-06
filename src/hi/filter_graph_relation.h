@@ -5,8 +5,8 @@ namespace tff {
 
 class filter;
 
-bool precedes(const filter&, const filter&);
-bool precedes_strict(const filter&, const filter&);
+bool precedes(const filter&, const filter&, bool strict = true);
+bool succeedes(const filter&, const filter&, bool strict = true);
 
 }
 

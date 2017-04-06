@@ -1,5 +1,7 @@
 #include "node_graph.h"
 #include "sink_node.h"
+#include "diagnostic/node_graph_visualization.h"
+
 #include <iostream>
 
 namespace tff {
@@ -12,11 +14,19 @@ node_graph::node_graph() {
 node_graph::~node_graph() {
 	if(was_setup_) stop();
 }
+
+
+void node_graph::verify_() const {
+	for(const node& nd : nodes_) nd.verify();
+}
 		
 
 void node_graph::setup() {
+	export_node_graph_visualization(*this, "lo_init.gv");
+	
 	Assert(! was_setup_);
-	Assert(sink_ != nullptr);
+	if(sink_ == nullptr) throw invalid_node_graph("node_graph must have one sink node");
+	verify_();
 	sink_->setup_graph();
 	was_setup_ = true;
 }

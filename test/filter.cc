@@ -7,6 +7,7 @@
 #include "../src/hi/processing/processing_filter_job.h"
 #include "../src/lo/diagnostic/node_graph_visualization.h"
 #include "../src/hi/diagnostic/filter_graph_visualization.h"
+#include "../src/hi/enclosure/enclosure_box.h"
 
 using namespace tff;
 
@@ -67,7 +68,7 @@ public:
 	
 	void setup() {
 		std::cout << "setup Merge" << std::endl;
-		out.define_frame_shape(in1.frame_shape());
+		out.define_frame_shape(make_ndsize(1));
 	}
 	
 	void process(processing_filter_job& job) {
@@ -75,18 +76,46 @@ public:
 	}
 };
 
+class IC : public enclosure_box {
+public:
+	input<1, int> in;
+	output<1, int> out;
+	
+	IC() {
+		auto& a = graph().add_processing_filter<Passthrough>(); a.set_name("i a");
+		auto& b = graph().add_processing_filter<Passthrough>(); b.set_name("i b");
+		in.attach_internal_input(a->in);
+		b->in.connect(a->out);
+		out.attach_internal_output(b->out);
+	}
+};
+
 TEST_CASE("filter") {
 	filter_graph graph;
 	
 	auto& a = graph.add_processing_filter<Source>(); a.set_name("A");
-	auto& b = graph.add_processing_filter<Passthrough>(); b.set_name("B");
+	auto& b = graph.add_processing_filter<Tee>(); b.set_name("B");
+	auto& c = graph.add_enclosure_filter<IC>(); c.set_name("C");
+	auto& d = graph.add_processing_filter<Merge>(); d.set_name("D");
+	auto& e = graph.add_enclosure_filter<IC>(); e.set_name("E");
+	auto& f = graph.add_processing_filter<Merge>(); f.set_name("F");
+	
 	b->in.connect(a->out);
-	b.set_is_pulled(true);
+	d->in1.connect(b->out2);
+	d->in2.connect(c->out);
+	d->in2.set_window(time_window(2, 0));
+	//d.set_asynchronous(true);
+	e->in.connect(b->out1);
+	f->in1.connect(e->out);
+	f->in2.connect(d->out);
+	c->in.connect(a->out);
+	f.set_is_pulled(true);
+	export_filter_graph_visualization(graph, "hi.gv");
 	
 	graph.setup();
 
-	graph.run_for(10);
-	
-	export_filter_graph_visualization(graph, "hi.gv");
 	export_node_graph_visualization(graph.installed_node_graph(), "lo.gv");
+	
+	graph.run_for(10);
+		
 }

@@ -141,11 +141,15 @@ node_output& processing_node::add_pull_only_output() {
 }
 
 
-void processing_node::setup() {
-	node::setup();
-	
+void processing_node::verify() const {
+	node::verify();
 	if(handler_ == nullptr) throw invalid_node_graph("processing_node handler not set");
-	if(! has_request_sender()) throw invalid_node_graph("processing_node has not request sender");
+}
+
+
+void processing_node::setup() {
+	if(! has_request_sender()) throw invalid_node_graph("processing_node has no request sender");
+	node::setup();
 }
 
 

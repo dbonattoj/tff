@@ -67,10 +67,6 @@ public:
 private:
 	std::unique_ptr<edge_base_type> edge_;
 	
-protected:
-	void set_edge_(std::unique_ptr<edge_base_type>);
-	void delete_edge_();
-	
 public:
 	explicit filter_input(filter& filt) :
 		filter_input_base(filt) { }
@@ -80,6 +76,16 @@ public:
 	edge_base_type& edge() override;
 	
 	frame_shape_type frame_shape() const;
+
+	// TODO better system to place edges (init edge object + make input own it + add ref to output)
+	void set_edge(std::unique_ptr<edge_base_type>);
+	void delete_edge();
+
+	void connect(filter_output<Input_dim, Input_elem>&);
+	void disconnect();
+	
+	//template<std::size_t Output_dim, typename Output_elem>
+	//void connect(filter_output<Output_dim, Output_elem>&);
 };
 
 }

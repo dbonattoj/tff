@@ -82,6 +82,7 @@ public:
 	bool is_source() const { return inputs_.empty(); }
 	bool is_sink() const { return outputs_.empty(); }
 	
+	virtual void verify() const;
 	virtual void setup();
 	virtual thread_index_type input_reader_thread(input_index_type) const = 0;
 	virtual thread_index_type request_sender_thread() const = 0;

@@ -65,6 +65,11 @@ public:
 	
 	const box_type& box() const { return *box_; }
 	box_type& box() { return *box_; }
+	
+	const box_type& operator*() const { return box(); }
+	box_type& operator*() { return box(); }
+	const box_type* operator->() const { return &box(); }
+	box_type* operator->() { return &box(); }
 };
 
 
@@ -82,11 +87,10 @@ public:
 private:
 	ref_vector<internal_edge_type> internal_edges_;
 	
-protected:
+public:
 	enclosure_filter_input() : base(enclosure_filter_base::current_in_construction()) { }
 	~enclosure_filter_input();
-	
-public:
+
 	enclosure_filter_base& this_filter()
 		{ return static_cast<enclosure_filter_base&>(base::this_filter()); }
 	const enclosure_filter_base& this_filter() const
@@ -115,28 +119,23 @@ public:
 	
 private:
 	std::unique_ptr<internal_edge_type> internal_edge_;
-
-protected:
-	enclosure_filter_output() :
-		base(enclosure_filter_base::current_in_construction()) { }
-	
-	~enclosure_filter_output();
 	
 public:
+	enclosure_filter_output() : base(enclosure_filter_base::current_in_construction()) { }
+	~enclosure_filter_output();
+
 	enclosure_filter_base& this_filter()
 		{ return static_cast<enclosure_filter_base&>(base::this_filter()); }
 	const enclosure_filter_base& this_filter() const
 		{ return static_cast<enclosure_filter_base&>(base::this_filter()); }
 	
-	bool has_internal_edge() const override { return internal_edge_; }
+	bool has_internal_edge() const override { return (internal_edge_ != nullptr); }
 	internal_edge_type& internal_edge() override { return *internal_edge_; }
 	const internal_edge_type& internal_edge() const override { return *internal_edge_; }
 	
 	bool frame_shape_is_defined() const override;
 	const frame_shape_type& frame_shape() const override;
-
-	opaque_ndarray_format data_format() const override;
-
+	
 	internal_output_type& internal_output();
 	const internal_output_type& internal_output() const;
 	void attach_internal_output(internal_output_type&);

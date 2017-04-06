@@ -44,28 +44,6 @@ void processing_filter<Box>::box_setup_() {
 /////
 
 
-template<std::size_t Input_dim, typename Input_elem>
-void processing_filter_input<Input_dim, Input_elem>::connect(filter_output<Input_dim, Input_elem>& out) {
-	using caster_type = filter_null_edge_caster<Input_dim, Input_elem>;
-	using edge_type = filter_edge<Input_dim, Input_elem, Input_dim, Input_elem, caster_type>;
-	
-	auto edge = std::make_unique<edge_type>(out, *this);
-	out.edge_has_connected(*edge);
-	base::set_edge_( std::move(edge) );
-}
-
-
-template<std::size_t Input_dim, typename Input_elem>
-void processing_filter_input<Input_dim, Input_elem>::disconnect() {
-	auto edge = base::edge();
-	edge.origin().edge_has_disconnected(edge);
-	base::delete_edge_();
-}
-
-
-/////
-
-
 template<std::size_t Output_dim, typename Output_elem>
 void processing_filter_output<Output_dim, Output_elem>::define_frame_shape(const frame_shape_type& shp) {
 	frame_shape_ = shp;

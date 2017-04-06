@@ -8,7 +8,7 @@ namespace tff {
 template<typename Box> template<typename... Box_args>
 enclosure_filter<Box>::enclosure_filter(filter_subgraph& gr, Box_args&&... args) : enclosure_filter_base(gr) {
 	current_in_construction_ = this;
-	box_.emplace(subgraph_, std::forward<Box_args>(args)...);
+	box_.emplace(std::forward<Box_args>(args)...);
 	current_in_construction_ = nullptr;
 }
 
@@ -28,7 +28,7 @@ void enclosure_filter_input<Input_dim, Input_elem>::attach_internal_input(intern
 	using edge_type = enclosure_input_filter_edge<Input_dim, Input_elem>;
 	auto edge = std::make_unique<edge_type>(*this, in);
 	internal_edges_.push_back(*edge);
-	in.set_edge_(std::move(edge));
+	in.set_edge(std::move(edge));
 }
 
 
@@ -40,7 +40,7 @@ void enclosure_filter_input<Input_dim, Input_elem>::detach_internal_input(intern
 	Assert(it != internal_edges_.end());
 	
 	internal_edges_.erase(it);
-	in.delete_edge_();
+	in.delete_edge();
 }
 
 
@@ -86,7 +86,7 @@ void enclosure_filter_output<Output_dim, Output_elem>::attach_internal_output(in
 		throw invalid_filter_graph("internal filter output in enclosure can only be attached to external output of same enclosure");
 	
 	internal_edge_ = std::make_unique<internal_edge_type>(*this, out);
-	out.edge_has_connected(&internal_edge_);
+	out.edge_has_connected(*internal_edge_);
 }
 
 

@@ -22,6 +22,7 @@ public:
 	
 	thread_index_type processing_thread() const override;
 
+	void verify() const override;
 	void setup() override;
 	
 	void request(time_span) override;

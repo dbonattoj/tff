@@ -4,8 +4,8 @@
 
 namespace tff {
 
-bool precedes(const filter& a, const filter& b) {
-	if(&a == &b) return true;
+bool precedes(const filter& a, const filter& b, bool strict) {
+	if(&a == &b) return !strict;
 	for(const filter_output_base& out : a.outputs()) {
 		for(std::ptrdiff_t i = 0; i < out.edges_count(); ++i) {
 			const filter_edge_base& edge = out.edge_at(i);
@@ -17,18 +17,8 @@ bool precedes(const filter& a, const filter& b) {
 }
 
 
-bool precedes_strict(const filter& a, const filter& b) {
-	if(&a == &b) return false;
-	for(const filter_output_base& out : a.outputs()) {
-		for(std::ptrdiff_t i = 0; i < out.edges_count(); ++i) {
-			const filter_edge_base& edge = out.edge_at(i);
-			if(! edge.has_destination()) continue;
-			else if(precedes(edge.destination_filter(), b)) return true;
-		}
-	}
-	return false;
+bool succeedes(const filter& a, const filter& b, bool strict) {
+	return precedes(b, a, strict);
 }
-
-// TODO nontotal order (what if disconnected or invalid connected?, succeedes, succeedes_strict)
 
 }

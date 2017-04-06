@@ -89,12 +89,6 @@ public:
 	
 	input_index_type input_index() const final override { return input_index_; }
 	void set_input_index(input_index_type idx) final override { input_index_ = idx; }
-
-	void connect(filter_output<Input_dim, Input_elem>&);
-	void disconnect();
-	
-	//template<std::size_t Output_dim, typename Output_elem>
-	//void connect(filter_output<Output_dim, Output_elem>&);
 };
 
 

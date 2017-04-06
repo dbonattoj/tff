@@ -10,19 +10,24 @@ sync_node::sync_node(node_graph& gr, const std::string& name) :
 	processing_node(gr, name) { }
 
 
-void sync_node::setup() {
-	processing_node::setup();
-
+void sync_node::verify() const {
+	processing_node::verify();
+	
 	if(outputs().size() == 0) throw invalid_node_graph("sync_node must have at least one output");
 	
 	for(output_index_type out = 1; out < outputs().size(); ++out)
 		if(outputs().at(out).reader_thread() != processing_thread())
 			throw invalid_node_graph("sync_node outputs must all be on the processing thread");
+}
+
+
+void sync_node::setup() {
+	processing_node::setup();
 	
-	node_request_connection& req_sender = request_sender();
+	const node_request_connection& req_sender = request_sender();
 	if(req_sender.sender_thread() != processing_thread())
 		throw invalid_node_graph("sync_node requests must come from the processing thread");
-	
+
 	std::size_t capacity = req_sender.window().past + 1 + req_sender.window().future;
 	
 	processing_node::setup_ring_(rqueue_variant::sync, capacity);

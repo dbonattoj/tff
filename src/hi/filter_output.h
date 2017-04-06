@@ -45,7 +45,7 @@ public:
 	bool is_connected() const { return (this->edges_count() > 0); }
 	
 	virtual bool frame_shape_is_defined() const = 0;
-	virtual opaque_ndarray_format data_format() const = 0;
+	virtual opaque_ndarray_format data_format() const { throw not_implemented(); }
 
 	virtual data_channel_index_type data_channel_index() const { throw not_implemented(); }
 	virtual void set_data_channel_index(data_channel_index_type) { throw not_implemented(); }

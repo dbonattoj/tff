@@ -52,6 +52,7 @@ public:
 	
 	virtual thread_index_type processing_thread() const = 0;
 	
+	void verify() const override;
 	void setup() override;
 	
 	time_unit current_time() const { return current_time_; }

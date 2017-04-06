@@ -28,10 +28,9 @@ namespace {
 }
 
 void setup_debug_() {
-	using namespace backward;
 	std::set_terminate(&terminate_handler_);
 	
-	SignalHandling sh;
+	backward::SignalHandling sh;
 }
 
 class setup_debug_caller_ {
@@ -43,19 +42,16 @@ setup_debug_caller_ caller;
 };
 
 stack_trace get_stack_trace() {
-	using namespace backward;
 	constexpr std::size_t maximal_traces = 32;
 
-	StackTrace st;
+	backward::StackTrace st;
 	st.load_here(maximal_traces);
 	return st;
 }
 
 
 void print_stack_trace(stack_trace trace) {
-	using namespace backward;
-
-	Printer p;
+	backward::Printer p;
 	p.print(trace, stderr);
 }
 
