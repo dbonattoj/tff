@@ -28,7 +28,7 @@ void sync_node::setup() {
 	if(req_sender.sender_thread() != processing_thread())
 		throw invalid_node_graph("sync_node requests must come from the processing thread");
 
-	std::size_t capacity = req_sender.window().past + 1 + req_sender.window().future;
+	std::size_t capacity = req_sender.window().duration();
 	
 	processing_node::setup_ring_(rqueue_variant::sync, capacity);
 	

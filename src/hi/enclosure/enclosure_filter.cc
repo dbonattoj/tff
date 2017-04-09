@@ -54,7 +54,8 @@ void enclosure_filter_base::install_(filter_installation_guide& external_guide) 
 	// TODO parallelization: install multiple times + insert splitter node
 
 	// prepare internal guide
-	filter_installation_guide internal_guide(external_guide.this_node_graph());
+	std::string internal_name_prefix = name() + "/";
+	filter_installation_guide internal_guide(external_guide.this_node_graph(), internal_name_prefix);
 	
 	// for enclosure output edges: put successor node_inputs outside the enclosure into internal guide
 	for(const filter_output_base& out : outputs()) {

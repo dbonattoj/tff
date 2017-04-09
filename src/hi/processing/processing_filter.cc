@@ -30,7 +30,7 @@ void processing_filter_base::setup_() {
 
 void processing_filter_base::install_(filter_installation_guide& guide) {
 	node_graph& nd_graph = guide.this_node_graph();
-	std::string node_name = name();
+	std::string node_name = guide.name_prefix() + name();
 	
 	bool need_asynchronous_node = asynchronous_;
 	/*

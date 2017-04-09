@@ -96,6 +96,9 @@ bool node::accumulated_time_window_to_(const node& target_successor_node, time_w
 void node::connect_to_request_sender_() {
 	Assert(! has_request_sender());
 
+	// find request sender for this node:
+	// go down chain of successor's request senders ("request chains"),
+	// and select first common request sender node
 	node* sender = &outputs().front().connected_node();
 	for(;;) {
 		bool rejected = false;
@@ -106,28 +109,35 @@ void node::connect_to_request_sender_() {
 		else break;
 	}
 	
+	// determine time window of request sender connection:
+	// accumulated time window of all node connections between this node and the request sender node
 	time_window request_window;
 	bool ok = accumulated_time_window_to_(*sender, request_window);
 	Assert(ok);
 	
+	// connect the request sender
 	sender->add_request_receiver_(*this, request_window);
 }
 
 
 void node::propagate_request_connections_() {
 	if(! is_sink()) {
+		// skip if already connected to request sender
 		if(has_request_sender()) return;
 
+		// defer if direct successors of this node are not yet connected to request sender
 		for(const node_output& out : outputs()) {
 			const node& successor = out.connected_node();
 			if(!successor.has_request_sender() && !successor.is_sink()) return;
 		}
-			
+		
+		// find and connect request sender for this node
 		connect_to_request_sender_();
 	}
 	
 	stage_ = stage::request_connection;
 	
+	// propagate to predecessors
 	for(node_input& in : inputs())
 		in.connected_node().propagate_request_connections_();
 }

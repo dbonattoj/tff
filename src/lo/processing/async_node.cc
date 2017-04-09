@@ -35,7 +35,7 @@ void async_node::setup() {
 	rqueue_variant variant = (different_output_reader_threads ? rqueue_variant::async_multiplex : rqueue_variant::async);
 
 	node_request_connection& req_sender = request_sender();
-	std::size_t capacity = req_sender.window().past + 1 + req_sender.window().future + prefetch_duration_;
+	std::size_t capacity = req_sender.window().duration() + prefetch_duration_;
 
 	processing_node::setup_ring_(variant, capacity);
 }

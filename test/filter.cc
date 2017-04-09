@@ -82,8 +82,8 @@ public:
 	output<1, int> out;
 	
 	IC() {
-		auto& a = graph().add_processing_filter<Passthrough>(); a.set_name("i a");
-		auto& b = graph().add_processing_filter<Passthrough>(); b.set_name("i b");
+		auto& a = graph().add_processing_filter<Passthrough>(); a.set_name("a");
+		auto& b = graph().add_processing_filter<Passthrough>(); b.set_name("b");
 		in.attach_internal_input(a->in);
 		b->in.connect(a->out);
 		out.attach_internal_output(b->out);
