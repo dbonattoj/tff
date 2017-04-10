@@ -100,8 +100,8 @@ public:
 	const internal_edge_type& internal_edge_at(std::ptrdiff_t index) const override { return internal_edges_.at(index); }
 	internal_edge_type& internal_edge_at(std::ptrdiff_t index) override { return internal_edges_.at(index); }
 	
-	void attach_internal_input(internal_input_type&);
-	void detach_internal_input(internal_input_type&);
+	void internal_input_has_connected(internal_input_type&);
+	void internal_input_has_disconnected(internal_input_type&);
 };
 
 
@@ -128,18 +128,23 @@ public:
 		{ return static_cast<enclosure_filter_base&>(base::this_filter()); }
 	const enclosure_filter_base& this_filter() const
 		{ return static_cast<enclosure_filter_base&>(base::this_filter()); }
-	
+
+
+	void set_internal_edge(std::unique_ptr<internal_edge_type>);
+	void delete_internal_edge();
+
+
+	internal_output_type& internal_output();
+	const internal_output_type& internal_output() const;
+
+
+/*
 	bool has_internal_edge() const override { return (internal_edge_ != nullptr); }
 	internal_edge_type& internal_edge() override { return *internal_edge_; }
 	const internal_edge_type& internal_edge() const override { return *internal_edge_; }
-	
+	*/
 	bool frame_shape_is_defined() const override;
 	const frame_shape_type& frame_shape() const override;
-	
-	internal_output_type& internal_output();
-	const internal_output_type& internal_output() const;
-	void attach_internal_output(internal_output_type&);
-	void detach_internal_output();
 };
 
 }

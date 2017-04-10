@@ -1,8 +1,8 @@
 #ifndef TFF_ENCLOSURE_OUTPUT_FILTER_EDGE_H_
 #define TFF_ENCLOSURE_OUTPUT_FILTER_EDGE_H_
 
-#include "../filter_edge.h"
-#include "enclosure_filter.h"
+#include "../edge/filter_edge_base.h"
+#include "../enclosure/enclosure_filter.h"
 
 namespace tff {
 
@@ -33,6 +33,15 @@ public:
 	bool has_destination() const override { return false; }
 };
 
+
+template<std::size_t Output_dim, typename Output_elem>
+void connect_enclosure_output(
+	enclosure_filter_output<Output_dim, Output_elem>& external,
+	filter_output<Output_dim, Output_elem>& internal
+);
+
 }
+
+#include "enclosure_output_filter_edge.tcc"
 
 #endif

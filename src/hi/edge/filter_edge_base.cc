@@ -1,6 +1,6 @@
-#include "filter_edge.h"
-#include "filter_input.h"
-#include "filter_output.h"
+#include "filter_edge_base.h"
+#include "../filter_input.h"
+#include "../filter_output.h"
 
 namespace tff {
 

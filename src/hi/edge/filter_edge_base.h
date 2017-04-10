@@ -1,10 +1,10 @@
-#ifndef TFF_FILTER_EDGE_H_
-#define TFF_FILTER_EDGE_H_
+#ifndef TFF_FILTER_EDGE_BASE_H_
+#define TFF_FILTER_EDGE_BASE_H_
 
-#include "view_types.h"
-#include "../lo/types.h"
-#include "../nd/nd.h"
-#include "filter_graph_relation.h"
+#include "hi/view_types.h"
+#include "lo/types.h"
+#include "nd/nd.h"
+#include "hi/filter_graph_relation.h"
 
 namespace tff {
 
@@ -77,66 +77,6 @@ public:
 	bool has_origin() const override { return true; }
 	const output_type& origin() const override { return output_; }
 	output_type& origin() override { return output_; }
-};
-
-
-/// Edge connecting a filter output (_origin_) to a filter input (_destination_).
-template<
-	std::size_t Output_dim,
-	typename Output_elem,
-	std::size_t Input_dim,
-	typename Input_elem,
-	typename Caster
->
-class filter_edge final :
-	public filter_edge_output_base<Output_dim, Output_elem>,
-	public filter_edge_input_base<Input_dim, Input_elem>
-{
-	using base_in = filter_edge_input_base<Input_dim, Input_elem>;
-	using base_out = filter_edge_output_base<Output_dim, Output_elem>;
-	
-	/*
-	origin filter
-	 [output]
-		|
-		|  cast
-		v
-	 [input]
-	destination filter
-	*/
-
-public:
-	using typename base_out::output_type;
-	using typename base_out::output_frame_shape_type;
-	using typename base_out::output_full_view_type;
-	using typename base_in::input_type;
-	using typename base_in::input_frame_shape_type;
-	using typename base_in::input_full_view_type;
-	using caster_type = Caster;
-	
-private:
-	caster_type caster_;
-	
-public:
-	filter_edge(output_type& out, input_type& in, const caster_type& caster = caster_type()) :
-		base_out(out), base_in(in), caster_(caster)
-	{
-		if(&out.this_filter().graph() != &in.this_filter().graph())
-			throw invalid_filter_graph("filter edge must be between filters in same subgraph");
-		
-		if(succeedes(out.this_filter(), in.this_filter()))
-			throw invalid_filter_graph("filter edge origin filter must not succeede destination filter");
-	}
-	
-	input_full_view_type input_view_from_opaque(const const_data_window_view_type& out_opaque_vw) const override {
-		output_full_view_type out_vw = from_opaque<Output_dim + 1, const Output_elem>(out_opaque_vw);
-		return caster_.cast_view(out_vw);
-	}
-	
-	input_frame_shape_type input_frame_shape() const override {
-		output_frame_shape_type output_shp = base_out::origin().frame_shape();
-		return caster_.cast_frame_shape(output_shp);
-	}
 };
 
 

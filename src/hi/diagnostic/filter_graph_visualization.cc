@@ -2,7 +2,7 @@
 #include "../filter.h"
 #include "../filter_output.h"
 #include "../filter_input.h"
-#include "../filter_edge.h"
+#include "../edge/filter_edge_base.h"
 #include "../filter_subgraph.h"
 
 #include <fstream>

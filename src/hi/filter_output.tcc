@@ -1,5 +1,5 @@
 #include "filter_output.h"
-#include "filter_edge.h"
+#include "hi/edge/filter_edge_base.h"
 #include "../nd/nd.h"
 #include <algorithm>
 

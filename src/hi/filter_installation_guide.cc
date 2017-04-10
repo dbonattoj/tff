@@ -1,5 +1,5 @@
 #include "filter_installation_guide.h"
-#include "filter_edge.h"
+#include "edge/filter_edge_base.h"
 #include "filter.h"
 #include "../lo/processing/processing_node.h"
 #include "../lo/node_input.h"

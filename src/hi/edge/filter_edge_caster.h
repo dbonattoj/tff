@@ -1,7 +1,7 @@
 #ifndef TFF_FILTER_EDGE_CASTER_H_
 #define TFF_FILTER_EDGE_CASTER_H_
 
-#include "view_types.h"
+#include "hi/view_types.h"
 
 namespace tff {
 
