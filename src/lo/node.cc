@@ -36,9 +36,11 @@ void node::verify() const {
 void node::setup() { }
 
 
-void node::forward_request_(time_span span) {
-	for(node_request_connection& req : request_receivers_)
-		req.receiver().request(expand_truncate(span, req.window()));
+void node::forward_request_(time_unit t) {
+	for(node_request_connection& req : request_receivers_) {
+		time_span span = expand(t, req.window());
+		req.receiver().request(truncate_begin(span));
+	}
 }
 
 

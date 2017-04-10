@@ -25,13 +25,14 @@ time_span expand(const time_span& span, const time_window& win) {
 }
 
 
-time_span expand_truncate(const time_span& span, const time_window& win) {
-	time_span expanded_span = expand(span, win);
-	if(expanded_span.begin < 0) expanded_span.begin = 0;
-	return expanded_span;
+time_span expand(time_unit t, const time_window& win) {
+	time_unit begin = t - win.past;
+	time_unit end = t + 1 + win.future;
+	return time_span(begin, end);
 }
 
-time_span truncate(time_span span) {
+
+time_span truncate_begin(time_span span) {
 	if(span.begin < 0) span.begin = 0;
 	return span;
 }

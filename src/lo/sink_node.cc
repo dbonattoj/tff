@@ -14,8 +14,7 @@ sink_node::sink_node(node_graph& gr) :
 frame_state_flag sink_node::process(time_unit t) {
 	current_time_ = t;
 	
-	time_span span(t, t + 1);
-	request(span);
+	node::forward_request_(t);
 	
 	for(node_input& input : inputs()) {
 		if(! input.is_activated()) continue;
@@ -70,9 +69,7 @@ thread_index_type sink_node::request_sender_thread() const {
 }
 
 
-void sink_node::request(time_span span) {
-	node::forward_request_(span);
-}
+void sink_node::request(time_span) { }
 
 
 void sink_node::launch() {

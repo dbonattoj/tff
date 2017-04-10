@@ -81,7 +81,6 @@ class enclosure_filter_input : public filter_input<Input_dim, Input_elem> {
 	using base = filter_input<Input_dim, Input_elem>;
 	
 public:
-	using internal_input_type = filter_input<Input_dim, Input_elem>;
 	using internal_edge_type = enclosure_input_filter_edge<Input_dim, Input_elem>;
 	
 private:
@@ -100,8 +99,8 @@ public:
 	const internal_edge_type& internal_edge_at(std::ptrdiff_t index) const override { return internal_edges_.at(index); }
 	internal_edge_type& internal_edge_at(std::ptrdiff_t index) override { return internal_edges_.at(index); }
 	
-	void internal_input_has_connected(internal_input_type&);
-	void internal_input_has_disconnected(internal_input_type&);
+	void internal_edge_has_connected(internal_edge_type&);
+	void internal_edge_has_disconnected(internal_edge_type&);
 };
 
 
@@ -132,17 +131,11 @@ public:
 
 	void set_internal_edge(std::unique_ptr<internal_edge_type>);
 	void delete_internal_edge();
-
-
-	internal_output_type& internal_output();
-	const internal_output_type& internal_output() const;
-
-
-/*
+	
 	bool has_internal_edge() const override { return (internal_edge_ != nullptr); }
 	internal_edge_type& internal_edge() override { return *internal_edge_; }
 	const internal_edge_type& internal_edge() const override { return *internal_edge_; }
-	*/
+	
 	bool frame_shape_is_defined() const override;
 	const frame_shape_type& frame_shape() const override;
 };

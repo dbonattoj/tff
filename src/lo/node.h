@@ -56,7 +56,7 @@ protected:
 	
 	void sink_setup_();
 	
-	void forward_request_(time_span);
+	void forward_request_(time_unit);
 	void forward_launch_();
 	void forward_stop_();
 	

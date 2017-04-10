@@ -1,5 +1,5 @@
 #include "filter_output.h"
-#include "hi/edge/filter_edge_base.h"
+#include "edge/filter_edge_base.h"
 #include "../nd/nd.h"
 #include <algorithm>
 
@@ -15,7 +15,8 @@ template<std::size_t Output_dim, typename Output_elem>
 void filter_output<Output_dim, Output_elem>::edge_has_disconnected(const filter_edge_base& edge) {
 	auto cmp = [&edge](const edge_base_type& q_edge) { return (&edge == &q_edge); };
 	auto it = std::find_if(edges_.begin(), edges_.end(), cmp);
-	if(it != edges_.end()) edges_.erase(it);
+	Assert(it != edges_.end());
+	edges_.erase(it);
 }
 
 

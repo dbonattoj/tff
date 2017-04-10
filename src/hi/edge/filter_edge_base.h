@@ -1,10 +1,10 @@
 #ifndef TFF_FILTER_EDGE_BASE_H_
 #define TFF_FILTER_EDGE_BASE_H_
 
-#include "hi/view_types.h"
-#include "lo/types.h"
-#include "nd/nd.h"
-#include "hi/filter_graph_relation.h"
+#include "../view_types.h"
+#include "../../lo/types.h"
+#include "../../nd/nd.h"
+#include "../filter_graph_relation.h"
 
 namespace tff {
 

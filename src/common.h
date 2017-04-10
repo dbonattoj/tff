@@ -48,8 +48,9 @@ time_window max(const time_window&, const time_window&);
 time_window min(const time_window&, const time_window&);
 
 time_span expand(const time_span&, const time_window&);
-time_span expand_truncate(const time_span&, const time_window&);
-time_span truncate(time_span);
+time_span expand(time_unit, const time_window&);
+
+time_span truncate_begin(time_span);
 
 };
 

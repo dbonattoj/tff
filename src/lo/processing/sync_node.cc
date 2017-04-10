@@ -39,6 +39,8 @@ void sync_node::setup() {
 void sync_node::write_(rqueue_type::write_handle& handle) {
 	if(handle.has_stopped()) return;
 
+	node::forward_request_(handle.time());
+	
 	//std::cout << name() << ":" << &handle.frame().state().flag << std::endl;
 	handle.frame().state().flag = frame_state_flag::failure;
 
@@ -54,7 +56,6 @@ thread_index_type sync_node::processing_thread() const {
 
 	
 void sync_node::request(time_span span) {
-	node::forward_request_(span);
 	processing_node::queue_request_(span);
 }
 

@@ -41,18 +41,11 @@ public:
 
 private:
 	caster_type caster_;
-
-	filter_edge(output_type& out, input_type& in, const caster_type& caster) :
-		base_out(out), base_in(in), caster_(caster)
-	{
-		if(&out.this_filter().graph() != &in.this_filter().graph())
-			throw invalid_filter_graph("filter edge must be between filters in same subgraph");
-
-		if(succeedes(out.this_filter(), in.this_filter()))
-			throw invalid_filter_graph("filter edge origin filter must not succeede destination filter");
-	}
-
+	
 public:
+	filter_edge(output_type& out, input_type& in, const caster_type& caster) :
+		base_out(out), base_in(in), caster_(caster) { }
+
 	input_full_view_type input_view_from_opaque(const const_data_window_view_type& out_opaque_vw) const override {
 		output_full_view_type out_vw = from_opaque<Output_dim + 1, const Output_elem>(out_opaque_vw);
 		return caster_.cast_view(out_vw);
@@ -65,17 +58,20 @@ public:
 };
 
 
-template<
-	std::size_t Output_dim,
-	typename Output_elem,
-	std::size_t Input_dim,
-	typename Input_elem,
-	typename Caster
->
+template<std::size_t Output_dim, typename Output_elem, std::size_t Input_dim, typename Input_elem, typename Caster>
 void connect_filters(
 	filter_output<Output_dim, Output_elem>&,
 	filter_input<Input_dim, Input_elem>&,
-	const Caster& = Caster()
+	const Caster&
+);
+
+template<std::size_t Dim, typename Elem>
+void connect_filters(filter_output<Dim, Elem>&, filter_input<Dim, Elem>&);
+
+template<std::size_t Output_dim, typename Output_elem, std::size_t Input_dim, typename Input_elem>
+void disconnect_filters(
+	filter_output<Output_dim, Output_elem>&,
+	filter_input<Input_dim, Input_elem>&
 );
 
 }

@@ -5,7 +5,7 @@
 #include "../nd/ndcoord.h"
 #include "../lo/types.h"
 #include "../utility/exception.h"
-#include "hi/edge/filter_edge_base.h"
+#include "edge/filter_edge_base.h"
 #include <string>
 #include <memory>
 
@@ -44,6 +44,7 @@ public:
 	virtual bool is_connected() const = 0;
 	virtual const filter_edge_base& edge() const = 0;
 	virtual filter_edge_base& edge() = 0;
+	virtual void delete_edge() = 0;
 	
 	virtual input_index_type input_index() const { throw not_implemented(); }
 	virtual void set_input_index(input_index_type) { throw not_implemented(); }
@@ -78,7 +79,7 @@ public:
 	frame_shape_type frame_shape() const;
 
 	void set_edge(std::unique_ptr<edge_base_type>);
-	void delete_edge();
+	void delete_edge() override;
 };
 
 }

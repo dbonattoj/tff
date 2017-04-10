@@ -77,7 +77,7 @@ void async_node::worker_main_() {
 		handle.frame().state().flag = frame_state_flag::failure;
 
 		
-		node::forward_request_(time_span(handle.time(), handle.time() + 1));
+		node::forward_request_(handle.time());
 		
 		succeeded = processing_node::write_next_(handle);
 		if(succeeded) {

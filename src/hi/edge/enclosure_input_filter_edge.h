@@ -1,9 +1,11 @@
 #ifndef TFF_ENCLOSURE_INPUT_FILTER_EDGE_H_
 #define TFF_ENCLOSURE_INPUT_FILTER_EDGE_H_
 
-#include "../edge/filter_edge_base.h"
+#include "filter_edge_base.h"
 
 namespace tff {
+
+class filter_input_base;
 
 template<std::size_t Output_dim, typename Output_elem>
 class enclosure_filter_input;
@@ -48,6 +50,13 @@ public:
 
 template<std::size_t Input_dim, typename Input_elem>
 void connect_enclosure_input(
+	enclosure_filter_input<Input_dim, Input_elem>& external,
+	filter_input<Input_dim, Input_elem>& internal
+);
+
+
+template<std::size_t Input_dim, typename Input_elem>
+void disconnect_enclosure_input(
 	enclosure_filter_input<Input_dim, Input_elem>& external,
 	filter_input<Input_dim, Input_elem>& internal
 );

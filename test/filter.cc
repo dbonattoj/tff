@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "../src/hi/filter_graph.h"
+#include "../src/hi/edge/filter_edge.h"
 #include "../src/hi/processing/filter_box.h"
 #include "../src/hi/processing/processing_filter.h"
 #include "../src/hi/processing/processing_filter_job.h"
@@ -84,9 +85,10 @@ public:
 	IC() {
 		auto& a = graph().add_processing_filter<Passthrough>(); a.set_name("a");
 		auto& b = graph().add_processing_filter<Passthrough>(); b.set_name("b");
-		in.attach_internal_input(a->in);
-		b->in.connect(a->out);
-		out.attach_internal_output(b->out);
+		
+		connect_enclosure_input(in, a->in);
+		connect_filters(a->out, b->in);
+		connect_enclosure_output(b->out, out);
 	}
 };
 
@@ -100,16 +102,17 @@ TEST_CASE("filter") {
 	auto& e = graph.add_enclosure_filter<IC>(); e.set_name("E");
 	auto& f = graph.add_processing_filter<Merge>(); f.set_name("F");
 	
-	b->in.connect(a->out);
-	d->in1.connect(b->out2);
-	d->in2.connect(c->out);
+	connect_filters(a->out, b->in);
+	connect_filters(b->out2, d->in2);
+	connect_filters(c->out, d->in1);
 	d->in2.set_window(time_window(2, 0));
-	//d.set_asynchronous(true);
-	e->in.connect(b->out1);
-	f->in1.connect(e->out);
-	f->in2.connect(d->out);
-	c->in.connect(a->out);
+	connect_filters(b->out1, e->in);
+	connect_filters(e->out, f->in1);
+	connect_filters(d->out, f->in2);
+	connect_filters(e->out, c->in);
 	f.set_is_pulled(true);
+	b.set_asynchronous(true);
+	
 	export_filter_graph_visualization(graph, "hi.gv");
 	
 	graph.setup();

@@ -42,6 +42,7 @@ public:
 	virtual std::size_t edges_count() const = 0;
 	virtual const filter_edge_base& edge_at(std::ptrdiff_t) const = 0;
 	virtual filter_edge_base& edge_at(std::ptrdiff_t) = 0;
+	virtual void edge_has_disconnected(const filter_edge_base&) = 0;
 	bool is_connected() const { return (this->edges_count() > 0); }
 	
 	virtual bool frame_shape_is_defined() const = 0;
@@ -80,7 +81,7 @@ public:
 	filter_edge_base& edge_at(std::ptrdiff_t) override;
 	
 	void edge_has_connected(edge_base_type&);
-	void edge_has_disconnected(const filter_edge_base&);
+	void edge_has_disconnected(const filter_edge_base&) override;
 	
 	virtual const frame_shape_type& frame_shape() const = 0;
 };
